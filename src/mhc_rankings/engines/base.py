@@ -10,7 +10,7 @@ class RankingEngine(ABC):
         pass
 
     @abstractmethod
-    def add_game(self, away: str, home: str, away_score: int, home_score: int) -> None:
+    def add_game(self, away: str, home: str, away_score: int, home_score: int, is_overtime: bool = False) -> None:
         """Process a single game result."""
         pass
 

@@ -143,8 +143,10 @@ def main() -> None:
         weekly_records=weekly_records,
         plot_engine=args.plot_engine,
         output_path=report_file,
+        df=df,
         include_sos_plot=args.include_sos_plot,
-        method=args.method
+        method=args.method,
+        use_movm=args.use_movm
     )
     
     print(f"Done! Report saved to {report_file}")

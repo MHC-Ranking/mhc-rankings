@@ -8,9 +8,9 @@ class StatsTracker:
     
     def __init__(self, teams: List[str]) -> None:
         self.teams = teams
-        self.stats = {team: {"W": 0, "L": 0, "T": 0, "GF": 0, "GA": 0, "LastGame": ""} for team in teams}
+        self.stats = {team: {"W": 0, "OTW": 0, "L": 0, "OTL": 0, "T": 0, "GF": 0, "GA": 0, "LastGame": ""} for team in teams}
         
-    def add_game(self, away: str, home: str, away_score: int, home_score: int) -> None:
+    def add_game(self, away: str, home: str, away_score: int, home_score: int, is_overtime: bool = False) -> None:
         """Update cumulative stats based on a single game result."""
         self.stats[away]["GF"] += away_score
         self.stats[away]["GA"] += home_score
@@ -20,21 +20,31 @@ class StatsTracker:
         away_abbrev = team_to_abbrev.get(away, away)
         home_abbrev = team_to_abbrev.get(home, home)
         
+        ot_str = " (OT)" if is_overtime else ""
+        
         if away_score > home_score:
-            self.stats[away]["W"] += 1
-            self.stats[home]["L"] += 1
-            self.stats[away]["LastGame"] = f"@ {home_abbrev} W {away_score}-{home_score}"
-            self.stats[home]["LastGame"] = f"vs {away_abbrev} L {home_score}-{away_score}"
+            if is_overtime:
+                self.stats[away]["OTW"] += 1
+                self.stats[home]["OTL"] += 1
+            else:
+                self.stats[away]["W"] += 1
+                self.stats[home]["L"] += 1
+            self.stats[away]["LastGame"] = f"@ {home_abbrev} W {away_score}-{home_score}{ot_str}"
+            self.stats[home]["LastGame"] = f"vs {away_abbrev} L {home_score}-{away_score}{ot_str}"
         elif home_score > away_score:
-            self.stats[home]["W"] += 1
-            self.stats[away]["L"] += 1
-            self.stats[away]["LastGame"] = f"@ {home_abbrev} L {away_score}-{home_score}"
-            self.stats[home]["LastGame"] = f"vs {away_abbrev} W {home_score}-{away_score}"
+            if is_overtime:
+                self.stats[home]["OTW"] += 1
+                self.stats[away]["OTL"] += 1
+            else:
+                self.stats[home]["W"] += 1
+                self.stats[away]["L"] += 1
+            self.stats[away]["LastGame"] = f"@ {home_abbrev} L {away_score}-{home_score}{ot_str}"
+            self.stats[home]["LastGame"] = f"vs {away_abbrev} W {home_score}-{away_score}{ot_str}"
         else:
             self.stats[away]["T"] += 1
             self.stats[home]["T"] += 1
-            self.stats[away]["LastGame"] = f"@ {home_abbrev} T {away_score}-{home_score}"
-            self.stats[home]["LastGame"] = f"vs {away_abbrev} T {home_score}-{away_score}"
+            self.stats[away]["LastGame"] = f"@ {home_abbrev} T {away_score}-{home_score}{ot_str}"
+            self.stats[home]["LastGame"] = f"vs {away_abbrev} T {home_score}-{away_score}{ot_str}"
 
     def build_records(self, ratings: Dict[str, float], sos: Dict[str, float]) -> List[TeamRecord]:
         """Combines internal stats with external ratings and SOS into TeamRecord objects."""
@@ -45,8 +55,10 @@ class StatsTracker:
                 team=team,
                 rating=ratings.get(team, 0.0),
                 sos=sos.get(team, 0.0),
-                w=st["W"],
-                l=st["L"],
+                wins=st["W"],
+                ot_wins=st["OTW"],
+                losses=st["L"],
+                ot_losses=st["OTL"],
                 t=st["T"],
                 gf=st["GF"],
                 ga=st["GA"],

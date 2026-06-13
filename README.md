@@ -65,6 +65,30 @@ When run, the application will generate the following in the specified output di
 - `weekly_ratings_output.tsv`: Matrix of team ratings over time.
 - `colley_matrix_output.tsv`: The final calculated Colley Matrix (if the Colley method was used).
 
+## 2025-26 Data Processing
+
+The game results from the 2025-26 are included in the `data/mhc-hockey` folder.  They have been 
+processed using three different schemes.
+
+### Colley Method
+
+```bash
+mhc-rankings --input data/mhc-hockey/game_results_2025-26.tsv --output-dir data/mhc-hockey/colley --plot-engine plotly --include-sos-plot --method colley
+```
+
+### Bradley-Terry/ELO Hybrid Method 
+
+```bash
+mhc-rankings --input data/mhc-hockey/game_results_2025-26.tsv --output-dir data/mhc-hockey/bt-elo --method bt-elo --include-sos-plot --plot-engine plotly
+```
+
+### Bradley-Terry/ELO Hybrid Method + Margin of Victory Multiplier
+
+```bash
+mhc-rankings --input data/mhc-hockey/game_results_2025-26.tsv --output-dir data/mhc-hockey/bt-elo-movm --method bt-elo --use-movm --max-gd 4 --include-sos-plot --plot-engine plotly
+```
+
+
 ## References
 
 - Colley, Wesley N. (Ph.D., Princeton University). *[Colley’s Bias Free College Football Ranking Method: The Colley Matrix Explained](https://www.colleyrankings.com/matrate.pdf)*

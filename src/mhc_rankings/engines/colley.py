@@ -34,7 +34,7 @@ class ColleyEngine(RankingEngine):
         for i in range(self.n_teams):
             self.C[i, i] = 2
             
-    def add_game(self, away: str, home: str, away_score: int, home_score: int) -> None:
+    def add_game(self, away: str, home: str, away_score: int, home_score: int, is_overtime: bool = False) -> None:
         """
         Process a single game result and incrementally update the C matrix and b vector.
         """
@@ -49,14 +49,24 @@ class ColleyEngine(RankingEngine):
         self.C[i, j] -= 1
         self.C[j, i] -= 1
         
-        # Update right-hand side vector (b) to reflect win/loss
-        # A win adds 0.5 to a team's b-value; a loss subtracts 0.5. Ties do nothing.
+        # Update right-hand side vector (b) to reflect win/loss value
+        # Base value is 0.5. Game value v dictates the addition: b += (v - 0.5)
+        # Regulation: Win (1.0) -> +0.5, Loss (0.0) -> -0.5, Tie (0.5) -> 0.0
+        # Overtime: Win (0.667) -> +0.167, Loss (0.333) -> -0.167, Tie (0.5) -> 0.0
+        
+        if is_overtime:
+            win_val = 0.667 - 0.5  # 0.167
+            loss_val = 0.333 - 0.5 # -0.167
+        else:
+            win_val = 1.0 - 0.5    # 0.5
+            loss_val = 0.0 - 0.5   # -0.5
+            
         if away_score > home_score:
-            self.b[i] += 0.5
-            self.b[j] -= 0.5
+            self.b[i] += win_val
+            self.b[j] += loss_val
         elif home_score > away_score:
-            self.b[j] += 0.5
-            self.b[i] -= 0.5
+            self.b[j] += win_val
+            self.b[i] += loss_val
 
     def solve(self) -> Tuple[Dict[str, float], Dict[str, float]]:
         """

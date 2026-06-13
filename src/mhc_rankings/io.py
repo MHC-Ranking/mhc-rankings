@@ -58,9 +58,9 @@ def save_rankings_tsv(rankings: List[TeamRecord], output_path: str | Path) -> No
     """
     with open(output_path, "w", encoding="utf-8", newline="") as f:
         writer = csv.writer(f, delimiter="\t")
-        writer.writerow(["Rank", "Team", "Rating", "SOS", "Raw Win%", "W", "L", "T", "GF", "GA", "GD"])
+        writer.writerow(["Rank", "Team", "Rating", "SOS", "Raw Win%", "W", "OTW", "T", "OTL", "L", "GF", "GA", "GD"])
         for idx, rec in enumerate(rankings, 1):
-            writer.writerow([idx, rec.team, f"{rec.rating:.4f}", f"{rec.sos:.4f}", f"{rec.win_pct:.3f}", rec.w, rec.l, rec.t, rec.gf, rec.ga, rec.gd])
+            writer.writerow([idx, rec.team, f"{rec.rating:.4f}", f"{rec.sos:.4f}", f"{rec.win_pct:.3f}", rec.wins, rec.ot_wins, rec.t, rec.ot_losses, rec.losses, rec.gf, rec.ga, rec.gd])
 
 
 def save_colley_matrix_tsv(C: Any, teams: List[str], output_path: str | Path) -> None:

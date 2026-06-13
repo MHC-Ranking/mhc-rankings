@@ -44,7 +44,7 @@ class BTEloEngine(RankingEngine):
         self.opp_ratings_sum = {team: 0.0 for team in teams}
         self.games_played = {team: 0 for team in teams}
 
-    def add_game(self, away: str, home: str, away_score: int, home_score: int) -> None:
+    def add_game(self, away: str, home: str, away_score: int, home_score: int, is_overtime: bool = False) -> None:
         """
         Process a single game, calculate expected win probabilities, and update ratings.
         """
@@ -65,12 +65,20 @@ class BTEloEngine(RankingEngine):
         expected_away = 1.0 / (1.0 + 10.0 ** ((r_home - r_away) / 400.0))
         expected_home = 1.0 / (1.0 + 10.0 ** ((r_away - r_home) / 400.0))
         
-        # Determine Actual Outcomes (1.0 for Win, 0.5 for Tie, 0.0 for Loss)
+        # Determine Actual Outcomes (1.0 for Regulation Win, 0.5 for Tie, 0.0 for Regulation Loss)
+        # Overtime Outcomes: 0.667 for OT Win, 0.333 for OT Loss
+        if is_overtime:
+            win_val = 0.667
+            loss_val = 0.333
+        else:
+            win_val = 1.0
+            loss_val = 0.0
+            
         if away_score > home_score:
-            s_away, s_home = 1.0, 0.0
+            s_away, s_home = win_val, loss_val
             r_winner, r_loser = r_away, r_home
         elif home_score > away_score:
-            s_away, s_home = 0.0, 1.0
+            s_away, s_home = loss_val, win_val
             r_winner, r_loser = r_home, r_away
         else:
             s_away, s_home = 0.5, 0.5

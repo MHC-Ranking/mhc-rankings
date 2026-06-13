@@ -318,8 +318,10 @@
                     <th title="Strength of Schedule (Average Opponent Rating)">SOS</th>
                     <th title="Raw Win Percentage">Win %</th>
                     <th title="Wins">W</th>
-                    <th title="Losses">L</th>
+                    <th title="Overtime Wins">OTW</th>
                     <th title="Ties">T</th>
+                    <th title="Overtime Losses">OTL</th>
+                    <th title="Losses">L</th>
                     <th title="Goals For">GF</th>
                     <th title="Goals Against">GA</th>
                     <th title="Goal Differential">GD</th>
@@ -439,6 +441,44 @@
         {% endif %}
     </div>
 
+    <div class="section">
+        <details>
+            <summary>Game Results History</summary>
+            <div class="matrix-container">
+                <table class="matrix-table" style="width: 100%; text-align: center;">
+                    <thead>
+                        <tr>
+                            <th>Date</th>
+                            <th>Time</th>
+                            <th>Away Team</th>
+                            <th>Away Score</th>
+                            <th>Home Score</th>
+                            <th>Home Team</th>
+                            <th>Overtime</th>
+                            <th>Location</th>
+                            <th>Game Type</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for game in games_data %}
+                        <tr>
+                            <td>{{ game['Date'] }}</td>
+                            <td>{{ game['Time'] }}</td>
+                            <td>{{ game['Away Team'] }}</td>
+                            <td>{{ game['Away Score'] }}</td>
+                            <td>{{ game['Home Score'] }}</td>
+                            <td>{{ game['Home Team'] }}</td>
+                            <td>{{ game['Overtime'] }}</td>
+                            <td>{{ game['Location'] }}</td>
+                            <td>{{ game['Game Type'] }}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </details>
+    </div>
+
 </div>
 
 <script>
@@ -486,9 +526,11 @@
                 <td>${teamData.rating.toFixed(4)}</td>
                 <td>${teamData.sos.toFixed(4)}</td>
                 <td>${teamData.win_pct.toFixed(3)}</td>
-                <td>${teamData.w}</td>
-                <td>${teamData.l}</td>
+                <td>${teamData.wins}</td>
+                <td>${teamData.ot_wins}</td>
                 <td>${teamData.t}</td>
+                <td>${teamData.ot_losses}</td>
+                <td>${teamData.losses}</td>
                 <td>${teamData.gf}</td>
                 <td>${teamData.ga}</td>
                 <td>${teamData.gd}</td>
