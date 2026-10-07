@@ -2,7 +2,6 @@ import pytest
 import pandas as pd
 from mhc_rankings.rankings_math import get_teams, get_engine, compute_final_rankings
 from mhc_rankings.engines.colley import ColleyEngine
-from mhc_rankings.engines.bt_elo import BTEloEngine
 
 def test_get_teams():
     df = pd.DataFrame({
@@ -12,10 +11,7 @@ def test_get_teams():
     assert get_teams(df) == ["Team A", "Team B", "Team C"]
 
 def test_get_engine():
-    assert isinstance(get_engine("colley", ["A"]), ColleyEngine)
-    assert isinstance(get_engine("bt-elo", ["A"]), BTEloEngine)
-    with pytest.raises(ValueError):
-        get_engine("unknown", ["A"])
+    assert isinstance(get_engine(["A"]), ColleyEngine)
 
 def test_compute_final_rankings():
     data = {
@@ -28,7 +24,7 @@ def test_compute_final_rankings():
     }
     df = pd.DataFrame(data)
     
-    records, details, teams = compute_final_rankings(df, method="colley")
+    records, details, teams = compute_final_rankings(df)
     
     assert teams == ["Team A", "Team B"]
     assert len(records) == 2

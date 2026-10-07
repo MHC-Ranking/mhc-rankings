@@ -15,6 +15,7 @@ class TeamRecord:
     rank: int = 0
     rank_change: int = 0
     last_game: str = ""
+    last_game_url: str = ""
     win_pct: float = field(init=False)
     gd: int = field(init=False)
 

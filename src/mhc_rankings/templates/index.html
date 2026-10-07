@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ title }}</title>
+    <style>
+        :root {
+            --primary-color: #0f204b;
+            --secondary-color: #a3aaaf;
+            --accent-color: #d11241;
+            --bg-color: #f4f6f8;
+            --text-color: #333;
+            --white: #ffffff;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            line-height: 1.6;
+            margin: 0;
+        }
+
+        header {
+            background-color: var(--primary-color);
+            color: var(--white);
+            padding: 2rem 0;
+            text-align: center;
+            border-bottom: 5px solid var(--accent-color);
+        }
+
+        h1 {
+            margin: 0;
+            font-size: 2rem;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 2rem auto;
+            padding: 0 20px;
+        }
+
+        .section {
+            background-color: var(--white);
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            padding: 2rem;
+        }
+
+        a {
+            color: var(--primary-color);
+            font-weight: bold;
+        }
+
+        a:hover {
+            color: var(--accent-color);
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>{{ title }}</h1>
+    </header>
+    <div class="container">
+        <div class="section">
+            <p>Based on {{ game_count }} completed games through {{ latest_date }}.</p>
+            <ul>
+                <li><a href="mhc_rankings_report.html">Rankings</a> - the table, charts and a plain-language explanation of the method.</li>
+                <li><a href="mhc_team_reports.html">Team reports</a> - every team's game-by-game results.</li>
+            </ul>
+        </div>
+    </div>
+</body>
+</html>

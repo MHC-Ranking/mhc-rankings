@@ -51,31 +51,42 @@
             color: var(--accent-color);
         }
         .main-content {
-            margin-left: 250px;
-            padding: 2rem;
-            width: calc(100% - 250px);
-            box-sizing: border-box;
+            /* Same 1200px content width as the rankings report, centered when there is room beside the sidebar. */
+            flex: 1;
+            min-width: 0;
+            max-width: 1200px;
+            margin-left: max(250px, calc((100vw - 1240px) / 2));
+            margin-right: auto;
+            padding: 1.25rem 20px;
+            box-sizing: content-box;
+        }
+        .main-content h1 {
+            margin: 0 0 0.25rem;
+            font-size: 1.6rem;
+        }
+        .main-content > p {
+            margin: 0 0 1rem;
         }
         .team-section {
             background-color: var(--white);
             border-radius: 8px;
             box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-            padding: 2rem;
-            margin-bottom: 3rem;
-            scroll-margin-top: 2rem;
+            padding: 1rem 1.25rem;
+            margin-bottom: 1.25rem;
+            scroll-margin-top: 1rem;
         }
         .team-header {
             display: flex;
             justify-content: space-between;
             align-items: center;
             border-bottom: 2px solid var(--secondary-color);
-            padding-bottom: 0.5rem;
-            margin-bottom: 1.5rem;
+            padding-bottom: 0.3rem;
+            margin-bottom: 0.75rem;
         }
         .team-header h2 {
             color: var(--primary-color);
             margin: 0;
-            font-size: 2rem;
+            font-size: 1.5rem;
         }
         .back-to-top {
             font-size: 0.9rem;
@@ -88,36 +99,36 @@
         .summary-stats {
             display: flex;
             flex-wrap: wrap;
-            gap: 1.5rem;
+            gap: 1rem;
             background-color: #e9ecef;
-            padding: 1.5rem;
+            padding: 0.6rem 1rem;
             border-radius: 8px;
-            margin-bottom: 2rem;
+            margin-bottom: 0.75rem;
             border-left: 5px solid var(--accent-color);
         }
         .stat-box {
             flex: 1;
-            min-width: 120px;
+            min-width: 100px;
             text-align: center;
         }
         .stat-value {
-            font-size: 1.8rem;
+            font-size: 1.3rem;
             font-weight: bold;
             color: var(--primary-color);
         }
         .stat-label {
-            font-size: 0.9rem;
+            font-size: 0.75rem;
             color: #666;
             text-transform: uppercase;
         }
         table {
             width: 100%;
             border-collapse: collapse;
-            margin: 1rem 0;
-            font-size: 0.95rem;
+            margin: 0.5rem 0 0;
+            font-size: 0.9rem;
         }
         th, td {
-            padding: 10px 12px;
+            padding: 4px 8px;
             text-align: center;
             border-bottom: 1px solid #ddd;
         }
@@ -140,14 +151,21 @@
         .loss { color: #d62728; font-weight: bold; }
         .tie { color: #7f7f7f; font-weight: bold; }
         .plots-row {
-            display: flex;
-            flex-direction: column;
-            gap: 2rem;
-            margin-bottom: 2rem;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+            margin-bottom: 0.5rem;
         }
         .plot-container {
-            width: 100%;
+            min-width: 0;
             overflow-x: auto;
+        }
+        .team-section h3 {
+            margin: 0.5rem 0 0;
+            font-size: 1.1rem;
+        }
+        @media (max-width: 900px) {
+            .plots-row { grid-template-columns: 1fr; }
         }
         
         /* Print Styles */
@@ -181,18 +199,18 @@
             <div class="summary-stats">
                 <div class="stat-box">
                     <div class="stat-value">{{ team_data.rank }}</div>
-                    <div class="stat-label">Final Rank</div>
+                    <div class="stat-label">Current Rank</div>
                 </div>
                 <div class="stat-box">
-                    <div class="stat-value">{{ "%.1f"|format(team_data.rating) if method == 'bt-elo' else "%.4f"|format(team_data.rating) }}</div>
-                    <div class="stat-label">Final Rating</div>
+                    <div class="stat-value">{{ "%.4f"|format(team_data.rating) }}</div>
+                    <div class="stat-label">Current Rating</div>
                 </div>
                 <div class="stat-box">
                     <div class="stat-value">{{ team_data.w }}-{{ team_data.l }}-{{ team_data.t }}</div>
                     <div class="stat-label">Record</div>
                 </div>
                 <div class="stat-box">
-                    <div class="stat-value">{{ "%.1f"|format(team_data.sos) if method == 'bt-elo' else "%.4f"|format(team_data.sos) }}</div>
+                    <div class="stat-value">{{ "%.4f"|format(team_data.sos) }}</div>
                     <div class="stat-label">SOS</div>
                 </div>
                 <div class="stat-box">
@@ -219,11 +237,6 @@
                         <th>Result</th>
                         <th>Score</th>
                         <th>GD</th>
-                        {% if method == 'bt-elo' %}
-                        <th>Opp Rating</th>
-                        <th>Exp Win %</th>
-                        <th>Rating +/-</th>
-                        {% endif %}
                         <th>New Rating</th>
                         <th>New Rank</th>
                     </tr>
@@ -253,15 +266,7 @@
                             {% endif %}
                         </td>
                         
-                        {% if method == 'bt-elo' %}
-                        <td>{{ "%.1f"|format(game.opp_rating_pre) }}</td>
-                        <td>{{ "%.1f"|format(game.expected_win_prob * 100) }}%</td>
-                        <td style="font-weight:bold; color: {{ '#2ca02c' if game.rating_change > 0 else '#d62728' if game.rating_change < 0 else '#333' }};">
-                            {{ "+" if game.rating_change > 0 else ""}}{{ "%.1f"|format(game.rating_change) }}
-                        </td>
-                        {% endif %}
-                        
-                        <td>{{ "%.1f"|format(game.rating_post) if method == 'bt-elo' else "%.4f"|format(game.rating_post) }}</td>
+                        <td>{{ "%.4f"|format(game.rating_post) }}</td>
                         <td>{{ game.rank_post }}</td>
                     </tr>
                     {% endfor %}

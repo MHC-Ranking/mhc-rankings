@@ -1,0 +1,11 @@
+Team	Bethesda-Chevy Chase JV	Central MOCO JV	DC Stars JV	Richard Montgomery-Sherwood JV	Rockville-Magruder JV	Silver Spring JV	Upper Montgomery JV	Walt Whitman JV	Walter Johnson JV	Winston Churchill JV
+Bethesda-Chevy Chase JV	4	0	0	0	0	0	0	-1	-1	0
+Central MOCO JV	0	4	0	0	0	0	-1	-1	0	0
+DC Stars JV	0	0	4	-1	0	0	0	0	0	-1
+Richard Montgomery-Sherwood JV	0	0	-1	4	0	-1	0	0	0	0
+Rockville-Magruder JV	0	0	0	0	4	0	-1	0	0	-1
+Silver Spring JV	0	0	0	-1	0	4	0	0	-1	0
+Upper Montgomery JV	0	-1	0	0	-1	0	4	0	0	0
+Walt Whitman JV	-1	-1	0	0	0	0	0	4	0	0
+Walter Johnson JV	-1	0	0	0	0	-1	0	0	4	0
+Winston Churchill JV	0	0	-1	0	-1	0	0	0	0	4

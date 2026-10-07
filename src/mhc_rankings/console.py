@@ -1,7 +1,7 @@
-from typing import List, Literal
+from typing import List
 from .models import TeamRecord
 
-def print_rankings_table(rankings: List[TeamRecord], method:Literal["bt-elo", "colley"]) -> None:
+def print_rankings_table(rankings: List[TeamRecord]) -> None:
     """
     Prints the calculated rankings table to the console.
     """
@@ -20,7 +20,4 @@ def print_rankings_table(rankings: List[TeamRecord], method:Literal["bt-elo", "c
         else:
             formatted_change = f"{raw_change_str}{pad}"
 
-        if method == "bt-elo":
-            print(f"{idx:<5} {formatted_change} {rec.team:<25} {rec.rating:4.1f}   {rec.sos:4.1f}   {rec.win_pct:.3f}      {rec.wins:<3} {rec.ot_wins:<3} {rec.t:<3} {rec.ot_losses:<3} {rec.losses:<3} {rec.gf:<4} {rec.ga:<4} {rec.gd:<4} {rec.last_game}")
-        elif method == "colley":
-            print(f"{idx:<5} {formatted_change} {rec.team:<25} {rec.rating:.4f}   {rec.sos:.4f}   {rec.win_pct:.3f}      {rec.wins:<3} {rec.ot_wins:<3} {rec.t:<3} {rec.ot_losses:<3} {rec.losses:<3} {rec.gf:<4} {rec.ga:<4} {rec.gd:<4} {rec.last_game}")
+        print(f"{idx:<5} {formatted_change} {rec.team:<25} {rec.rating:.4f}   {rec.sos:.4f}   {rec.win_pct:.3f}      {rec.wins:<3} {rec.ot_wins:<3} {rec.t:<3} {rec.ot_losses:<3} {rec.losses:<3} {rec.gf:<4} {rec.ga:<4} {rec.gd:<4} {rec.last_game}")

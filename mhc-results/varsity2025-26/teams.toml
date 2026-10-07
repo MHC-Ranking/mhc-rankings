@@ -1,0 +1,78 @@
+# Varsity teams for 2025-26. GameSheet URLs are blank, so names are not linked. The first color draws the team's plot line.
+schedule_url = "https://gamesheetstats.com/seasons/10312/games?configuration[compact-view]=true&configuration[primary-colour]=C80F2E&configuration[secondary-colour]=041E42&filter[division]=83124,57193&filter[type]=regular_season&filter[status]=completed"
+
+# Completed regular-season games, read by `mhc-weekly`.
+games_url = "https://gamesheetstats.com/seasons/10312/games?configuration[compact-view]=true&configuration[primary-colour]=C80F2E&configuration[secondary-colour]=041E42&filter[division]=83124,57193&filter[type]=regular_season&filter[status]=completed"
+
+[[team]]
+name = "Winston Churchill"
+abbreviation = "Church"
+url = "https://gamesheetstats.com/seasons/10312/teams/368657/preview"
+colors = ["#133e7e", "#808080"]  # Blue, Grey
+
+[[team]]
+name = "Silver Spring"
+abbreviation = "SS"
+url = "https://gamesheetstats.com/seasons/10312/teams/368659/preview"
+colors = ["#7a0f1f", "#111111"]  # Dark Red, Black
+
+[[team]]
+name = "Upper Montgomery"
+abbreviation = "UML"
+url = "https://gamesheetstats.com/seasons/10312/teams/368660/preview"
+colors = ["#f2c200", "#1b7f3b"]  # Yellow, Green
+
+[[team]]
+name = "Richard Montgomery"
+abbreviation = "RM"
+url = "https://gamesheetstats.com/seasons/10312/teams/368663/preview"
+colors = ["#c77700", "#111111"]  # Gold, Black
+
+[[team]]
+name = "Wootton"
+abbreviation = "Woot"
+url = "https://gamesheetstats.com/seasons/10312/teams/368658/preview"
+colors = ["#e4572e", "#1f5fbf"]  # Vermilion, Blue
+
+[[team]]
+name = "NWQO"
+abbreviation = "NWQO"
+url = "https://gamesheetstats.com/seasons/10312/teams/368665/preview"
+colors = ["#0e7490", "#c80f2e"]  # Teal Blue, Red
+
+[[team]]
+name = "DC Stars"
+abbreviation = "DC"
+url = "https://gamesheetstats.com/seasons/10312/teams/368661/preview"
+colors = ["#ff6b6b", "#ffffff"]  # Light Red, White
+aliases = ["DC Stars Varsity"]
+
+[[team]]
+name = "Bethesda-Chevy Chase"
+abbreviation = "BCC"
+url = "https://gamesheetstats.com/seasons/10312/teams/368654/preview"
+colors = ["#001f5b", "#f2c200"]  # Navy Blue, Yellow
+
+[[team]]
+name = "Walt Whitman"
+abbreviation = "Whit"
+url = "https://gamesheetstats.com/seasons/10312/teams/368655/preview"
+colors = ["#02a7e2", "#2a2929"]
+
+[[team]]
+name = "Sherwood"
+abbreviation = "Sher"
+url = "https://gamesheetstats.com/seasons/10312/teams/368664/preview"
+colors = ["#5b4fcf", "#ffffff"]  # Indigo, White
+
+[[team]]
+name = "Walter Johnson"
+abbreviation = "WJ"
+url = "https://gamesheetstats.com/seasons/10312/teams/368656/preview"
+colors = ["#111111", "#ffffff"]  # Black, White
+
+[[team]]
+name = "Rockville-Magruder"
+abbreviation = "RAM"
+url = "https://gamesheetstats.com/seasons/10312/teams/368662/preview"
+colors = ["#c80f2e", "#f2c200", "#111111"]  # Red, Yellow, Black

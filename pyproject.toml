@@ -10,7 +10,6 @@ requires-python = ">=3.14"
 dependencies = [
     "jinja2>=3.1.6",
     "markdown-it-py>=4.2.0",
-    "matplotlib>=3.10.9",
     "mdit-py-plugins>=0.6.1",
     "numpy>=2.4.6",
     "pandas>=3.0.3",
@@ -19,6 +18,7 @@ dependencies = [
 
 [project.scripts]
 mhc-rankings = "mhc_rankings:main"
+mhc-weekly = "mhc_rankings.weekly:main"
 mkdoc = "mhc_rankings.mkdoc:main"
 
 [build-system]

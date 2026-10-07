@@ -25,5 +25,5 @@ class RankingEngine(ABC):
     @property
     @abstractmethod
     def details(self) -> Any:
-        """Return method-specific details (e.g., matrix, final Elo states) for reporting."""
+        """Return method-specific details (e.g., the Colley matrix) for reporting."""
         pass

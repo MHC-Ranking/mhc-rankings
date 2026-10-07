@@ -33,7 +33,7 @@ def test_ot_wins_and_losses_weekly_vs_final():
     df[["Away Score", "Home Score"]] = df["Score"].apply(parse_score)
     
     # 1. Compute Final Rankings
-    final_rankings, _, final_teams = compute_final_rankings(df, method="colley")
+    final_rankings, _, final_teams = compute_final_rankings(df)
     final_dict = {rec.team: rec for rec in final_rankings}
     
     # Expected stats in final output:
@@ -73,7 +73,7 @@ def test_ot_wins_and_losses_weekly_vs_final():
     assert final_dict["Team C"].t == 1
     
     # 2. Compute Weekly Ratings
-    weekly_records, weekly_teams = compute_weekly_ratings(df, method="colley")
+    weekly_records, weekly_teams = compute_weekly_ratings(df)
     
     # Find the last week
     sorted_weeks = sorted(weekly_records.keys())
@@ -89,3 +89,13 @@ def test_ot_wins_and_losses_weekly_vs_final():
         assert last_week_dict[team].t == final_dict[team].t
         assert last_week_dict[team].gf == final_dict[team].gf
         assert last_week_dict[team].ga == final_dict[team].ga
+
+
+def test_last_game_uses_abbreviations_when_given() -> None:
+    """Last Game shows the opponent's abbreviation when a map is supplied, else the full name."""
+    from mhc_rankings.stats import StatsTracker
+
+    tracker = StatsTracker(["Team A", "Team B"], {"Team B": "TB"})
+    tracker.add_game("Team A", "Team B", 3, 1)
+    assert tracker.stats["Team A"]["LastGame"] == "@ TB W 3-1"
+    assert tracker.stats["Team B"]["LastGame"] == "vs Team A L 1-3"

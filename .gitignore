@@ -9,3 +9,8 @@ wheels/
 # Virtual environments
 .venv
 .vscode/settings.json
+mhc-results/varsity2025-26/__old
+.github
+# mhc-weekly keeps the previous games file as ~backup-<name>
+~backup-*
+website/

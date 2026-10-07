@@ -182,6 +182,18 @@
             max-width: 100%;
             height: auto;
         }
+
+        details {
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            padding: 0.5rem 1rem;
+            margin: 1.5rem 0;
+        }
+
+        summary {
+            font-weight: bold;
+            cursor: pointer;
+        }
     </style>
 </head>
 <body>
@@ -211,14 +223,23 @@
         document.addEventListener('DOMContentLoaded', () => {
             const tocLinks = document.querySelectorAll('.toc-link');
             const headings = Array.from(document.querySelectorAll('main h1, main h2, main h3, main h4, main h5, main h6')).filter(h => h.id);
+
+            // Headings inside a collapsed <details> are hidden, so open it when its TOC link is used.
+            tocLinks.forEach(link => link.addEventListener('click', () => {
+                const target = document.getElementById(link.getAttribute('href').slice(1));
+                for (let d = target && target.closest('details'); d; d = d.parentElement.closest('details')) {
+                    d.open = true;
+                }
+            }));
             
             function onScroll() {
                 let currentId = '';
                 // 150px offset to trigger active state slightly before hitting the top
                 const scrollPosition = window.scrollY + 150;
+                const visible = headings.filter(h => h.offsetParent !== null);
                 
-                for (let i = 0; i < headings.length; i++) {
-                    const heading = headings[i];
+                for (let i = 0; i < visible.length; i++) {
+                    const heading = visible[i];
                     // Calculate element's absolute position on page
                     const headingTop = heading.getBoundingClientRect().top + window.scrollY;
                     
@@ -231,8 +252,8 @@
                 
                 // If scrolled to very bottom, select the last item
                 if ((window.innerHeight + Math.round(window.scrollY)) >= document.body.offsetHeight - 10) {
-                    if (headings.length > 0) {
-                        currentId = headings[headings.length - 1].id;
+                    if (visible.length > 0) {
+                        currentId = visible[visible.length - 1].id;
                     }
                 }
                 

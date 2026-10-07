@@ -1,19 +1,17 @@
 #!/bin/bash
+# Rebuild the Colley rankings for every division that has a games file.
 set -e
 
-echo "Generating Colley..."
-uv run mhc-rankings --input data/mhc-hockey/game_results_2025-26.tsv --output-dir data/mhc-hockey/colley --method colley
-
-echo "Generating BT-Elo..."
-uv run mhc-rankings --input data/mhc-hockey/game_results_2025-26.tsv --output-dir data/mhc-hockey/bt-elo --method bt-elo
-
-echo "Generating BT-Elo with MoVM..."
-uv run mhc-rankings --input data/mhc-hockey/game_results_2025-26.tsv --output-dir data/mhc-hockey/bt-elo-movm --method bt-elo --use-movm --max-gd 5
-
-echo "Generating BT-Elo with MoVM (Reversed)..."
-uv run mhc-rankings --input data/mhc-hockey/game_results_2025-26-reversed.tsv --output-dir data/mhc-hockey/bt-elo-movm-rev --method bt-elo --use-movm --max-gd 5
-
-echo "Generating Comparison Table..."
-uv run python src/mhc_rankings/method_compare.py
+for games in \
+    mhc-results/varsity2026-27/v-game-results_2026-27.tsv \
+    mhc-results/jv2026-27/jv-game-results_2026-27.tsv \
+    mhc-results/varsity2025-26/v-game-results_2025-26.tsv; do
+    if [ -f "$games" ]; then
+        echo "Generating rankings for $games..."
+        uv run mhc-rankings --input "$games" --output-dir "$(dirname "$games")/rankings"
+    else
+        echo "Skipping $games (no games file yet)."
+    fi
+done
 
 echo "Done!"

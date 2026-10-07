@@ -1,0 +1,4 @@
+<p>hello <span class="math inline">r_i</span> world</p>
+<div class="math block">
+block
+</div>

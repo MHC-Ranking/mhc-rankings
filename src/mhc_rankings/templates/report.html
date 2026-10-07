@@ -116,10 +116,51 @@
             text-align: center;
         }
 
-        .plot-container img {
-            max-width: 100%;
-            height: auto;
-            border-radius: 4px;
+        /* Plot Tabs */
+        .tab-list {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.25rem;
+            border-bottom: 2px solid var(--secondary-color);
+            margin-bottom: 1rem;
+        }
+
+        .tab-list button {
+            font: inherit;
+            font-weight: bold;
+            color: var(--primary-color);
+            background: var(--bg-color);
+            border: 1px solid var(--secondary-color);
+            border-bottom: none;
+            border-radius: 6px 6px 0 0;
+            padding: 0.5rem 1rem;
+            cursor: pointer;
+        }
+
+        .tab-list button[aria-selected="true"] {
+            color: var(--white);
+            background: var(--primary-color);
+            border-color: var(--primary-color);
+        }
+
+        .tab-list button:focus-visible {
+            outline: 3px solid var(--accent-color);
+            outline-offset: 2px;
+        }
+
+        .tab-panels {
+            position: relative;
+        }
+
+        /* Inactive panels stay laid out at full width (so charts size correctly) but are invisible and unfocusable. */
+        .tab-panel[data-active="false"] {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 0;
+            overflow: hidden;
+            visibility: hidden;
         }
 
         /* Expandable Matrix */
@@ -152,14 +193,77 @@
             overflow-x: auto;
         }
 
+        .matrix-note {
+            margin: 0 0 0.75rem;
+            font-size: 0.9rem;
+        }
+
         .matrix-table {
-            font-family: monospace;
+            width: auto;
+            margin: 0 auto;
+            border-collapse: separate;
+            border-spacing: 3px;
             font-size: 0.85rem;
         }
-        
-        .matrix-table th {
-            background-color: var(--secondary-color);
-            color: var(--primary-color);
+
+        .matrix-table th,
+        .matrix-table td {
+            min-width: 2.6rem;
+            padding: 6px 8px;
+            border: none;
+            border-radius: 6px;
+            text-align: center;
+            font-weight: normal;
+        }
+
+        .matrix-table thead th,
+        .matrix-table tbody th {
+            background-color: var(--primary-color);
+            color: var(--white);
+            font-weight: 600;
+            cursor: default;
+            user-select: auto;
+        }
+
+        .matrix-table tbody th {
+            position: sticky;
+            left: 0;
+            text-align: left;
+        }
+
+        .matrix-table tbody tr:hover,
+        .matrix-table tbody tr:nth-of-type(even) {
+            background-color: transparent;
+        }
+
+        .matrix-table td.g0 {
+            background-color: #f4f6f8;
+            color: var(--secondary-color);
+        }
+
+        .matrix-table td.g1 {
+            background-color: #dbe3f3;
+            font-weight: 600;
+        }
+
+        .matrix-table td.g2 {
+            background-color: #a9bde6;
+            font-weight: 600;
+        }
+
+        .matrix-table td.g3 {
+            background-color: #6f8ccf;
+            color: var(--white);
+            font-weight: 700;
+        }
+
+        .matrix-table td.self {
+            background-image: repeating-linear-gradient(135deg, #e9ecef, #e9ecef 4px, #f4f6f8 4px, #f4f6f8 8px);
+            color: var(--secondary-color);
+        }
+
+        .schedule-link {
+            margin: 0.5rem 0 0;
         }
 
         /* Week Controls */
@@ -201,6 +305,33 @@
             border-left: 5px solid var(--primary-color);
             padding: 1.5rem;
             margin-top: 2rem;
+        }
+
+        .points-table {
+            width: auto;
+            min-width: 18rem;
+            background-color: var(--white);
+        }
+
+        .points-table caption {
+            caption-side: top;
+            text-align: left;
+            font-weight: bold;
+            padding-bottom: 0.25rem;
+        }
+
+        .points-table th {
+            position: static;
+            cursor: default;
+        }
+
+        .points-table td:nth-child(2) {
+            text-align: center;
+            font-weight: normal;
+        }
+
+        .points-table td:first-child {
+            text-align: left;
         }
 
         /* Print Styles */
@@ -256,6 +387,12 @@
                 padding: 4px 8px; /* Less vertical space between rows */
             }
 
+            .matrix-table thead th,
+            .matrix-table tbody th {
+                background-color: #e9ecef;
+                color: var(--primary-color);
+            }
+
             /* Make sure details are fully expanded on print */
             details {
                 display: block;
@@ -273,19 +410,16 @@
                 page-break-inside: avoid;
                 overflow: hidden;
             }
-            
-            .plot-container img {
-                max-width: 100%;
-                height: auto;
-                max-height: 450px;
-                object-fit: contain;
+
+            /* Print every chart, not just the selected tab */
+            .tab-list {
+                display: none;
             }
 
-            /* Scale down Plotly plots to fit on portrait */
-            .plot-container div.plotly-graph-div {
-                transform: scale(0.65);
-                transform-origin: top center;
-                margin-bottom: -25%; /* Adjust for the scaled empty space */
+            .tab-panel[data-active="false"] {
+                position: static;
+                height: auto;
+                visibility: visible;
             }
             
             /* Hide the details marker if possible */
@@ -343,85 +477,87 @@
                 <!-- Rows injected via JS -->
             </tbody>
         </table>
+        {% if schedule_url %}
+        <p class="schedule-link"><a href="{{ schedule_url }}" target="_blank" rel="noopener noreferrer">See the upcoming games schedule on GameSheet</a></p>
+        {% endif %}
     </div>
 
     <div class="section">
-        <h2>Ratings Plot</h2>
-        <div class="plot-container">
-            {% if plot_engine == 'matplotlib' %}
-                <img src="{{ plot_data }}" alt="Ratings Plot">
-            {% elif plot_engine == 'plotly' %}
-                {{ plot_data | safe }}
-            {% endif %}
+        <h2>Charts</h2>
+        <div class="tab-list" role="tablist" aria-label="Charts">
+            <button type="button" role="tab" id="tab-ratings" aria-controls="panel-ratings" aria-selected="true" tabindex="0">Ratings</button>
+            <button type="button" role="tab" id="tab-rankings" aria-controls="panel-rankings" aria-selected="false" tabindex="-1">Rankings Progress</button>
+            <button type="button" role="tab" id="tab-sos" aria-controls="panel-sos" aria-selected="false" tabindex="-1">Strength of Schedule</button>
+        </div>
+        <div class="tab-panels">
+            <div class="tab-panel" role="tabpanel" id="panel-ratings" aria-labelledby="tab-ratings" data-active="true">
+                <div class="plot-container">{{ plot_data | safe }}</div>
+            </div>
+            <div class="tab-panel" role="tabpanel" id="panel-rankings" aria-labelledby="tab-rankings" data-active="false">
+                <div class="plot-container">{{ rank_plot_data | safe }}</div>
+            </div>
+            <div class="tab-panel" role="tabpanel" id="panel-sos" aria-labelledby="tab-sos" data-active="false">
+                <div class="plot-container">{{ sos_plot_data | safe }}</div>
+            </div>
         </div>
     </div>
-
-    <div class="section">
-        <h2>Rankings Progress</h2>
-        <div class="plot-container">
-            {% if plot_engine == 'matplotlib' %}
-                <img src="{{ rank_plot_data }}" alt="Rankings Progress Plot">
-            {% elif plot_engine == 'plotly' %}
-                {{ rank_plot_data | safe }}
-            {% endif %}
-        </div>
-    </div>
-
-    {% if sos_plot_data %}
-    <div class="section">
-        <h2>Strength of Schedule Progress</h2>
-        <div class="plot-container">
-            {% if plot_engine == 'matplotlib' %}
-                <img src="{{ sos_plot_data }}" alt="Strength of Schedule Progress Plot">
-            {% elif plot_engine == 'plotly' %}
-                {{ sos_plot_data | safe }}
-            {% endif %}
-        </div>
-    </div>
-    {% endif %}
 
     <div class="section">
         <details>
-            <summary>{{ title_method }} Details</summary>
+            <summary>Game Matrix</summary>
+            <p class="matrix-note">Each cell is the number of games the team in that row has played against the team in that column. Darker cells mean more meetings.</p>
             <div class="matrix-container">
-                {% if method == 'colley' %}
-                <table class="matrix-table">
+                <table class="matrix-table" aria-label="Games played between each pair of teams">
                     <thead>
                         <tr>
-                            <th>Team</th>
-                            {% for team in teams %}
-                            <th>{{ team }}</th>
+                            <th scope="col">Team</th>
+                            {% for label in matrix_labels %}
+                            <th scope="col" title="{{ teams[loop.index0] }}">{{ label }}</th>
                             {% endfor %}
                         </tr>
                     </thead>
                     <tbody>
                         {% for i in range(teams|length) %}
                         <tr>
-                            <th>{{ teams[i] }}</th>
-                            {% for val in details[i] %}
-                            <td>{{ val|int if val == val|int else "%.2f"|format(val) }}</td>
+                            <th scope="row" title="{{ teams[i] }}">{{ matrix_labels[i] }}</th>
+                            {% for j in range(teams|length) %}
+                            {% if i == j %}
+                            <td class="self">&ndash;</td>
+                            {% else %}
+                            {% set games = (-details[i][j])|int %}
+                            <td class="g{{ [games, 3]|min }}" title="{{ teams[i] }} vs {{ teams[j] }}">{{ games if games else "" }}</td>
+                            {% endif %}
                             {% endfor %}
                         </tr>
                         {% endfor %}
                     </tbody>
                 </table>
-                {% elif method == 'bt-elo' %}
-                <ul>
-                    <li><strong>Initial Rating:</strong> {{ details.initial_rating }}</li>
-                    <li><strong>K-Factor:</strong> {{ details.k_factor }}</li>
-                    <li><strong>Margin of Victory Multiplier (MoVM):</strong> {{ 'Enabled' if details.use_movm else 'Disabled' }}</li>
-                    {% if details.use_movm %}
-                    <li><strong>Max Goal Differential:</strong> {{ details.max_gd }}</li>
-                    {% endif %}
-                </ul>
-                {% endif %}
             </div>
         </details>
     </div>
 
     <div class="method-description section">
-        {% if method == 'colley' %}
         <h2>The Colley Matrix Method</h2>
+        <h3>How the rankings work, in plain language</h3>
+        <p>The Colley method gives every team a rating from 0 to 1 based only on who they played and whether they won. Every team starts at 0.500, which means average. Wins push a rating up and losses push it down. The score of the game does not matter: a 1-0 win counts the same as a 10-0 win, so there is no reason to run up the score. A win or loss in overtime counts a little less than one in regulation.</p>
+        <table class="points-table">
+            <caption>Share of a point each team earns from a game</caption>
+            <thead>
+                <tr><th>Result</th><th>Share of a point</th></tr>
+            </thead>
+            <tbody>
+                <tr><td>Regulation win</td><td>1.000</td></tr>
+                <tr><td>Overtime win</td><td>0.667</td></tr>
+                <tr><td>Tie (decided in overtime)</td><td>0.500</td></tr>
+                <tr><td>Overtime loss</td><td>0.333</td></tr>
+                <tr><td>Regulation loss</td><td>0.000</td></tr>
+            </tbody>
+        </table>
+        <p>What makes it fair is that a win is worth more against a strong team than against a weak one. A team's rating depends on its opponents' ratings, and each opponent's rating depends on theirs. The computer works through all of these links at once and settles on one set of ratings where everything fits together. That is why a team can move up the rankings without playing, if a team it beat keeps winning.</p>
+        <p><strong>Strength of schedule (SOS)</strong> is the average rating of the teams a team has played. A higher number means a tougher schedule. A team with a modest record and a high SOS may have faced harder opponents than a team with a better record and a low SOS.</p>
+        <p><em>Example:</em> Team A and Team B each finish 1-1. Team A's win was over the league's best team. Team B's win was over the league's weakest team. Team A gets the higher rating, because its win was harder to earn.</p>
+        <details>
+        <summary>Technical details</summary>
         <p>The Colley Matrix is a bias-free, mathematically robust ranking system originally designed for college football. It uses a system of linear equations to distribute ratings such that every team's rating depends on the ratings of the teams they played.</p>
         <p>The fundamental equation solved is:</p>
         <p style="text-align: center;">
@@ -434,22 +570,7 @@
             <li>\( \vec{b} \) is the vector where each element \( b_i = 1 + \frac{W_i - L_i}{2} \) (where \( W_i \) and \( L_i \) are the wins and losses of team \( i \)).</li>
         </ul>
         <p>Strength of Schedule (SOS) is subsequently calculated as the average rating of a team's opponents.</p>
-        {% elif method == 'bt-elo' %}
-        <h2>The Bradley-Terry / Elo Method</h2>
-        <p>This method combines the Elo rating system with the Bradley-Terry model for estimating win probabilities based on paired comparisons.</p>
-        <p>The expected probability of team A beating team B is calculated using the logistic curve:</p>
-        <p style="text-align: center;">
-            $$ P(A > B) = \frac{1}{1 + 10^{(R_B - R_A) / 400}} $$
-        </p>
-        <p>After each game, ratings are updated based on the actual outcome (\( S_A = 1 \) for a win, \( 0.5 \) for a tie, \( 0 \) for a loss) compared to the expected outcome, scaled by a K-factor (\( K \)):</p>
-        <p style="text-align: center;">
-            $$ R_A' = R_A + K \times (S_A - P(A > B)) $$
-        </p>
-        {% if details.use_movm %}
-        <p>This implementation also applies a <strong>Margin of Victory Multiplier (MoVM)</strong>, which rewards larger goal differentials up to a maximum cap of {{ details.max_gd }} goals, scaling down the reward if the heavily favored team wins.</p>
-        {% endif %}
-        <p>Strength of Schedule (SOS) represents the average pre-game rating of a team's opponents across the season.</p>
-        {% endif %}
+        </details>
     </div>
 
     <div class="section">
@@ -596,7 +717,7 @@
             tr.innerHTML = `
                 <td>${rank}</td>
                 <td style="font-weight: bold;">${changeHtml}</td>
-                <td>${teamData.team}</td>
+                <td>${teamData.team_html}</td>
                 <td>${teamData.rating.toFixed(4)}</td>
                 <td>${teamData.sos.toFixed(4)}</td>
                 <td>${teamData.win_pct.toFixed(3)}</td>
@@ -608,7 +729,7 @@
                 <td>${teamData.gf}</td>
                 <td>${teamData.ga}</td>
                 <td>${teamData.gd}</td>
-                <td>${teamData.last_game}</td>
+                <td>${teamData.last_game_html}</td>
             `;
             rankingsBody.appendChild(tr);
         });
@@ -624,6 +745,42 @@
 
     // Initialize with the Final Rankings
     displayWeek("Final");
+
+    // Chart tabs: arrow keys, Home and End move between tabs; charts resize when shown.
+    (function () {
+        const tabs = Array.from(document.querySelectorAll('.tab-list [role="tab"]'));
+
+        function selectTab(tab) {
+            tabs.forEach((t) => {
+                const selected = t === tab;
+                const panel = document.getElementById(t.getAttribute('aria-controls'));
+                t.setAttribute('aria-selected', String(selected));
+                t.tabIndex = selected ? 0 : -1;
+                panel.dataset.active = String(selected);
+                if (selected && window.Plotly) {
+                    panel.querySelectorAll('.plotly-graph-div').forEach((div) => window.Plotly.Plots.resize(div));
+                }
+            });
+            tab.focus();
+        }
+
+        tabs.forEach((tab, index) => {
+            tab.addEventListener('click', () => selectTab(tab));
+            tab.addEventListener('keydown', (event) => {
+                const last = tabs.length - 1;
+                const target = {
+                    ArrowRight: tabs[index === last ? 0 : index + 1],
+                    ArrowLeft: tabs[index === 0 ? last : index - 1],
+                    Home: tabs[0],
+                    End: tabs[last],
+                }[event.key];
+                if (target) {
+                    event.preventDefault();
+                    selectTab(target);
+                }
+            });
+        });
+    })();
 </script>
 
 </body>

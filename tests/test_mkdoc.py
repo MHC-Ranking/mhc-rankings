@@ -25,6 +25,21 @@ def test_convert_algorithms_md(tmp_path):
         assert "<!DOCTYPE html>" in content
         assert "Table of Contents" in content
         assert "Colley Matrix" in content
-        assert "Bradley-Terry" in content
+        assert "Bradley-Terry" not in content
         # Ensure that markdown-it-py processed the table successfully
         assert "<table" in content
+
+
+def test_plain_language_comes_first_and_technical_details_are_collapsed(tmp_path: Path) -> None:
+    """The plain explanation and points table come before a closed Technical details block holding the math."""
+    output_html = tmp_path / "algorithms.html"
+    convert_markdown_to_html(Path(__file__).parent.parent / "docs" / "algorithms.md", output_html)
+    content = output_html.read_text(encoding="utf-8")
+
+    plain = content.index("How the Rankings Work, in Plain Language")
+    table = content.index("Overtime win")
+    technical = content.index("<summary>Technical details</summary>")
+    matrix = content.index("The Colley Matrix Method", technical)
+    assert plain < table < technical < matrix
+    assert "<details>" in content and "<details open" not in content
+    assert "0.667" in content[table:technical]

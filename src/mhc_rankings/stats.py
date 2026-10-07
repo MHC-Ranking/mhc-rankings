@@ -1,24 +1,29 @@
-from typing import Dict, List
+from typing import Dict, List, Mapping
 
 from .models import TeamRecord
-from .teams import team_to_abbrev
 
 class StatsTracker:
     """Tracks base statistics (W, L, T, GF, GA, Last Game) for a set of teams."""
     
-    def __init__(self, teams: List[str]) -> None:
+    def __init__(self, teams: List[str], abbreviations: Mapping[str, str] | None = None) -> None:
+        """Start empty stats for `teams`; `abbreviations` maps team name to the short name shown in Last Game."""
         self.teams = teams
-        self.stats = {team: {"W": 0, "OTW": 0, "L": 0, "OTL": 0, "T": 0, "GF": 0, "GA": 0, "LastGame": ""} for team in teams}
+        self.abbreviations: Mapping[str, str] = abbreviations or {}
+        self.stats = {team: {"W": 0, "OTW": 0, "L": 0, "OTL": 0, "T": 0, "GF": 0, "GA": 0, "LastGame": "", "LastGameUrl": ""} for team in teams}
         
-    def add_game(self, away: str, home: str, away_score: int, home_score: int, is_overtime: bool = False) -> None:
-        """Update cumulative stats based on a single game result."""
+    def add_game(
+        self, away: str, home: str, away_score: int, home_score: int, is_overtime: bool = False, game_url: str = ""
+    ) -> None:
+        """Update cumulative stats based on a single game result; `game_url` links the game's page when known."""
+        self.stats[away]["LastGameUrl"] = game_url
+        self.stats[home]["LastGameUrl"] = game_url
         self.stats[away]["GF"] += away_score
         self.stats[away]["GA"] += home_score
         self.stats[home]["GF"] += home_score
         self.stats[home]["GA"] += away_score
         
-        away_abbrev = team_to_abbrev.get(away, away)
-        home_abbrev = team_to_abbrev.get(home, home)
+        away_abbrev = self.abbreviations.get(away, away)
+        home_abbrev = self.abbreviations.get(home, home)
         
         ot_str = " (OT)" if is_overtime else ""
         
@@ -62,7 +67,8 @@ class StatsTracker:
                 t=st["T"],
                 gf=st["GF"],
                 ga=st["GA"],
-                last_game=st["LastGame"]
+                last_game=st["LastGame"],
+                last_game_url=st["LastGameUrl"],
             ))
             
         # Sort by rating, highest first

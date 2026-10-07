@@ -182,6 +182,18 @@
             max-width: 100%;
             height: auto;
         }
+
+        details {
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            padding: 0.5rem 1rem;
+            margin: 1.5rem 0;
+        }
+
+        summary {
+            font-weight: bold;
+            cursor: pointer;
+        }
     </style>
 </head>
 <body>
@@ -200,7 +212,11 @@
                 </li>
                 
                 <li class="toc-item toc-level-2">
-                    <a href="#1-the-colley-matrix-method" class="toc-link">1. The Colley Matrix Method</a>
+                    <a href="#how-the-rankings-work-in-plain-language" class="toc-link">How the Rankings Work, in Plain Language</a>
+                </li>
+                
+                <li class="toc-item toc-level-2">
+                    <a href="#the-colley-matrix-method" class="toc-link">The Colley Matrix Method</a>
                 </li>
                 
                 <li class="toc-item toc-level-3">
@@ -223,42 +239,6 @@
                     <a href="#inputs-outputs" class="toc-link">Inputs & Outputs</a>
                 </li>
                 
-                <li class="toc-item toc-level-2">
-                    <a href="#2-the-bradley-terry-elo-hybrid-method" class="toc-link">2. The Bradley-Terry / Elo Hybrid Method</a>
-                </li>
-                
-                <li class="toc-item toc-level-3">
-                    <a href="#overview" class="toc-link">Overview</a>
-                </li>
-                
-                <li class="toc-item toc-level-3">
-                    <a href="#how-it-works" class="toc-link">How it Works</a>
-                </li>
-                
-                <li class="toc-item toc-level-3">
-                    <a href="#the-math" class="toc-link">The Math</a>
-                </li>
-                
-                <li class="toc-item toc-level-3">
-                    <a href="#inputs-outputs" class="toc-link">Inputs & Outputs</a>
-                </li>
-                
-                <li class="toc-item toc-level-3">
-                    <a href="#example-calculation-using-margin-of-victory-multiplier-movm" class="toc-link">Example Calculation - Using Margin of Victory Multiplier __MoVM__</a>
-                </li>
-                
-                <li class="toc-item toc-level-3">
-                    <a href="#what-if-movm-is-disabled" class="toc-link">What if MoVM is Disabled?</a>
-                </li>
-                
-                <li class="toc-item toc-level-1">
-                    <a href="#summary-similarities-and-differences" class="toc-link">Summary - Similarities and Differences</a>
-                </li>
-                
-                <li class="toc-item toc-level-2">
-                    <a href="#differences-between-the-methods" class="toc-link">Differences Between the Methods</a>
-                </li>
-                
             </ul>
         </nav>
 
@@ -268,10 +248,47 @@
 <p><strong>Date</strong>: Jun 17, 2026</p>
 <hr />
 <h1 id="ranking-algorithms-explanation">Ranking Algorithms Explanation</h1>
-<p>The rankings program supports two distinct mathematical approaches to ranking teams: the <strong>Colley Matrix</strong> and a hybrid <strong>Bradley-Terry / Elo</strong> system. Each model answers a fundamentally different question about team strength.</p>
-<p>This document explains the philosophy behind each method, the mathematical equations powering them, and the step-by-step process used to calculate the final rankings.</p>
+<p>The rankings program uses the <strong>Colley Matrix</strong> method to rank teams.</p>
+<p>This document explains the philosophy behind the method, the mathematical equations powering it, and the step-by-step process used to calculate the final rankings.</p>
 <hr />
-<h2 id="1-the-colley-matrix-method">1. The Colley Matrix Method</h2>
+<h2 id="how-the-rankings-work-in-plain-language">How the Rankings Work, in Plain Language</h2>
+<p>The Colley method gives every team a rating from 0 to 1 based only on who they played and whether they won. Every team starts at 0.500, which means average. Wins push a rating up and losses push it down. The score of the game does not matter: a 1-0 win counts the same as a 10-0 win, so there is no reason to run up the score. A win or loss in overtime counts a little less than one in regulation.</p>
+<table>
+<thead>
+<tr>
+<th>Result</th>
+<th style="text-align:center">Share of a point</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Regulation win</td>
+<td style="text-align:center">1.000</td>
+</tr>
+<tr>
+<td>Overtime win</td>
+<td style="text-align:center">0.667</td>
+</tr>
+<tr>
+<td>Tie (decided in overtime)</td>
+<td style="text-align:center">0.500</td>
+</tr>
+<tr>
+<td>Overtime loss</td>
+<td style="text-align:center">0.333</td>
+</tr>
+<tr>
+<td>Regulation loss</td>
+<td style="text-align:center">0.000</td>
+</tr>
+</tbody>
+</table>
+<p>What makes it fair is that a win is worth more against a strong team than against a weak one. A team's rating depends on its opponents' ratings, and each opponent's rating depends on theirs. The computer works through all of these links at once and settles on one set of ratings where everything fits together. That is why a team can move up the rankings without playing, if a team it beat keeps winning.</p>
+<p><strong>Strength of schedule (SOS)</strong> is the average rating of the teams a team has played. A higher number means a tougher schedule. A team with a modest record and a high SOS may have faced harder opponents than a team with a better record and a low SOS.</p>
+<p><em>Example:</em> Team A and Team B each finish 1-1. Team A's win was over the league's best team. Team B's win was over the league's weakest team. Team A gets the higher rating, because its win was harder to earn.</p>
+<details>
+<summary>Technical details</summary>
+<h2 id="the-colley-matrix-method">The Colley Matrix Method</h2>
 <h3 id="overview">Overview</h3>
 <p>The Colley Matrix is a &quot;resume-based&quot; ranking system. Its primary goal is <strong>descriptive fairness</strong>. Instead of trying to predict who would win a theoretical game, it objectively evaluates what actually happened on the ice.</p>
 <p>It was originally designed for college football to provide a completely bias-free ranking. It does not care about the margin of victory (winning 1-0 is treated exactly the same as winning 10-0) to discourage teams from running up the score. It simply asks: <em>Who did you play, and did you win or lose?</em></p>
@@ -549,144 +566,7 @@ Once ratings are found, a team's SOS is simply the average rating of their oppon
 <li><strong>Inputs needed:</strong> A list of teams and the results of all games (who played who, and who won). Scores are ignored.</li>
 <li><strong>Outputs produced:</strong> A Colley Rating (usually hovering around 0.500 for an average team) and an SOS rating for each team.</li>
 </ul>
-<hr />
-<h2 id="2-the-bradley-terry-elo-hybrid-method">2. The Bradley-Terry / Elo Hybrid Method</h2>
-<h3 id="overview">Overview</h3>
-<p>The Bradley-Terry / Elo hybrid is a &quot;power-based&quot; ranking system. Its primary goal is <strong>predictive accuracy</strong>. It treats team strength as a hidden variable and uses every single game as a data point to update its guess about how good a team truly is.</p>
-<p>Unlike Colley, which evaluates the season as a whole, Elo evaluates chronologically. It looks at the ratings <em>before</em> a game, calculates an expected outcome, and then updates the ratings based on what actually happened. It can also be configured to care about the Margin of Victory (rewarding blowouts).</p>
-<h3 id="how-it-works">How it Works</h3>
-<ol>
-<li>Everyone starts with a base rating (e.g., 1500).</li>
-<li>Before a game, the system compares Team A's rating to Team B's rating to calculate a win probability. (If Team A is 1600 and Team B is 1200, Team A is heavily expected to win).</li>
-<li>The game is played.</li>
-<li>Ratings are exchanged. If Team A wins as expected, they gain a tiny amount of points. If Team B pulls off a massive upset, Team B steals a huge amount of points from Team A.</li>
-</ol>
-<h3 id="the-math">The Math</h3>
-<p><strong>Step 1: Expected Win Probability (Bradley-Terry)</strong>
-We use the Bradley-Terry logistic curve to determine the probability (\(P\)) of Team A beating Team B:</p>
-\[
-P(A) = \frac{1}{1 + 10^{(R_B - R_A) / 400}}
-\]
-<p><em>Note: A 400-point difference translates to a team being exactly 10 times more likely to win than lose (about a 91% win probability).</em></p>
-<p><strong>Step 2: The Outcome (\(S_A\))</strong>
-The actual result of the game is converted to a mathematical score representing the share of the win. To properly handle overtime games, the outcome is apportioned as follows:</p>
-<ul>
-<li><strong>Regulation Win:</strong> \(1.0\)</li>
-<li><strong>Overtime Win:</strong> \(0.667\)</li>
-<li><strong>Overtime Tie:</strong> \(0.5\)</li>
-<li><strong>Overtime Loss:</strong> \(0.333\)</li>
-<li><strong>Regulation Loss:</strong> \(0.0\)</li>
-</ul>
-<p>This ensures that forcing a stronger team into overtime correctly rewards the underdog (and slightly penalizes the favorite relative to expectation), even if the underdog ultimately loses.</p>
-<p><strong>Step 3: Margin of Victory Multiplier (MoVM) [Optional]</strong>
-If enabled, the system scales the rating exchange based on the goal differential (\(GD\)). It uses a logarithmic curve so that winning by 10 goals isn't treated as mathematically twice as impressive as winning by 5 goals, discouraging teams from endlessly running up the score.  A user definable cap on goal differential is also implemented.</p>
-\[
-\text{MoVM} = \ln(|GD| + 1) \times \frac{2.2}{(|R_{\text{winner}} - R_{\text{loser}}| \times 0.001) + 2.2}
-\]
-<p><strong>Step 4: The Rating Update (Elo)</strong>
-Finally, the ratings are updated using the \(K\)-factor, which dictates how volatile or reactive the system is. A \(K\) of 32 is standard.</p>
-\[
-R_A' = R_A + K \times \text{MoVM} \times (S_A - P(A))
-\]
-\[
-R_B' = R_B + K \times \text{MoVM} \times (S_B - P(B))
-\]
-<p><strong>Step 5: Strength of Schedule (SOS)</strong>
-Because ratings change over time, a team's SOS is computed by averaging the ratings of their opponents <em>exactly as they were rated at the time the game was played</em>.</p>
-<h3 id="inputs-outputs">Inputs &amp; Outputs</h3>
-<ul>
-<li><strong>Inputs needed:</strong> Chronological game results (including scores if MoVM is enabled), an initial starting rating, a K-factor, and an optional maximum Goal Differential cap.</li>
-<li><strong>Outputs produced:</strong> A dynamic Power Rating (e.g., 1600) representing their current strength, and a historical SOS.</li>
-</ul>
-<h3 id="example-calculation-using-margin-of-victory-multiplier-movm">Example Calculation - Using Margin of Victory Multiplier <strong>MoVM</strong></h3>
-<p>Let's walk through a game where Team A (Rating: 1550) beats Team B (Rating: 1450) in
-regulation with a score of 5-2. We will use a standard \(K\)-factor of 32.  Remember
-that this process is applied to each game in sequence.  The ratings used are the
-teams ratings at the start of this game.</p>
-<p><strong>1. Expected Win Probability:</strong>
-\[P(A) = \frac{1}{1 + 10^{(1450 - 1550) / 400}} = \frac{1}{1 + 10^{-0.25}} \approx 0.640\]
-Team A is expected to win 64% of the time. Team B's probability \(P(B)\) is \(0.360\).</p>
-<p><strong>2. The Outcome:</strong>
-Because it was a regulation win, \(S_A = 1.0\) and \(S_B = 0.0\).</p>
-<p><strong>3. Margin of Victory Multiplier (MoVM):</strong>
-The goal differential (\(GD\)) is \(5 - 2 = 3\). The rating difference is 100.
-\[\text{MoVM} = \ln(3 + 1) \times \frac{2.2}{(100 \times 0.001) + 2.2} = 1.386 \times \frac{2.2}{2.3} \approx 1.326\]</p>
-<p><strong>4. The Rating Update:</strong>
-Team A gains points because they won, but the gain is slightly moderated because they were expected to win.
-\[R_A' = 1550 + 32 \times 1.326 \times (1.0 - 0.640) = 1550 + 15.28 = 1565.28\]
-\[R_B' = 1450 + 32 \times 1.326 \times (0.0 - 0.360) = 1450 - 15.28 = 1434.72\]</p>
-<p>Team A's new rating is ~1565, and Team B's new rating is ~1435.</p>
-<p><strong>Alternative Scenario: The Upset</strong>
-Now let's imagine Team B (1450) pulls off an upset and beats Team A (1550) with the same 5-2 score.</p>
-<p><strong>1. Expected Win Probability &amp; MoVM:</strong>
-These values remain the same because the rating gap and goal differential are identical.
-\(P(A) = 0.640\), \(P(B) = 0.360\), and \(\text{MoVM} \approx 1.326\).</p>
-<p><strong>2. The Outcome:</strong>
-Team B won in regulation, so \(S_A = 0.0\) and \(S_B = 1.0\).</p>
-<p><strong>3. The Rating Update:</strong>
-Team B gains a massive amount of points because they overcame a significant mathematical expectation to win, while Team A is heavily penalized for losing to a weaker opponent.
-\[R_A' = 1550 + 32 \times 1.326 \times (0.0 - 0.640) = 1550 - 27.16 = 1522.84\]
-\[R_B' = 1450 + 32 \times 1.326 \times (1.0 - 0.360) = 1450 + 27.16 = 1477.16\]</p>
-<p>Team A plummets to ~1523, and Team B surges to ~1477. Notice how the upset (a 27.16 point exchange) causes a much larger swing than the expected win (a 15.28 point exchange) did in the first scenario.</p>
-<h3 id="what-if-movm-is-disabled">What if MoVM is Disabled?</h3>
-<p>If the Margin of Victory Multiplier is turned off, the goal differential is completely ignored, and the \(\text{MoVM}\) variable simply becomes \(1.0\). The math then relies entirely on the win probability and the outcome.</p>
-<p>In the <strong>Expected Win Scenario</strong>:
-\[R_A' = 1550 + 32 \times 1.0 \times (1.0 - 0.640) = 1550 + 11.52 = 1561.52\]
-\[R_B' = 1450 + 32 \times 1.0 \times (0.0 - 0.360) = 1450 - 11.52 = 1438.48\]
-<em>(The expected 5-2 win now yields slightly fewer points because the 3-goal margin is no longer rewarded).</em></p>
-<p>In the <strong>Upset Scenario</strong>:
-\[R_A' = 1550 + 32 \times 1.0 \times (0.0 - 0.640) = 1550 - 20.48 = 1529.52\]
-\[R_B' = 1450 + 32 \times 1.0 \times (1.0 - 0.360) = 1450 + 20.48 = 1470.48\]
-<em>(The 5-2 upset penalizes Team A slightly less because the 3-goal deficit is ignored. The only thing that matters is that they lost a game they were expected to win).</em></p>
-<h1 id="summary-similarities-and-differences">Summary - Similarities and Differences</h1>
-<p>Both the Colley Matrix and the Bradley-Terry/Elo Hybrid models are mathematical ranking systems designed to evaluate team performance and establish rankings from a schedule of games. In a segmented league scenario (like one starting with disconnected upper and lower divisions), both models initially face challenges if all teams begin with equal ratings, as they cannot immediately identify the strength gap between the divisions until cross-play begins. However, they diverge fundamentally in their philosophy: the Colley Matrix is a &quot;resume-based&quot; system focused on objective, retrospective fairness, while the Bradley-Terry/Elo model is a &quot;power-based&quot; system designed for predictive accuracy and rapid reactivity.</p>
-<h2 id="differences-between-the-methods">Differences Between the Methods</h2>
-<table>
-<thead>
-<tr>
-<th style="text-align:left">Feature</th>
-<th style="text-align:left">Colley Matrix</th>
-<th style="text-align:left">Bradley-Terry / Elo Hybrid</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td style="text-align:left"><strong>Primary Goal</strong></td>
-<td style="text-align:left">Descriptive Fairness (Resume-based)</td>
-<td style="text-align:left">Predictive Accuracy (Power-based)</td>
-</tr>
-<tr>
-<td style="text-align:left"><strong>Mathematical Approach</strong></td>
-<td style="text-align:left">Solves a massive system of linear equations across the whole season simultaneously.</td>
-<td style="text-align:left">Game-by-game chronological updates based on the expected probability of an outcome.</td>
-</tr>
-<tr>
-<td style="text-align:left"><strong>Sequence Dependency</strong></td>
-<td style="text-align:left"><strong>Independent:</strong> It does not matter <em>when</em> an upset or game occurred during the season.</td>
-<td style="text-align:left"><strong>Dependent:</strong> Beating a top team team early in the season is worth less than beating them later in the season when their rating is higher.</td>
-</tr>
-<tr>
-<td style="text-align:left"><strong>Margin of Victory</strong></td>
-<td style="text-align:left">Deliberately ignored to prevent teams from running up the score.</td>
-<td style="text-align:left">Easily extensible to include a Margin of Victory Multiplier (MoVM).</td>
-</tr>
-<tr>
-<td style="text-align:left"><strong>Initial Ratings</strong></td>
-<td style="text-align:left">Every team starts mathematically equal; zero initial bias.</td>
-<td style="text-align:left">Requires setting starting ratings; adjusting starting ratings for divisions introduces human bias.</td>
-</tr>
-<tr>
-<td style="text-align:left"><strong>Handling Missed Matchups</strong></td>
-<td style="text-align:left">Excels at inferring gaps (e.g., 1st vs 12th) through common opponents without penalizing teams.</td>
-<td style="text-align:left">Stratifies quickly once cross-play begins by funneling points between divisions.</td>
-</tr>
-<tr>
-<td style="text-align:left"><strong>Best Used For</strong></td>
-<td style="text-align:left">Playoff seeding (easier to defend, rewards winning the games on your schedule).</td>
-<td style="text-align:left">Setting Vegas betting lines or measuring pure, current team power.</td>
-</tr>
-</tbody>
-</table>
+</details>
 
         </main>
     </div>
@@ -695,14 +575,23 @@ Team B gains a massive amount of points because they overcame a significant math
         document.addEventListener('DOMContentLoaded', () => {
             const tocLinks = document.querySelectorAll('.toc-link');
             const headings = Array.from(document.querySelectorAll('main h1, main h2, main h3, main h4, main h5, main h6')).filter(h => h.id);
+
+            // Headings inside a collapsed <details> are hidden, so open it when its TOC link is used.
+            tocLinks.forEach(link => link.addEventListener('click', () => {
+                const target = document.getElementById(link.getAttribute('href').slice(1));
+                for (let d = target && target.closest('details'); d; d = d.parentElement.closest('details')) {
+                    d.open = true;
+                }
+            }));
             
             function onScroll() {
                 let currentId = '';
                 // 150px offset to trigger active state slightly before hitting the top
                 const scrollPosition = window.scrollY + 150;
+                const visible = headings.filter(h => h.offsetParent !== null);
                 
-                for (let i = 0; i < headings.length; i++) {
-                    const heading = headings[i];
+                for (let i = 0; i < visible.length; i++) {
+                    const heading = visible[i];
                     // Calculate element's absolute position on page
                     const headingTop = heading.getBoundingClientRect().top + window.scrollY;
                     
@@ -715,8 +604,8 @@ Team B gains a massive amount of points because they overcame a significant math
                 
                 // If scrolled to very bottom, select the last item
                 if ((window.innerHeight + Math.round(window.scrollY)) >= document.body.offsetHeight - 10) {
-                    if (headings.length > 0) {
-                        currentId = headings[headings.length - 1].id;
+                    if (visible.length > 0) {
+                        currentId = visible[visible.length - 1].id;
                     }
                 }
                 
