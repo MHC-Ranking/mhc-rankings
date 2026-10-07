@@ -82,7 +82,18 @@
             font-weight: 600;
             position: sticky;
             top: 0;
-            cursor: help;
+            cursor: pointer; /* Changed for sortability */
+            user-select: none;
+        }
+
+        th.sort-asc::after {
+            content: " \25B2"; /* Up Arrow */
+            font-size: 0.8em;
+        }
+
+        th.sort-desc::after {
+            content: " \25BC"; /* Down Arrow */
+            font-size: 0.8em;
         }
 
         td:nth-child(2) {
@@ -496,6 +507,63 @@
     const nextWeekBtn = document.getElementById('nextWeekBtn');
     const rankingsBody = document.getElementById('rankingsBody');
 
+    let currentSortColumn = -1;
+    let currentSortDirection = 1;
+
+    function sortTable(columnIndex) {
+        const table = rankingsBody.parentElement;
+        const rows = Array.from(rankingsBody.querySelectorAll('tr'));
+        const headers = table.querySelectorAll('th');
+
+        if (currentSortColumn === columnIndex) {
+            currentSortDirection *= -1;
+        } else {
+            currentSortColumn = columnIndex;
+            currentSortDirection = -1; // Default descending for most sports metrics
+        }
+
+        headers.forEach((th, idx) => {
+            th.classList.remove('sort-asc', 'sort-desc');
+            if (idx === columnIndex) {
+                th.classList.add(currentSortDirection === 1 ? 'sort-asc' : 'sort-desc');
+            }
+        });
+
+        rows.sort((a, b) => {
+            let valA = a.children[columnIndex].innerText.trim();
+            let valB = b.children[columnIndex].innerText.trim();
+
+            let numA = parseFloat(valA.replace(/[^0-9.-]+/g, ""));
+            let numB = parseFloat(valB.replace(/[^0-9.-]+/g, ""));
+            
+            if (valA === '-') numA = 0;
+            if (valB === '-') numB = 0;
+            // Handle negative rank changes rendered with the down arrow
+            if (valA.includes('▼')) numA = -Math.abs(numA);
+            if (valB.includes('▼')) numB = -Math.abs(numB);
+
+            let isNumA = !isNaN(numA) && /[0-9]/.test(valA);
+            let isNumB = !isNaN(numB) && /[0-9]/.test(valB);
+
+            if (isNumA && isNumB) {
+                return (numA - numB) * currentSortDirection;
+            } else {
+                return valA.localeCompare(valB) * currentSortDirection;
+            }
+        });
+
+        rankingsBody.innerHTML = '';
+        rows.forEach(row => rankingsBody.appendChild(row));
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+        const headers = rankingsBody.parentElement.querySelectorAll('th');
+        headers.forEach((th, index) => {
+            th.title += " (Click to sort)";
+            th.addEventListener('click', () => sortTable(index));
+        });
+    });
+
     function displayWeek(weekKey) {
         weekSelector.value = weekKey;
         const data = weeklyData[weekKey];
@@ -504,6 +572,12 @@
         const currentIndex = weeks.indexOf(weekKey);
         prevWeekBtn.disabled = currentIndex <= 0;
         nextWeekBtn.disabled = currentIndex >= weeks.length - 1;
+
+        // Reset sort state when changing weeks
+        currentSortColumn = -1;
+        rankingsBody.parentElement.querySelectorAll('th').forEach(th => {
+            th.classList.remove('sort-asc', 'sort-desc');
+        });
 
         // Clear and render table
         rankingsBody.innerHTML = "";

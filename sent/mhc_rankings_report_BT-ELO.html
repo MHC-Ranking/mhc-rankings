@@ -1,0 +1,494 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MHC Rankings</title>
+    <!-- MathJax for rendering equations -->
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    
+    <style>
+        :root {
+            --primary-color: #0f204b; /* Deep Navy */
+            --secondary-color: #a3aaaf; /* Silver/Gray */
+            --accent-color: #d11241; /* Sporty Red */
+            --bg-color: #f4f6f8;
+            --text-color: #333;
+            --white: #ffffff;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            line-height: 1.6;
+            margin: 0;
+            padding: 0;
+        }
+
+        header {
+            background-color: var(--primary-color);
+            color: var(--white);
+            padding: 2rem 0;
+            text-align: center;
+            border-bottom: 5px solid var(--accent-color);
+        }
+
+        h1 {
+            margin: 0;
+            font-size: 2.5rem;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 2rem auto;
+            padding: 0 20px;
+        }
+
+        .section {
+            background-color: var(--white);
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            padding: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        h2 {
+            color: var(--primary-color);
+            border-bottom: 2px solid var(--secondary-color);
+            padding-bottom: 0.5rem;
+            margin-top: 0;
+        }
+
+        /* Table Styles */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 1rem 0;
+            font-size: 0.95rem;
+        }
+
+        th, td {
+            padding: 12px 15px;
+            text-align: center;
+            border-bottom: 1px solid #ddd;
+        }
+
+        th {
+            background-color: var(--primary-color);
+            color: var(--white);
+            font-weight: 600;
+            position: sticky;
+            top: 0;
+            cursor: help;
+        }
+
+        td:nth-child(2) {
+            text-align: left;
+            font-weight: bold;
+        }
+
+        tbody tr:hover {
+            background-color: #f1f1f1;
+        }
+
+        tbody tr:nth-of-type(even) {
+            background-color: #f9f9f9;
+        }
+
+        /* Plot Container */
+        .plot-container {
+            width: 100%;
+            overflow-x: auto;
+            text-align: center;
+        }
+
+        .plot-container img {
+            max-width: 100%;
+            height: auto;
+            border-radius: 4px;
+        }
+
+        /* Expandable Matrix */
+        details {
+            border: 1px solid var(--secondary-color);
+            border-radius: 4px;
+            padding: 0.5em 0.5em 0;
+        }
+
+        summary {
+            font-weight: bold;
+            margin: -0.5em -0.5em 0;
+            padding: 0.5em;
+            background-color: var(--primary-color);
+            color: var(--white);
+            cursor: pointer;
+            border-radius: 4px 4px 0 0;
+        }
+
+        details[open] {
+            padding: 0.5em;
+        }
+
+        details[open] summary {
+            border-bottom: 1px solid var(--secondary-color);
+            margin-bottom: 0.5em;
+        }
+
+        .matrix-container {
+            overflow-x: auto;
+        }
+
+        .matrix-table {
+            font-family: monospace;
+            font-size: 0.85rem;
+        }
+        
+        .matrix-table th {
+            background-color: var(--secondary-color);
+            color: var(--primary-color);
+        }
+
+        /* Week Controls */
+        .week-controls {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 1rem;
+            background-color: var(--bg-color);
+            padding: 10px;
+            border-radius: 4px;
+        }
+
+        .week-controls select {
+            padding: 5px 10px;
+            font-size: 1rem;
+            border: 1px solid var(--secondary-color);
+            border-radius: 4px;
+        }
+
+        .btn {
+            background-color: var(--primary-color);
+            color: var(--white);
+            border: none;
+            padding: 8px 15px;
+            font-size: 1rem;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        .btn:disabled {
+            background-color: var(--secondary-color);
+            cursor: not-allowed;
+        }
+
+        /* Method Description */
+        .method-description {
+            background-color: #e9ecef;
+            border-left: 5px solid var(--primary-color);
+            padding: 1.5rem;
+            margin-top: 2rem;
+        }
+
+        /* Print Styles */
+        @media print {
+            @page {
+                size: 8.5in 11in portrait;
+                margin: 0.5in;
+            }
+
+            body {
+                background-color: var(--white);
+                color: #000;
+                font-size: 10pt;
+            }
+
+            .container {
+                margin: 0;
+                padding: 0;
+                max-width: 100%;
+            }
+
+            .section {
+                box-shadow: none;
+                border: 1px solid #ddd;
+                padding: 1rem;
+                margin-bottom: 1rem;
+                page-break-inside: avoid;
+            }
+
+            header {
+                padding: 1rem 0;
+                background-color: transparent;
+                color: var(--primary-color);
+                border-bottom: 3px solid var(--primary-color);
+            }
+
+            h1 {
+                font-size: 2rem;
+            }
+
+            .week-controls {
+                display: none;
+            }
+
+            th {
+                position: static;
+                background-color: #e9ecef;
+                color: var(--primary-color);
+                border-bottom: 2px solid var(--primary-color);
+            }
+
+            th, td {
+                padding: 4px 8px; /* Less vertical space between rows */
+            }
+
+            /* Make sure details are fully expanded on print */
+            details {
+                display: block;
+            }
+            
+            details > summary {
+                background-color: transparent;
+                color: var(--primary-color);
+                border-bottom: 1px solid var(--primary-color);
+                padding: 0 0 0.5rem 0;
+                margin-bottom: 1rem;
+            }
+            
+            .plot-container {
+                page-break-inside: avoid;
+                overflow: hidden;
+            }
+            
+            .plot-container img {
+                max-width: 100%;
+                height: auto;
+                max-height: 450px;
+                object-fit: contain;
+            }
+
+            /* Scale down Plotly plots to fit on portrait */
+            .plot-container div.plotly-graph-div {
+                transform: scale(0.65);
+                transform-origin: top center;
+                margin-bottom: -25%; /* Adjust for the scaled empty space */
+            }
+            
+            /* Hide the details marker if possible */
+            summary::marker {
+                color: transparent;
+            }
+        }
+
+    </style>
+</head>
+<body>
+
+<header>
+    <h1>MHC Rankings - Jan 23, 2026</h1>
+    <h3 style="margin-top: 0; color: var(--secondary-color);">Bradley-Terry Elo Method</h3>
+</header>
+
+<div class="container">
+
+    <div class="section">
+        <h2>Rankings by Week</h2>
+        
+        <div class="week-controls">
+            <button id="prevWeekBtn" class="btn" onclick="changeWeek(-1)">&#9664; Previous</button>
+            <select id="weekSelector" onchange="displayWeek(this.value)">
+                
+                <option value="2025-W42">2025-W42</option>
+                
+                <option value="2025-W43">2025-W43</option>
+                
+                <option value="2025-W44">2025-W44</option>
+                
+                <option value="2025-W45">2025-W45</option>
+                
+                <option value="2025-W46">2025-W46</option>
+                
+                <option value="2025-W47">2025-W47</option>
+                
+                <option value="2025-W49">2025-W49</option>
+                
+                <option value="2025-W50">2025-W50</option>
+                
+                <option value="2025-W51">2025-W51</option>
+                
+                <option value="2026-W01">2026-W01</option>
+                
+                <option value="2026-W02">2026-W02</option>
+                
+                <option value="2026-W04">2026-W04</option>
+                
+                <option value="Final">Final Rankings</option>
+            </select>
+            <button id="nextWeekBtn" class="btn" onclick="changeWeek(1)">Next &#9654;</button>
+        </div>
+
+        <table>
+            <thead>
+                <tr>
+                    <th title="Overall Rank">Rank</th>
+                    <th title="Change in Rank from Previous Week">+/-</th>
+                    <th title="Team Name">Team</th>
+                    <th title="Bradley-Terry Elo Rating">Rating</th>
+                    <th title="Strength of Schedule (Average Opponent Rating)">SOS</th>
+                    <th title="Raw Win Percentage">Win %</th>
+                    <th title="Wins">W</th>
+                    <th title="Losses">L</th>
+                    <th title="Ties">T</th>
+                    <th title="Goals For">GF</th>
+                    <th title="Goals Against">GA</th>
+                    <th title="Goal Differential">GD</th>
+                    <th title="Result of most recent game">Last Game</th>
+                </tr>
+            </thead>
+            <tbody id="rankingsBody">
+                <!-- Rows injected via JS -->
+            </tbody>
+        </table>
+    </div>
+
+    <div class="section">
+        <h2>Ratings Plot</h2>
+        <div class="plot-container">
+            
+                <div>                        <script>window.PlotlyConfig = {MathJaxConfig: 'local'};</script>
+        <script charset="utf-8" src="https://cdn.plot.ly/plotly-3.5.0.min.js" integrity="sha256-fHbNLP+GlIXN+efbQec78UkemUz3NJp7UmfGxC1tNxs=" crossorigin="anonymous"></script>                <div id="12acc400-8369-4cbe-b012-2174ee9d5bdc" class="plotly-graph-div" style="height:733px; width:1100px;"></div>            <script>                window.PLOTLYENV=window.PLOTLYENV || {};                                if (document.getElementById("12acc400-8369-4cbe-b012-2174ee9d5bdc")) {                    Plotly.newPlot(                        "12acc400-8369-4cbe-b012-2174ee9d5bdc",                        [{"line":{"color":"#8c564b","dash":"longdashdot","width":2},"marker":{"size":8,"symbol":"hexagon2"},"mode":"lines+markers","name":"Winston Churchill","x":["2025-W42","2025-W43","2025-W44","2025-W45","2025-W46","2025-W47","2025-W49","2025-W50","2025-W51","2026-W01","2026-W02","2026-W04"],"y":[1484.0,1500.0,1517.4695015289756,1531.9298366119353,1547.7990586215037,1563.5537855858502,1573.125377562905,1585.6431531891376,1598.749362798489,1611.5615121881524,1621.3356877575168,1603.2019367901685],"type":"scatter"},{"line":{"color":"#c5b0d5","dash":"longdash","width":2},"marker":{"size":8,"symbol":"hexagon"},"mode":"lines+markers","name":"Walter Johnson","x":["2025-W42","2025-W43","2025-W44","2025-W45","2025-W46","2025-W47","2025-W49","2025-W50","2025-W51","2026-W01","2026-W02","2026-W04"],"y":[1516.0,1500.0,1483.9323273572415,1469.4719922742818,1469.4719922742818,1487.476115702236,1504.0817472994922,1521.980898314554,1549.426324095412,1560.157257132912,1574.724227147504,1592.8579781148524],"type":"scatter"},{"line":{"color":"#c49c94","dash":"dot","width":2},"marker":{"size":8,"symbol":"cross"},"mode":"lines+markers","name":"Wootton","x":["2025-W42","2025-W43","2025-W44","2025-W45","2025-W46","2025-W47","2025-W49","2025-W50","2025-W51","2026-W01","2026-W02","2026-W04"],"y":[1516.0,1532.0,1514.5304984710244,1530.5336149113534,1542.4726050671866,1526.7178781028401,1544.173784099869,1558.724778305566,1523.0405126191104,1538.4856090701035,1548.528375513953,1548.528375513953],"type":"scatter"},{"line":{"color":"#d62728","dash":"solid","width":2},"marker":{"size":8,"symbol":"triangle-right"},"mode":"lines+markers","name":"Silver Spring","x":["2025-W42","2025-W43","2025-W44","2025-W45","2025-W46","2025-W47","2025-W49","2025-W50","2025-W51","2026-W01","2026-W02","2026-W04"],"y":[1516.0,1532.0,1530.4634227228255,1513.0641143485539,1527.1003669336985,1525.8255232193571,1508.41956670558,1522.1063597726577,1509.0001501633062,1526.527165537272,1521.2286796260987,1536.913733447275],"type":"scatter"},{"line":{"color":"#2ca02c","dash":"longdashdot","width":2},"marker":{"size":8,"symbol":"triangle-down"},"mode":"lines+markers","name":"Rockville-Magruder","x":["2025-W42","2025-W43","2025-W44","2025-W45","2025-W46","2025-W47","2025-W49","2025-W50","2025-W51","2026-W01","2026-W02","2026-W04"],"y":[1516.0,1498.5304984710244,1500.067075748199,1515.2601716419092,1499.3586812841877,1500.633524998529,1484.0278934012729,1497.4203501974548,1510.9861005682008,1495.5410041172076,1512.4717840328653,1529.555691585996],"type":"scatter"},{"line":{"color":"#aec7e8","dash":"dash","width":2},"marker":{"size":8,"symbol":"square"},"mode":"lines+markers","name":"DC Stars Varsity","x":["2025-W42","2025-W43","2025-W44","2025-W45","2025-W46","2025-W47","2025-W49","2025-W50","2025-W51","2026-W01","2026-W02","2026-W04"],"y":[1484.0,1500.0,1500.0,1517.3993083742716,1533.3007987319932,1530.3899183922774,1545.5166155877066,1527.6174645726448,1542.260096895139,1524.7330815211733,1536.0446425447562,1518.9607349916255],"type":"scatter"},{"line":{"color":"#98df8a","dash":"dot","width":2},"marker":{"size":8,"symbol":"triangle-left"},"mode":"lines+markers","name":"Sherwood","x":["2025-W42","2025-W43","2025-W44","2025-W45","2025-W46","2025-W47","2025-W49","2025-W50","2025-W51","2026-W01","2026-W02","2026-W04"],"y":[1516.0,1498.5304984710244,1514.5981711137829,1498.595054673454,1498.595054673454,1511.4075235875152,1496.280826392086,1483.7630507658534,1514.3772615908829,1528.9557967697222,1514.3888267551301,1498.7037729339538],"type":"scatter"},{"line":{"color":"#ffbb78","dash":"longdash","width":2},"marker":{"size":8,"symbol":"diamond"},"mode":"lines+markers","name":"Richard Montgomery","x":["2025-W42","2025-W43","2025-W44","2025-W45","2025-W46","2025-W47","2025-W49","2025-W50","2025-W51","2026-W01","2026-W02","2026-W04"],"y":[1484.0,1501.4695015289756,1501.4695015289756,1516.7331947354535,1530.4736381242521,1558.420166757191,1540.9642607601622,1551.0460189188955,1528.5876289375742,1515.775479547911,1498.8446996322532,1481.0212508517793],"type":"scatter"},{"line":{"color":"#9467bd","dash":"dashdot","width":2},"marker":{"size":8,"symbol":"star"},"mode":"lines+markers","name":"Walt Whitman","x":["2025-W42","2025-W43","2025-W44","2025-W45","2025-W46","2025-W47","2025-W49","2025-W50","2025-W51","2026-W01","2026-W02","2026-W04"],"y":[1484.0,1501.4695015289756,1515.932924251801,1529.0899653887,1513.2207433791316,1495.2166199511773,1512.6225764649544,1498.0715822592574,1483.4289499367633,1468.850414757924,1459.0762391885596,1476.8996879690335],"type":"scatter"},{"line":{"color":"#ff7f0e","dash":"dashdot","width":2},"marker":{"size":8,"symbol":"triangle-up"},"mode":"lines+markers","name":"NWQO","x":["2025-W42","2025-W43","2025-W44","2025-W45","2025-W46","2025-W47","2025-W49","2025-W50","2025-W51","2026-W01","2026-W02","2026-W04"],"y":[1484.0,1468.0,1485.4695015289756,1470.2058083224977,1456.169555737353,1442.9502433931814,1426.8963805980468,1413.5039238018649,1424.8016262338774,1406.9657641863175,1412.2642500974907,1412.2642500974907],"type":"scatter"},{"line":{"color":"#1f77b4","dash":"solid","width":2},"marker":{"size":8,"symbol":"circle"},"mode":"lines+markers","name":"Bethesda-Chevy Chase","x":["2025-W42","2025-W43","2025-W44","2025-W45","2025-W46","2025-W47","2025-W49","2025-W50","2025-W51","2026-W01","2026-W02","2026-W04"],"y":[1484.0,1468.0,1453.5365772771745,1440.3795361402756,1428.4405459844425,1415.628077070381,1406.0564850933263,1395.974726934593,1384.76004356447,1402.5959056120298,1392.5531391681802,1409.2888168188376],"type":"scatter"},{"line":{"color":"#ff9896","dash":"dash","width":2},"marker":{"size":8,"symbol":"pentagon"},"mode":"lines+markers","name":"Upper Montgomery","x":["2025-W42","2025-W43","2025-W44","2025-W45","2025-W46","2025-W47","2025-W49","2025-W50","2025-W51","2026-W01","2026-W02","2026-W04"],"y":[1516.0,1500.0,1482.5304984710244,1467.3374025773142,1453.5969591885155,1441.780623239464,1457.8344860345985,1444.147692967521,1430.581942596775,1419.8510095592749,1408.539448535692,1391.8037708850345],"type":"scatter"}],                        {"template":{"data":{"barpolar":[{"marker":{"line":{"color":"white","width":0.5},"pattern":{"fillmode":"overlay","size":10,"solidity":0.2}},"type":"barpolar"}],"bar":[{"error_x":{"color":"#2a3f5f"},"error_y":{"color":"#2a3f5f"},"marker":{"line":{"color":"white","width":0.5},"pattern":{"fillmode":"overlay","size":10,"solidity":0.2}},"type":"bar"}],"carpet":[{"aaxis":{"endlinecolor":"#2a3f5f","gridcolor":"#C8D4E3","linecolor":"#C8D4E3","minorgridcolor":"#C8D4E3","startlinecolor":"#2a3f5f"},"baxis":{"endlinecolor":"#2a3f5f","gridcolor":"#C8D4E3","linecolor":"#C8D4E3","minorgridcolor":"#C8D4E3","startlinecolor":"#2a3f5f"},"type":"carpet"}],"choropleth":[{"colorbar":{"outlinewidth":0,"ticks":""},"type":"choropleth"}],"contourcarpet":[{"colorbar":{"outlinewidth":0,"ticks":""},"type":"contourcarpet"}],"contour":[{"colorbar":{"outlinewidth":0,"ticks":""},"colorscale":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]],"type":"contour"}],"heatmap":[{"colorbar":{"outlinewidth":0,"ticks":""},"colorscale":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]],"type":"heatmap"}],"histogram2dcontour":[{"colorbar":{"outlinewidth":0,"ticks":""},"colorscale":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]],"type":"histogram2dcontour"}],"histogram2d":[{"colorbar":{"outlinewidth":0,"ticks":""},"colorscale":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]],"type":"histogram2d"}],"histogram":[{"marker":{"pattern":{"fillmode":"overlay","size":10,"solidity":0.2}},"type":"histogram"}],"mesh3d":[{"colorbar":{"outlinewidth":0,"ticks":""},"type":"mesh3d"}],"parcoords":[{"line":{"colorbar":{"outlinewidth":0,"ticks":""}},"type":"parcoords"}],"pie":[{"automargin":true,"type":"pie"}],"scatter3d":[{"line":{"colorbar":{"outlinewidth":0,"ticks":""}},"marker":{"colorbar":{"outlinewidth":0,"ticks":""}},"type":"scatter3d"}],"scattercarpet":[{"marker":{"colorbar":{"outlinewidth":0,"ticks":""}},"type":"scattercarpet"}],"scattergeo":[{"marker":{"colorbar":{"outlinewidth":0,"ticks":""}},"type":"scattergeo"}],"scattergl":[{"marker":{"colorbar":{"outlinewidth":0,"ticks":""}},"type":"scattergl"}],"scattermapbox":[{"marker":{"colorbar":{"outlinewidth":0,"ticks":""}},"type":"scattermapbox"}],"scattermap":[{"marker":{"colorbar":{"outlinewidth":0,"ticks":""}},"type":"scattermap"}],"scatterpolargl":[{"marker":{"colorbar":{"outlinewidth":0,"ticks":""}},"type":"scatterpolargl"}],"scatterpolar":[{"marker":{"colorbar":{"outlinewidth":0,"ticks":""}},"type":"scatterpolar"}],"scatter":[{"fillpattern":{"fillmode":"overlay","size":10,"solidity":0.2},"type":"scatter"}],"scatterternary":[{"marker":{"colorbar":{"outlinewidth":0,"ticks":""}},"type":"scatterternary"}],"surface":[{"colorbar":{"outlinewidth":0,"ticks":""},"colorscale":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]],"type":"surface"}],"table":[{"cells":{"fill":{"color":"#EBF0F8"},"line":{"color":"white"}},"header":{"fill":{"color":"#C8D4E3"},"line":{"color":"white"}},"type":"table"}]},"layout":{"annotationdefaults":{"arrowcolor":"#2a3f5f","arrowhead":0,"arrowwidth":1},"autotypenumbers":"strict","coloraxis":{"colorbar":{"outlinewidth":0,"ticks":""}},"colorscale":{"diverging":[[0,"#8e0152"],[0.1,"#c51b7d"],[0.2,"#de77ae"],[0.3,"#f1b6da"],[0.4,"#fde0ef"],[0.5,"#f7f7f7"],[0.6,"#e6f5d0"],[0.7,"#b8e186"],[0.8,"#7fbc41"],[0.9,"#4d9221"],[1,"#276419"]],"sequential":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]],"sequentialminus":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]]},"colorway":["#636efa","#EF553B","#00cc96","#ab63fa","#FFA15A","#19d3f3","#FF6692","#B6E880","#FF97FF","#FECB52"],"font":{"color":"#2a3f5f"},"geo":{"bgcolor":"white","lakecolor":"white","landcolor":"white","showlakes":true,"showland":true,"subunitcolor":"#C8D4E3"},"hoverlabel":{"align":"left"},"hovermode":"closest","mapbox":{"style":"light"},"paper_bgcolor":"white","plot_bgcolor":"white","polar":{"angularaxis":{"gridcolor":"#EBF0F8","linecolor":"#EBF0F8","ticks":""},"bgcolor":"white","radialaxis":{"gridcolor":"#EBF0F8","linecolor":"#EBF0F8","ticks":""}},"scene":{"xaxis":{"backgroundcolor":"white","gridcolor":"#DFE8F3","gridwidth":2,"linecolor":"#EBF0F8","showbackground":true,"ticks":"","zerolinecolor":"#EBF0F8"},"yaxis":{"backgroundcolor":"white","gridcolor":"#DFE8F3","gridwidth":2,"linecolor":"#EBF0F8","showbackground":true,"ticks":"","zerolinecolor":"#EBF0F8"},"zaxis":{"backgroundcolor":"white","gridcolor":"#DFE8F3","gridwidth":2,"linecolor":"#EBF0F8","showbackground":true,"ticks":"","zerolinecolor":"#EBF0F8"}},"shapedefaults":{"line":{"color":"#2a3f5f"}},"ternary":{"aaxis":{"gridcolor":"#DFE8F3","linecolor":"#A2B1C6","ticks":""},"baxis":{"gridcolor":"#DFE8F3","linecolor":"#A2B1C6","ticks":""},"bgcolor":"white","caxis":{"gridcolor":"#DFE8F3","linecolor":"#A2B1C6","ticks":""}},"title":{"x":0.05},"xaxis":{"automargin":true,"gridcolor":"#EBF0F8","linecolor":"#EBF0F8","ticks":"","title":{"standoff":15},"zerolinecolor":"#EBF0F8","zerolinewidth":2},"yaxis":{"automargin":true,"gridcolor":"#EBF0F8","linecolor":"#EBF0F8","ticks":"","title":{"standoff":15},"zerolinecolor":"#EBF0F8","zerolinewidth":2}}},"yaxis":{"title":{"text":"Bradley-Terry Elo Rating"},"range":[1372.9312613548175,1633.1644699671692]},"legend":{"title":{"text":"Teams"},"yanchor":"top","y":0.99,"xanchor":"left","x":1.01,"itemclick":"toggleothers","itemdoubleclick":"toggle"},"xaxis":{"title":{"text":"Week"},"type":"category"},"margin":{"r":150,"t":100},"hovermode":"x unified","updatemenus":[{"buttons":[{"args":[{"visible":[true,true,true,true,true,true,true,true,true,true,true,true]}],"label":"All Teams","method":"update"},{"args":[{"visible":[true,true,true,true,true,true,false,false,false,false,false,false]}],"label":"Top 6 Teams","method":"update"},{"args":[{"visible":[false,false,false,false,false,false,true,true,true,true,true,true]}],"label":"Bottom 6 Teams","method":"update"},{"args":[{"visible":[true,false,false,false,false,false,false,false,false,false,false,false]}],"label":"Winston Churchill","method":"update"},{"args":[{"visible":[false,true,false,false,false,false,false,false,false,false,false,false]}],"label":"Walter Johnson","method":"update"},{"args":[{"visible":[false,false,true,false,false,false,false,false,false,false,false,false]}],"label":"Wootton","method":"update"},{"args":[{"visible":[false,false,false,true,false,false,false,false,false,false,false,false]}],"label":"Silver Spring","method":"update"},{"args":[{"visible":[false,false,false,false,true,false,false,false,false,false,false,false]}],"label":"Rockville-Magruder","method":"update"},{"args":[{"visible":[false,false,false,false,false,true,false,false,false,false,false,false]}],"label":"DC Stars Varsity","method":"update"},{"args":[{"visible":[false,false,false,false,false,false,true,false,false,false,false,false]}],"label":"Sherwood","method":"update"},{"args":[{"visible":[false,false,false,false,false,false,false,true,false,false,false,false]}],"label":"Richard Montgomery","method":"update"},{"args":[{"visible":[false,false,false,false,false,false,false,false,true,false,false,false]}],"label":"Walt Whitman","method":"update"},{"args":[{"visible":[false,false,false,false,false,false,false,false,false,true,false,false]}],"label":"NWQO","method":"update"},{"args":[{"visible":[false,false,false,false,false,false,false,false,false,false,true,false]}],"label":"Bethesda-Chevy Chase","method":"update"},{"args":[{"visible":[false,false,false,false,false,false,false,false,false,false,false,true]}],"label":"Upper Montgomery","method":"update"}],"direction":"down","type":"dropdown","x":0.0,"xanchor":"left","y":1.15,"yanchor":"top"}],"width":1100,"height":733},                        {"toImageButtonOptions": {"format": "png", "filename": "mhc_plot", "height": 800, "width": 1200, "scale": 2}, "displaylogo": false, "responsive": true}                    )                };            </script>        </div>
+            
+        </div>
+    </div>
+
+    <div class="section">
+        <h2>Rankings Progress</h2>
+        <div class="plot-container">
+            
+                <div>                        <script>window.PlotlyConfig = {MathJaxConfig: 'local'};</script>
+        <script charset="utf-8" src="https://cdn.plot.ly/plotly-3.5.0.min.js" integrity="sha256-fHbNLP+GlIXN+efbQec78UkemUz3NJp7UmfGxC1tNxs=" crossorigin="anonymous"></script>                <div id="87be4fdb-3f0f-4cb2-9b57-e0fcb075f699" class="plotly-graph-div" style="height:733px; width:1100px;"></div>            <script>                window.PLOTLYENV=window.PLOTLYENV || {};                                if (document.getElementById("87be4fdb-3f0f-4cb2-9b57-e0fcb075f699")) {                    Plotly.newPlot(                        "87be4fdb-3f0f-4cb2-9b57-e0fcb075f699",                        [{"line":{"color":"#ff9896","dash":"dash","width":2},"marker":{"size":8,"symbol":"pentagon"},"mode":"lines+markers","name":"Upper Montgomery","x":["2025-W42","2025-W43","2025-W44","2025-W45","2025-W46","2025-W47","2025-W49","2025-W50","2025-W51","2026-W01","2026-W02","2026-W04"],"y":[4,6,11,11,11,11,10,10,10,10,11,12],"type":"scatter"},{"line":{"color":"#1f77b4","dash":"solid","width":2},"marker":{"size":8,"symbol":"circle"},"mode":"lines+markers","name":"Bethesda-Chevy Chase","x":["2025-W42","2025-W43","2025-W44","2025-W45","2025-W46","2025-W47","2025-W49","2025-W50","2025-W51","2026-W01","2026-W02","2026-W04"],"y":[7,11,12,12,12,12,12,12,12,12,12,11],"type":"scatter"},{"line":{"color":"#ff7f0e","dash":"dashdot","width":2},"marker":{"size":8,"symbol":"triangle-up"},"mode":"lines+markers","name":"NWQO","x":["2025-W42","2025-W43","2025-W44","2025-W45","2025-W46","2025-W47","2025-W49","2025-W50","2025-W51","2026-W01","2026-W02","2026-W04"],"y":[9,12,9,9,10,10,11,11,11,11,10,10],"type":"scatter"},{"line":{"color":"#9467bd","dash":"dashdot","width":2},"marker":{"size":8,"symbol":"star"},"mode":"lines+markers","name":"Walt Whitman","x":["2025-W42","2025-W43","2025-W44","2025-W45","2025-W46","2025-W47","2025-W49","2025-W50","2025-W51","2026-W01","2026-W02","2026-W04"],"y":[11,4,3,3,6,8,5,7,9,9,9,9],"type":"scatter"},{"line":{"color":"#ffbb78","dash":"longdash","width":2},"marker":{"size":8,"symbol":"diamond"},"mode":"lines+markers","name":"Richard Montgomery","x":["2025-W42","2025-W43","2025-W44","2025-W45","2025-W46","2025-W47","2025-W49","2025-W50","2025-W51","2026-W01","2026-W02","2026-W04"],"y":[10,3,6,5,4,2,4,3,4,7,8,8],"type":"scatter"},{"line":{"color":"#98df8a","dash":"dot","width":2},"marker":{"size":8,"symbol":"triangle-left"},"mode":"lines+markers","name":"Sherwood","x":["2025-W42","2025-W43","2025-W44","2025-W45","2025-W46","2025-W47","2025-W49","2025-W50","2025-W51","2026-W01","2026-W02","2026-W04"],"y":[2,10,4,8,8,6,8,9,6,4,6,7],"type":"scatter"},{"line":{"color":"#aec7e8","dash":"dash","width":2},"marker":{"size":8,"symbol":"square"},"mode":"lines+markers","name":"DC Stars Varsity","x":["2025-W42","2025-W43","2025-W44","2025-W45","2025-W46","2025-W47","2025-W49","2025-W50","2025-W51","2026-W01","2026-W02","2026-W04"],"y":[8,5,8,4,3,3,2,4,3,6,4,6],"type":"scatter"},{"line":{"color":"#2ca02c","dash":"longdashdot","width":2},"marker":{"size":8,"symbol":"triangle-down"},"mode":"lines+markers","name":"Rockville-Magruder","x":["2025-W42","2025-W43","2025-W44","2025-W45","2025-W46","2025-W47","2025-W49","2025-W50","2025-W51","2026-W01","2026-W02","2026-W04"],"y":[1,9,7,6,7,7,9,8,7,8,7,5],"type":"scatter"},{"line":{"color":"#d62728","dash":"solid","width":2},"marker":{"size":8,"symbol":"triangle-right"},"mode":"lines+markers","name":"Silver Spring","x":["2025-W42","2025-W43","2025-W44","2025-W45","2025-W46","2025-W47","2025-W49","2025-W50","2025-W51","2026-W01","2026-W02","2026-W04"],"y":[3,1,1,7,5,5,6,5,8,5,5,4],"type":"scatter"},{"line":{"color":"#c49c94","dash":"dot","width":2},"marker":{"size":8,"symbol":"cross"},"mode":"lines+markers","name":"Wootton","x":["2025-W42","2025-W43","2025-W44","2025-W45","2025-W46","2025-W47","2025-W49","2025-W50","2025-W51","2026-W01","2026-W02","2026-W04"],"y":[6,2,5,2,2,4,3,2,5,3,3,3],"type":"scatter"},{"line":{"color":"#c5b0d5","dash":"longdash","width":2},"marker":{"size":8,"symbol":"hexagon"},"mode":"lines+markers","name":"Walter Johnson","x":["2025-W42","2025-W43","2025-W44","2025-W45","2025-W46","2025-W47","2025-W49","2025-W50","2025-W51","2026-W01","2026-W02","2026-W04"],"y":[5,7,10,10,9,9,7,6,2,2,2,2],"type":"scatter"},{"line":{"color":"#8c564b","dash":"longdashdot","width":2},"marker":{"size":8,"symbol":"hexagon2"},"mode":"lines+markers","name":"Winston Churchill","x":["2025-W42","2025-W43","2025-W44","2025-W45","2025-W46","2025-W47","2025-W49","2025-W50","2025-W51","2026-W01","2026-W02","2026-W04"],"y":[12,8,2,1,1,1,1,1,1,1,1,1],"type":"scatter"}],                        {"template":{"data":{"barpolar":[{"marker":{"line":{"color":"white","width":0.5},"pattern":{"fillmode":"overlay","size":10,"solidity":0.2}},"type":"barpolar"}],"bar":[{"error_x":{"color":"#2a3f5f"},"error_y":{"color":"#2a3f5f"},"marker":{"line":{"color":"white","width":0.5},"pattern":{"fillmode":"overlay","size":10,"solidity":0.2}},"type":"bar"}],"carpet":[{"aaxis":{"endlinecolor":"#2a3f5f","gridcolor":"#C8D4E3","linecolor":"#C8D4E3","minorgridcolor":"#C8D4E3","startlinecolor":"#2a3f5f"},"baxis":{"endlinecolor":"#2a3f5f","gridcolor":"#C8D4E3","linecolor":"#C8D4E3","minorgridcolor":"#C8D4E3","startlinecolor":"#2a3f5f"},"type":"carpet"}],"choropleth":[{"colorbar":{"outlinewidth":0,"ticks":""},"type":"choropleth"}],"contourcarpet":[{"colorbar":{"outlinewidth":0,"ticks":""},"type":"contourcarpet"}],"contour":[{"colorbar":{"outlinewidth":0,"ticks":""},"colorscale":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]],"type":"contour"}],"heatmap":[{"colorbar":{"outlinewidth":0,"ticks":""},"colorscale":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]],"type":"heatmap"}],"histogram2dcontour":[{"colorbar":{"outlinewidth":0,"ticks":""},"colorscale":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]],"type":"histogram2dcontour"}],"histogram2d":[{"colorbar":{"outlinewidth":0,"ticks":""},"colorscale":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]],"type":"histogram2d"}],"histogram":[{"marker":{"pattern":{"fillmode":"overlay","size":10,"solidity":0.2}},"type":"histogram"}],"mesh3d":[{"colorbar":{"outlinewidth":0,"ticks":""},"type":"mesh3d"}],"parcoords":[{"line":{"colorbar":{"outlinewidth":0,"ticks":""}},"type":"parcoords"}],"pie":[{"automargin":true,"type":"pie"}],"scatter3d":[{"line":{"colorbar":{"outlinewidth":0,"ticks":""}},"marker":{"colorbar":{"outlinewidth":0,"ticks":""}},"type":"scatter3d"}],"scattercarpet":[{"marker":{"colorbar":{"outlinewidth":0,"ticks":""}},"type":"scattercarpet"}],"scattergeo":[{"marker":{"colorbar":{"outlinewidth":0,"ticks":""}},"type":"scattergeo"}],"scattergl":[{"marker":{"colorbar":{"outlinewidth":0,"ticks":""}},"type":"scattergl"}],"scattermapbox":[{"marker":{"colorbar":{"outlinewidth":0,"ticks":""}},"type":"scattermapbox"}],"scattermap":[{"marker":{"colorbar":{"outlinewidth":0,"ticks":""}},"type":"scattermap"}],"scatterpolargl":[{"marker":{"colorbar":{"outlinewidth":0,"ticks":""}},"type":"scatterpolargl"}],"scatterpolar":[{"marker":{"colorbar":{"outlinewidth":0,"ticks":""}},"type":"scatterpolar"}],"scatter":[{"fillpattern":{"fillmode":"overlay","size":10,"solidity":0.2},"type":"scatter"}],"scatterternary":[{"marker":{"colorbar":{"outlinewidth":0,"ticks":""}},"type":"scatterternary"}],"surface":[{"colorbar":{"outlinewidth":0,"ticks":""},"colorscale":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]],"type":"surface"}],"table":[{"cells":{"fill":{"color":"#EBF0F8"},"line":{"color":"white"}},"header":{"fill":{"color":"#C8D4E3"},"line":{"color":"white"}},"type":"table"}]},"layout":{"annotationdefaults":{"arrowcolor":"#2a3f5f","arrowhead":0,"arrowwidth":1},"autotypenumbers":"strict","coloraxis":{"colorbar":{"outlinewidth":0,"ticks":""}},"colorscale":{"diverging":[[0,"#8e0152"],[0.1,"#c51b7d"],[0.2,"#de77ae"],[0.3,"#f1b6da"],[0.4,"#fde0ef"],[0.5,"#f7f7f7"],[0.6,"#e6f5d0"],[0.7,"#b8e186"],[0.8,"#7fbc41"],[0.9,"#4d9221"],[1,"#276419"]],"sequential":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]],"sequentialminus":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]]},"colorway":["#636efa","#EF553B","#00cc96","#ab63fa","#FFA15A","#19d3f3","#FF6692","#B6E880","#FF97FF","#FECB52"],"font":{"color":"#2a3f5f"},"geo":{"bgcolor":"white","lakecolor":"white","landcolor":"white","showlakes":true,"showland":true,"subunitcolor":"#C8D4E3"},"hoverlabel":{"align":"left"},"hovermode":"closest","mapbox":{"style":"light"},"paper_bgcolor":"white","plot_bgcolor":"white","polar":{"angularaxis":{"gridcolor":"#EBF0F8","linecolor":"#EBF0F8","ticks":""},"bgcolor":"white","radialaxis":{"gridcolor":"#EBF0F8","linecolor":"#EBF0F8","ticks":""}},"scene":{"xaxis":{"backgroundcolor":"white","gridcolor":"#DFE8F3","gridwidth":2,"linecolor":"#EBF0F8","showbackground":true,"ticks":"","zerolinecolor":"#EBF0F8"},"yaxis":{"backgroundcolor":"white","gridcolor":"#DFE8F3","gridwidth":2,"linecolor":"#EBF0F8","showbackground":true,"ticks":"","zerolinecolor":"#EBF0F8"},"zaxis":{"backgroundcolor":"white","gridcolor":"#DFE8F3","gridwidth":2,"linecolor":"#EBF0F8","showbackground":true,"ticks":"","zerolinecolor":"#EBF0F8"}},"shapedefaults":{"line":{"color":"#2a3f5f"}},"ternary":{"aaxis":{"gridcolor":"#DFE8F3","linecolor":"#A2B1C6","ticks":""},"baxis":{"gridcolor":"#DFE8F3","linecolor":"#A2B1C6","ticks":""},"bgcolor":"white","caxis":{"gridcolor":"#DFE8F3","linecolor":"#A2B1C6","ticks":""}},"title":{"x":0.05},"xaxis":{"automargin":true,"gridcolor":"#EBF0F8","linecolor":"#EBF0F8","ticks":"","title":{"standoff":15},"zerolinecolor":"#EBF0F8","zerolinewidth":2},"yaxis":{"automargin":true,"gridcolor":"#EBF0F8","linecolor":"#EBF0F8","ticks":"","title":{"standoff":15},"zerolinecolor":"#EBF0F8","zerolinewidth":2}}},"yaxis":{"title":{"text":"Rank"},"range":[12.5,0.5],"dtick":1},"legend":{"title":{"text":"Teams"},"yanchor":"top","y":0.99,"xanchor":"left","x":1.01,"itemclick":"toggleothers","itemdoubleclick":"toggle"},"xaxis":{"title":{"text":"Week"},"type":"category"},"margin":{"r":150,"t":100},"hovermode":"x unified","updatemenus":[{"buttons":[{"args":[{"visible":[true,true,true,true,true,true,true,true,true,true,true,true]}],"label":"All Teams","method":"update"},{"args":[{"visible":[true,true,true,true,true,true,false,false,false,false,false,false]}],"label":"Top 6 Teams","method":"update"},{"args":[{"visible":[false,false,false,false,false,false,true,true,true,true,true,true]}],"label":"Bottom 6 Teams","method":"update"},{"args":[{"visible":[true,false,false,false,false,false,false,false,false,false,false,false]}],"label":"Upper Montgomery","method":"update"},{"args":[{"visible":[false,true,false,false,false,false,false,false,false,false,false,false]}],"label":"Bethesda-Chevy Chase","method":"update"},{"args":[{"visible":[false,false,true,false,false,false,false,false,false,false,false,false]}],"label":"NWQO","method":"update"},{"args":[{"visible":[false,false,false,true,false,false,false,false,false,false,false,false]}],"label":"Walt Whitman","method":"update"},{"args":[{"visible":[false,false,false,false,true,false,false,false,false,false,false,false]}],"label":"Richard Montgomery","method":"update"},{"args":[{"visible":[false,false,false,false,false,true,false,false,false,false,false,false]}],"label":"Sherwood","method":"update"},{"args":[{"visible":[false,false,false,false,false,false,true,false,false,false,false,false]}],"label":"DC Stars Varsity","method":"update"},{"args":[{"visible":[false,false,false,false,false,false,false,true,false,false,false,false]}],"label":"Rockville-Magruder","method":"update"},{"args":[{"visible":[false,false,false,false,false,false,false,false,true,false,false,false]}],"label":"Silver Spring","method":"update"},{"args":[{"visible":[false,false,false,false,false,false,false,false,false,true,false,false]}],"label":"Wootton","method":"update"},{"args":[{"visible":[false,false,false,false,false,false,false,false,false,false,true,false]}],"label":"Walter Johnson","method":"update"},{"args":[{"visible":[false,false,false,false,false,false,false,false,false,false,false,true]}],"label":"Winston Churchill","method":"update"}],"direction":"down","type":"dropdown","x":0.0,"xanchor":"left","y":1.15,"yanchor":"top"}],"width":1100,"height":733},                        {"toImageButtonOptions": {"format": "png", "filename": "mhc_plot", "height": 800, "width": 1200, "scale": 2}, "displaylogo": false, "responsive": true}                    )                };            </script>        </div>
+            
+        </div>
+    </div>
+
+    
+    <div class="section">
+        <h2>Strength of Schedule Progress</h2>
+        <div class="plot-container">
+            
+                <div>                        <script>window.PlotlyConfig = {MathJaxConfig: 'local'};</script>
+        <script charset="utf-8" src="https://cdn.plot.ly/plotly-3.5.0.min.js" integrity="sha256-fHbNLP+GlIXN+efbQec78UkemUz3NJp7UmfGxC1tNxs=" crossorigin="anonymous"></script>                <div id="3f189c10-7d57-4f6e-8eea-a102f5160550" class="plotly-graph-div" style="height:733px; width:1100px;"></div>            <script>                window.PLOTLYENV=window.PLOTLYENV || {};                                if (document.getElementById("3f189c10-7d57-4f6e-8eea-a102f5160550")) {                    Plotly.newPlot(                        "3f189c10-7d57-4f6e-8eea-a102f5160550",                        [{"line":{"color":"#9467bd","dash":"dashdot","width":2},"marker":{"size":8,"symbol":"star"},"mode":"lines+markers","name":"Walt Whitman","x":["2025-W42","2025-W43","2025-W44","2025-W45","2025-W46","2025-W47","2025-W49","2025-W50","2025-W51","2026-W01","2026-W02","2026-W04"],"y":[1500.0,1508.0,1494.6666666666667,1484.3841443192937,1493.8932827778222,1489.8230676938986,1494.966275626107,1501.1172141853272,1504.0616864505846,1505.0932439646144,1514.7721774394815,1513.4448876222125],"type":"scatter"},{"line":{"color":"#c5b0d5","dash":"longdash","width":2},"marker":{"size":8,"symbol":"hexagon"},"mode":"lines+markers","name":"Walter Johnson","x":["2025-W42","2025-W43","2025-W44","2025-W45","2025-W46","2025-W47","2025-W49","2025-W50","2025-W51","2026-W01","2026-W02","2026-W04"],"y":[1500.0,1508.0,1504.8434994903416,1508.0,1508.0,1509.0441486758264,1507.6423780629436,1513.052983423624,1504.9111176242104,1497.4782001214667,1500.339799816763,1510.4227904784923],"type":"scatter"},{"line":{"color":"#8c564b","dash":"longdashdot","width":2},"marker":{"size":8,"symbol":"hexagon2"},"mode":"lines+markers","name":"Winston Churchill","x":["2025-W42","2025-W43","2025-W44","2025-W45","2025-W46","2025-W47","2025-W49","2025-W50","2025-W51","2026-W01","2026-W02","2026-W04"],"y":[1500.0,1492.0,1505.3333333333333,1499.9830818393104,1505.8044585491884,1511.9158163021882,1498.1604249833586,1497.9254751594494,1500.6122401164725,1503.4097789985826,1500.268018613068,1506.4727026576045],"type":"scatter"},{"line":{"color":"#98df8a","dash":"dot","width":2},"marker":{"size":8,"symbol":"triangle-left"},"mode":"lines+markers","name":"Sherwood","x":["2025-W42","2025-W43","2025-W44","2025-W45","2025-W46","2025-W47","2025-W49","2025-W50","2025-W51","2026-W01","2026-W02","2026-W04"],"y":[1500.0,1492.0,1494.6666666666667,1499.6326246177562,1499.6326246177562,1485.3942088910935,1492.8934938079574,1504.3551914872355,1498.3539828500898,1496.861479558757,1502.6156411564077,1504.1667276955486],"type":"scatter"},{"line":{"color":"#c49c94","dash":"dot","width":2},"marker":{"size":8,"symbol":"cross"},"mode":"lines+markers","name":"Wootton","x":["2025-W42","2025-W43","2025-W44","2025-W45","2025-W46","2025-W47","2025-W49","2025-W50","2025-W51","2026-W01","2026-W02","2026-W04"],"y":[1500.0,1508.0,1505.3333333333333,1507.6495427784457,1494.1955414508116,1503.1294609792603,1511.0281332332504,1511.2274386372133,1510.6724145727424,1510.7009314814204,1501.6921793256379,1501.6921793256379],"type":"scatter"},{"line":{"color":"#1f77b4","dash":"solid","width":2},"marker":{"size":8,"symbol":"circle"},"mode":"lines+markers","name":"Bethesda-Chevy Chase","x":["2025-W42","2025-W43","2025-W44","2025-W45","2025-W46","2025-W47","2025-W49","2025-W50","2025-W51","2026-W01","2026-W02","2026-W04"],"y":[1500.0,1492.0,1495.1565005096584,1500.350606445194,1506.3872081384259,1505.0885158942638,1513.440697278776,1516.8811427139492,1515.3568577702615,1506.301334616623,1509.2271777487576,1500.8365336476688],"type":"scatter"},{"line":{"color":"#d62728","dash":"solid","width":2},"marker":{"size":8,"symbol":"triangle-right"},"mode":"lines+markers","name":"Silver Spring","x":["2025-W42","2025-W43","2025-W44","2025-W45","2025-W46","2025-W47","2025-W49","2025-W50","2025-W51","2026-W01","2026-W02","2026-W04"],"y":[1500.0,1508.0,1504.8434994903416,1503.6326246177562,1496.9472613587045,1497.3491646796183,1497.0445154326983,1492.1432617579358,1502.5321385836248,1506.5049344147762,1497.4559189394618,1498.8669945907675],"type":"scatter"},{"line":{"color":"#2ca02c","dash":"longdashdot","width":2},"marker":{"size":8,"symbol":"triangle-down"},"mode":"lines+markers","name":"Rockville-Magruder","x":["2025-W42","2025-W43","2025-W44","2025-W45","2025-W46","2025-W47","2025-W49","2025-W50","2025-W51","2026-W01","2026-W02","2026-W04"],"y":[1500.0,1492.0,1505.3333333333333,1499.6326246177562,1503.1859613690592,1507.1716956298324,1504.3580413544616,1494.6753337599098,1489.0611514496443,1492.459087566591,1494.5787595648928,1498.0342498132147],"type":"scatter"},{"line":{"color":"#aec7e8","dash":"dash","width":2},"marker":{"size":8,"symbol":"square"},"mode":"lines+markers","name":"DC Stars Varsity","x":["2025-W42","2025-W43","2025-W44","2025-W45","2025-W46","2025-W47","2025-W49","2025-W50","2025-W51","2026-W01","2026-W02","2026-W04"],"y":[1500.0,1492.0,1492.0,1504.8211409076084,1507.4308985911837,1502.7277980377232,1503.9677588305508,1503.9820073891683,1503.325293485845,1503.8927791535912,1496.2526182813804,1497.6042154273375],"type":"scatter"},{"line":{"color":"#ff9896","dash":"dash","width":2},"marker":{"size":8,"symbol":"pentagon"},"mode":"lines+markers","name":"Upper Montgomery","x":["2025-W42","2025-W43","2025-W44","2025-W45","2025-W46","2025-W47","2025-W49","2025-W50","2025-W51","2026-W01","2026-W02","2026-W04"],"y":[1500.0,1508.0,1494.6666666666667,1496.0167689370496,1500.1600540967304,1507.9006835486318,1498.6220492407103,1499.846738923819,1499.5771401764453,1504.5620585683419,1506.3957879276902,1496.9089005310643],"type":"scatter"},{"line":{"color":"#ff7f0e","dash":"dashdot","width":2},"marker":{"size":8,"symbol":"triangle-up"},"mode":"lines+markers","name":"NWQO","x":["2025-W42","2025-W43","2025-W44","2025-W45","2025-W46","2025-W47","2025-W49","2025-W50","2025-W51","2026-W01","2026-W02","2026-W04"],"y":[1500.0,1492.0,1494.6666666666667,1496.3673753822438,1499.7067231755059,1502.617370320939,1493.926406452157,1492.6890923207964,1501.4539655799822,1490.8454272149356,1493.8189054084635,1493.8189054084635],"type":"scatter"},{"line":{"color":"#ffbb78","dash":"longdash","width":2},"marker":{"size":8,"symbol":"diamond"},"mode":"lines+markers","name":"Richard Montgomery","x":["2025-W42","2025-W43","2025-W44","2025-W45","2025-W46","2025-W47","2025-W49","2025-W50","2025-W51","2026-W01","2026-W02","2026-W04"],"y":[1500.0,1508.0,1508.0,1500.4898338429919,1492.2017260265725,1492.6174436711333,1497.4889343042341,1486.0598781528706,1476.7580290528358,1488.957162427401,1489.5556934901108,1487.0157389649814],"type":"scatter"}],                        {"template":{"data":{"barpolar":[{"marker":{"line":{"color":"white","width":0.5},"pattern":{"fillmode":"overlay","size":10,"solidity":0.2}},"type":"barpolar"}],"bar":[{"error_x":{"color":"#2a3f5f"},"error_y":{"color":"#2a3f5f"},"marker":{"line":{"color":"white","width":0.5},"pattern":{"fillmode":"overlay","size":10,"solidity":0.2}},"type":"bar"}],"carpet":[{"aaxis":{"endlinecolor":"#2a3f5f","gridcolor":"#C8D4E3","linecolor":"#C8D4E3","minorgridcolor":"#C8D4E3","startlinecolor":"#2a3f5f"},"baxis":{"endlinecolor":"#2a3f5f","gridcolor":"#C8D4E3","linecolor":"#C8D4E3","minorgridcolor":"#C8D4E3","startlinecolor":"#2a3f5f"},"type":"carpet"}],"choropleth":[{"colorbar":{"outlinewidth":0,"ticks":""},"type":"choropleth"}],"contourcarpet":[{"colorbar":{"outlinewidth":0,"ticks":""},"type":"contourcarpet"}],"contour":[{"colorbar":{"outlinewidth":0,"ticks":""},"colorscale":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]],"type":"contour"}],"heatmap":[{"colorbar":{"outlinewidth":0,"ticks":""},"colorscale":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]],"type":"heatmap"}],"histogram2dcontour":[{"colorbar":{"outlinewidth":0,"ticks":""},"colorscale":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]],"type":"histogram2dcontour"}],"histogram2d":[{"colorbar":{"outlinewidth":0,"ticks":""},"colorscale":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]],"type":"histogram2d"}],"histogram":[{"marker":{"pattern":{"fillmode":"overlay","size":10,"solidity":0.2}},"type":"histogram"}],"mesh3d":[{"colorbar":{"outlinewidth":0,"ticks":""},"type":"mesh3d"}],"parcoords":[{"line":{"colorbar":{"outlinewidth":0,"ticks":""}},"type":"parcoords"}],"pie":[{"automargin":true,"type":"pie"}],"scatter3d":[{"line":{"colorbar":{"outlinewidth":0,"ticks":""}},"marker":{"colorbar":{"outlinewidth":0,"ticks":""}},"type":"scatter3d"}],"scattercarpet":[{"marker":{"colorbar":{"outlinewidth":0,"ticks":""}},"type":"scattercarpet"}],"scattergeo":[{"marker":{"colorbar":{"outlinewidth":0,"ticks":""}},"type":"scattergeo"}],"scattergl":[{"marker":{"colorbar":{"outlinewidth":0,"ticks":""}},"type":"scattergl"}],"scattermapbox":[{"marker":{"colorbar":{"outlinewidth":0,"ticks":""}},"type":"scattermapbox"}],"scattermap":[{"marker":{"colorbar":{"outlinewidth":0,"ticks":""}},"type":"scattermap"}],"scatterpolargl":[{"marker":{"colorbar":{"outlinewidth":0,"ticks":""}},"type":"scatterpolargl"}],"scatterpolar":[{"marker":{"colorbar":{"outlinewidth":0,"ticks":""}},"type":"scatterpolar"}],"scatter":[{"fillpattern":{"fillmode":"overlay","size":10,"solidity":0.2},"type":"scatter"}],"scatterternary":[{"marker":{"colorbar":{"outlinewidth":0,"ticks":""}},"type":"scatterternary"}],"surface":[{"colorbar":{"outlinewidth":0,"ticks":""},"colorscale":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]],"type":"surface"}],"table":[{"cells":{"fill":{"color":"#EBF0F8"},"line":{"color":"white"}},"header":{"fill":{"color":"#C8D4E3"},"line":{"color":"white"}},"type":"table"}]},"layout":{"annotationdefaults":{"arrowcolor":"#2a3f5f","arrowhead":0,"arrowwidth":1},"autotypenumbers":"strict","coloraxis":{"colorbar":{"outlinewidth":0,"ticks":""}},"colorscale":{"diverging":[[0,"#8e0152"],[0.1,"#c51b7d"],[0.2,"#de77ae"],[0.3,"#f1b6da"],[0.4,"#fde0ef"],[0.5,"#f7f7f7"],[0.6,"#e6f5d0"],[0.7,"#b8e186"],[0.8,"#7fbc41"],[0.9,"#4d9221"],[1,"#276419"]],"sequential":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]],"sequentialminus":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]]},"colorway":["#636efa","#EF553B","#00cc96","#ab63fa","#FFA15A","#19d3f3","#FF6692","#B6E880","#FF97FF","#FECB52"],"font":{"color":"#2a3f5f"},"geo":{"bgcolor":"white","lakecolor":"white","landcolor":"white","showlakes":true,"showland":true,"subunitcolor":"#C8D4E3"},"hoverlabel":{"align":"left"},"hovermode":"closest","mapbox":{"style":"light"},"paper_bgcolor":"white","plot_bgcolor":"white","polar":{"angularaxis":{"gridcolor":"#EBF0F8","linecolor":"#EBF0F8","ticks":""},"bgcolor":"white","radialaxis":{"gridcolor":"#EBF0F8","linecolor":"#EBF0F8","ticks":""}},"scene":{"xaxis":{"backgroundcolor":"white","gridcolor":"#DFE8F3","gridwidth":2,"linecolor":"#EBF0F8","showbackground":true,"ticks":"","zerolinecolor":"#EBF0F8"},"yaxis":{"backgroundcolor":"white","gridcolor":"#DFE8F3","gridwidth":2,"linecolor":"#EBF0F8","showbackground":true,"ticks":"","zerolinecolor":"#EBF0F8"},"zaxis":{"backgroundcolor":"white","gridcolor":"#DFE8F3","gridwidth":2,"linecolor":"#EBF0F8","showbackground":true,"ticks":"","zerolinecolor":"#EBF0F8"}},"shapedefaults":{"line":{"color":"#2a3f5f"}},"ternary":{"aaxis":{"gridcolor":"#DFE8F3","linecolor":"#A2B1C6","ticks":""},"baxis":{"gridcolor":"#DFE8F3","linecolor":"#A2B1C6","ticks":""},"bgcolor":"white","caxis":{"gridcolor":"#DFE8F3","linecolor":"#A2B1C6","ticks":""}},"title":{"x":0.05},"xaxis":{"automargin":true,"gridcolor":"#EBF0F8","linecolor":"#EBF0F8","ticks":"","title":{"standoff":15},"zerolinecolor":"#EBF0F8","zerolinewidth":2},"yaxis":{"automargin":true,"gridcolor":"#EBF0F8","linecolor":"#EBF0F8","ticks":"","title":{"standoff":15},"zerolinecolor":"#EBF0F8","zerolinewidth":2}}},"yaxis":{"title":{"text":"SOS"},"range":[1474.7518733697802,1518.8872983970048]},"legend":{"title":{"text":"Teams"},"yanchor":"top","y":0.99,"xanchor":"left","x":1.01,"itemclick":"toggleothers","itemdoubleclick":"toggle"},"xaxis":{"title":{"text":"Week"},"type":"category"},"margin":{"r":150,"t":100},"hovermode":"x unified","updatemenus":[{"buttons":[{"args":[{"visible":[true,true,true,true,true,true,true,true,true,true,true,true]}],"label":"All Teams","method":"update"},{"args":[{"visible":[true,true,true,true,true,true,false,false,false,false,false,false]}],"label":"Top 6 Teams","method":"update"},{"args":[{"visible":[false,false,false,false,false,false,true,true,true,true,true,true]}],"label":"Bottom 6 Teams","method":"update"},{"args":[{"visible":[true,false,false,false,false,false,false,false,false,false,false,false]}],"label":"Walt Whitman","method":"update"},{"args":[{"visible":[false,true,false,false,false,false,false,false,false,false,false,false]}],"label":"Walter Johnson","method":"update"},{"args":[{"visible":[false,false,true,false,false,false,false,false,false,false,false,false]}],"label":"Winston Churchill","method":"update"},{"args":[{"visible":[false,false,false,true,false,false,false,false,false,false,false,false]}],"label":"Sherwood","method":"update"},{"args":[{"visible":[false,false,false,false,true,false,false,false,false,false,false,false]}],"label":"Wootton","method":"update"},{"args":[{"visible":[false,false,false,false,false,true,false,false,false,false,false,false]}],"label":"Bethesda-Chevy Chase","method":"update"},{"args":[{"visible":[false,false,false,false,false,false,true,false,false,false,false,false]}],"label":"Silver Spring","method":"update"},{"args":[{"visible":[false,false,false,false,false,false,false,true,false,false,false,false]}],"label":"Rockville-Magruder","method":"update"},{"args":[{"visible":[false,false,false,false,false,false,false,false,true,false,false,false]}],"label":"DC Stars Varsity","method":"update"},{"args":[{"visible":[false,false,false,false,false,false,false,false,false,true,false,false]}],"label":"Upper Montgomery","method":"update"},{"args":[{"visible":[false,false,false,false,false,false,false,false,false,false,true,false]}],"label":"NWQO","method":"update"},{"args":[{"visible":[false,false,false,false,false,false,false,false,false,false,false,true]}],"label":"Richard Montgomery","method":"update"}],"direction":"down","type":"dropdown","x":0.0,"xanchor":"left","y":1.15,"yanchor":"top"}],"width":1100,"height":733},                        {"toImageButtonOptions": {"format": "png", "filename": "mhc_plot", "height": 800, "width": 1200, "scale": 2}, "displaylogo": false, "responsive": true}                    )                };            </script>        </div>
+            
+        </div>
+    </div>
+    
+
+    <div class="section">
+        <details>
+            <summary>Bradley-Terry Elo Details</summary>
+            <div class="matrix-container">
+                
+                <ul>
+                    <li><strong>Initial Rating:</strong> 1500.0</li>
+                    <li><strong>K-Factor:</strong> 32.0</li>
+                    <li><strong>Margin of Victory Multiplier (MoVM):</strong> Disabled</li>
+                    
+                </ul>
+                
+            </div>
+        </details>
+    </div>
+
+    <div class="method-description section">
+        
+        <h2>The Bradley-Terry / Elo Method</h2>
+        <p>This method combines the Elo rating system with the Bradley-Terry model for estimating win probabilities based on paired comparisons.</p>
+        <p>The expected probability of team A beating team B is calculated using the logistic curve:</p>
+        <p style="text-align: center;">
+            $$ P(A > B) = \frac{1}{1 + 10^{(R_B - R_A) / 400}} $$
+        </p>
+        <p>After each game, ratings are updated based on the actual outcome (\( S_A = 1 \) for a win, \( 0.5 \) for a tie, \( 0 \) for a loss) compared to the expected outcome, scaled by a K-factor (\( K \)):</p>
+        <p style="text-align: center;">
+            $$ R_A' = R_A + K \times (S_A - P(A > B)) $$
+        </p>
+        
+        <p>Strength of Schedule (SOS) represents the average pre-game rating of a team's opponents across the season.</p>
+        
+    </div>
+
+</div>
+
+<script>
+    // Embed the python dictionary as a JSON string
+    const weeklyData = {"2025-W42": [{"ga": 3, "gd": 1, "gf": 4, "l": 0, "last_game": "vs NWQO W 4-3", "rank": 1, "rank_change": 0, "rating": 1516.0, "sos": 1500.0, "t": 0, "team": "Rockville-Magruder", "w": 1, "win_pct": 1.0}, {"ga": 3, "gd": 1, "gf": 4, "l": 0, "last_game": "@ Chur W 4-3", "rank": 2, "rank_change": 0, "rating": 1516.0, "sos": 1500.0, "t": 0, "team": "Sherwood", "w": 1, "win_pct": 1.0}, {"ga": 1, "gd": 4, "gf": 5, "l": 0, "last_game": "vs RM W 5-1", "rank": 3, "rank_change": 0, "rating": 1516.0, "sos": 1500.0, "t": 0, "team": "Silver Spring", "w": 1, "win_pct": 1.0}, {"ga": 0, "gd": 8, "gf": 8, "l": 0, "last_game": "@ DC W 8-0", "rank": 4, "rank_change": 0, "rating": 1516.0, "sos": 1500.0, "t": 0, "team": "Upper Montgomery", "w": 1, "win_pct": 1.0}, {"ga": 1, "gd": 4, "gf": 5, "l": 0, "last_game": "vs BCC W 5-1", "rank": 5, "rank_change": 0, "rating": 1516.0, "sos": 1500.0, "t": 0, "team": "Walter Johnson", "w": 1, "win_pct": 1.0}, {"ga": 3, "gd": 2, "gf": 5, "l": 0, "last_game": "@ Whit W 5-3", "rank": 6, "rank_change": 0, "rating": 1516.0, "sos": 1500.0, "t": 0, "team": "Wootton", "w": 1, "win_pct": 1.0}, {"ga": 5, "gd": -4, "gf": 1, "l": 1, "last_game": "@ WJ L 1-5", "rank": 7, "rank_change": 0, "rating": 1484.0, "sos": 1500.0, "t": 0, "team": "Bethesda-Chevy Chase", "w": 0, "win_pct": 0.0}, {"ga": 8, "gd": -8, "gf": 0, "l": 1, "last_game": "vs UML L 0-8", "rank": 8, "rank_change": 0, "rating": 1484.0, "sos": 1500.0, "t": 0, "team": "DC Stars Varsity", "w": 0, "win_pct": 0.0}, {"ga": 4, "gd": -1, "gf": 3, "l": 1, "last_game": "@ RAM L 3-4", "rank": 9, "rank_change": 0, "rating": 1484.0, "sos": 1500.0, "t": 0, "team": "NWQO", "w": 0, "win_pct": 0.0}, {"ga": 5, "gd": -4, "gf": 1, "l": 1, "last_game": "@ SS L 1-5", "rank": 10, "rank_change": 0, "rating": 1484.0, "sos": 1500.0, "t": 0, "team": "Richard Montgomery", "w": 0, "win_pct": 0.0}, {"ga": 5, "gd": -2, "gf": 3, "l": 1, "last_game": "vs Woot L 3-5", "rank": 11, "rank_change": 0, "rating": 1484.0, "sos": 1500.0, "t": 0, "team": "Walt Whitman", "w": 0, "win_pct": 0.0}, {"ga": 4, "gd": -1, "gf": 3, "l": 1, "last_game": "vs Shr L 3-4", "rank": 12, "rank_change": 0, "rating": 1484.0, "sos": 1500.0, "t": 0, "team": "Winston Churchill", "w": 0, "win_pct": 0.0}], "2025-W43": [{"ga": 8, "gd": 5, "gf": 13, "l": 0, "last_game": "vs UML W 8-7", "rank": 1, "rank_change": 2, "rating": 1532.0, "sos": 1508.0, "t": 0, "team": "Silver Spring", "w": 2, "win_pct": 1.0}, {"ga": 6, "gd": 5, "gf": 11, "l": 0, "last_game": "vs WJ W 6-3", "rank": 2, "rank_change": 4, "rating": 1532.0, "sos": 1508.0, "t": 0, "team": "Wootton", "w": 2, "win_pct": 1.0}, {"ga": 5, "gd": -1, "gf": 4, "l": 1, "last_game": "vs RAM W 3-0", "rank": 3, "rank_change": 7, "rating": 1501.4695015289756, "sos": 1508.0, "t": 0, "team": "Richard Montgomery", "w": 1, "win_pct": 0.5}, {"ga": 6, "gd": 0, "gf": 6, "l": 1, "last_game": "@ Shr W 3-1", "rank": 4, "rank_change": 7, "rating": 1501.4695015289756, "sos": 1508.0, "t": 0, "team": "Walt Whitman", "w": 1, "win_pct": 0.5}, {"ga": 16, "gd": -6, "gf": 10, "l": 1, "last_game": "vs NWQO W 10-8", "rank": 5, "rank_change": 3, "rating": 1500.0, "sos": 1492.0, "t": 0, "team": "DC Stars Varsity", "w": 1, "win_pct": 0.5}, {"ga": 8, "gd": 7, "gf": 15, "l": 1, "last_game": "@ SS L 7-8", "rank": 6, "rank_change": -2, "rating": 1500.0, "sos": 1508.0, "t": 0, "team": "Upper Montgomery", "w": 1, "win_pct": 0.5}, {"ga": 7, "gd": 1, "gf": 8, "l": 1, "last_game": "@ Woot L 3-6", "rank": 7, "rank_change": -2, "rating": 1500.0, "sos": 1508.0, "t": 0, "team": "Walter Johnson", "w": 1, "win_pct": 0.5}, {"ga": 5, "gd": 1, "gf": 6, "l": 1, "last_game": "@ BCC W 3-1", "rank": 8, "rank_change": 4, "rating": 1500.0, "sos": 1492.0, "t": 0, "team": "Winston Churchill", "w": 1, "win_pct": 0.5}, {"ga": 6, "gd": -2, "gf": 4, "l": 1, "last_game": "@ RM L 0-3", "rank": 9, "rank_change": -8, "rating": 1498.5304984710244, "sos": 1492.0, "t": 0, "team": "Rockville-Magruder", "w": 1, "win_pct": 0.5}, {"ga": 6, "gd": -1, "gf": 5, "l": 1, "last_game": "vs Whit L 1-3", "rank": 10, "rank_change": -8, "rating": 1498.5304984710244, "sos": 1492.0, "t": 0, "team": "Sherwood", "w": 1, "win_pct": 0.5}, {"ga": 8, "gd": -6, "gf": 2, "l": 2, "last_game": "vs Chur L 1-3", "rank": 11, "rank_change": -4, "rating": 1468.0, "sos": 1492.0, "t": 0, "team": "Bethesda-Chevy Chase", "w": 0, "win_pct": 0.0}, {"ga": 14, "gd": -3, "gf": 11, "l": 2, "last_game": "@ DC L 8-10", "rank": 12, "rank_change": -3, "rating": 1468.0, "sos": 1492.0, "t": 0, "team": "NWQO", "w": 0, "win_pct": 0.0}], "2025-W44": [{"ga": 14, "gd": 5, "gf": 19, "l": 0, "last_game": "@ RAM T 6-6", "rank": 1, "rank_change": 0, "rating": 1530.4634227228255, "sos": 1504.8434994903416, "t": 1, "team": "Silver Spring", "w": 2, "win_pct": 0.8333333333333334}, {"ga": 6, "gd": 7, "gf": 13, "l": 1, "last_game": "@ Woot W 7-1", "rank": 2, "rank_change": 6, "rating": 1517.4695015289756, "sos": 1505.3333333333333, "t": 0, "team": "Winston Churchill", "w": 2, "win_pct": 0.6666666666666666}, {"ga": 8, "gd": 1, "gf": 9, "l": 1, "last_game": "vs BCC W 3-2", "rank": 3, "rank_change": 1, "rating": 1515.932924251801, "sos": 1494.6666666666667, "t": 0, "team": "Walt Whitman", "w": 2, "win_pct": 0.6666666666666666}, {"ga": 8, "gd": 2, "gf": 10, "l": 1, "last_game": "@ WJ W 5-2", "rank": 4, "rank_change": 6, "rating": 1514.5981711137829, "sos": 1494.6666666666667, "t": 0, "team": "Sherwood", "w": 2, "win_pct": 0.6666666666666666}, {"ga": 13, "gd": -1, "gf": 12, "l": 1, "last_game": "vs Chur L 1-7", "rank": 5, "rank_change": -3, "rating": 1514.5304984710244, "sos": 1505.3333333333333, "t": 0, "team": "Wootton", "w": 2, "win_pct": 0.6666666666666666}, {"ga": 5, "gd": -1, "gf": 4, "l": 1, "last_game": "vs RAM W 3-0", "rank": 6, "rank_change": -3, "rating": 1501.4695015289756, "sos": 1508.0, "t": 0, "team": "Richard Montgomery", "w": 1, "win_pct": 0.5}, {"ga": 12, "gd": -2, "gf": 10, "l": 1, "last_game": "vs SS T 6-6", "rank": 7, "rank_change": 2, "rating": 1500.067075748199, "sos": 1505.3333333333333, "t": 1, "team": "Rockville-Magruder", "w": 1, "win_pct": 0.5}, {"ga": 16, "gd": -6, "gf": 10, "l": 1, "last_game": "vs NWQO W 10-8", "rank": 8, "rank_change": -3, "rating": 1500.0, "sos": 1492.0, "t": 0, "team": "DC Stars Varsity", "w": 1, "win_pct": 0.5}, {"ga": 17, "gd": 3, "gf": 20, "l": 2, "last_game": "@ UML W 9-3", "rank": 9, "rank_change": 3, "rating": 1485.4695015289756, "sos": 1494.6666666666667, "t": 0, "team": "NWQO", "w": 1, "win_pct": 0.3333333333333333}, {"ga": 12, "gd": -2, "gf": 10, "l": 2, "last_game": "vs Shr L 2-5", "rank": 10, "rank_change": -3, "rating": 1483.9323273572415, "sos": 1504.8434994903416, "t": 0, "team": "Walter Johnson", "w": 1, "win_pct": 0.3333333333333333}, {"ga": 17, "gd": 1, "gf": 18, "l": 2, "last_game": "vs NWQO L 3-9", "rank": 11, "rank_change": -5, "rating": 1482.5304984710244, "sos": 1494.6666666666667, "t": 0, "team": "Upper Montgomery", "w": 1, "win_pct": 0.3333333333333333}, {"ga": 11, "gd": -7, "gf": 4, "l": 3, "last_game": "@ Whit L 2-3", "rank": 12, "rank_change": -1, "rating": 1453.5365772771745, "sos": 1495.1565005096584, "t": 0, "team": "Bethesda-Chevy Chase", "w": 0, "win_pct": 0.0}], "2025-W45": [{"ga": 6, "gd": 9, "gf": 15, "l": 1, "last_game": "@ WJ W 2-0", "rank": 1, "rank_change": 1, "rating": 1531.9298366119353, "sos": 1499.9830818393104, "t": 0, "team": "Winston Churchill", "w": 3, "win_pct": 0.75}, {"ga": 14, "gd": 2, "gf": 16, "l": 1, "last_game": "vs Shr W 4-1", "rank": 2, "rank_change": 3, "rating": 1530.5336149113534, "sos": 1507.6495427784457, "t": 0, "team": "Wootton", "w": 3, "win_pct": 0.75}, {"ga": 9, "gd": 3, "gf": 12, "l": 1, "last_game": "@ BCC W 3-1", "rank": 3, "rank_change": 0, "rating": 1529.0899653887, "sos": 1484.3841443192937, "t": 0, "team": "Walt Whitman", "w": 3, "win_pct": 0.75}, {"ga": 18, "gd": -4, "gf": 14, "l": 1, "last_game": "vs SS W 4-2", "rank": 4, "rank_change": 4, "rating": 1517.3993083742716, "sos": 1504.8211409076084, "t": 0, "team": "DC Stars Varsity", "w": 2, "win_pct": 0.6666666666666666}, {"ga": 7, "gd": 6, "gf": 13, "l": 1, "last_game": "@ NWQO W 9-2", "rank": 5, "rank_change": 1, "rating": 1516.7331947354535, "sos": 1500.4898338429919, "t": 0, "team": "Richard Montgomery", "w": 2, "win_pct": 0.6666666666666666}, {"ga": 15, "gd": 1, "gf": 16, "l": 1, "last_game": "@ UML W 6-3", "rank": 6, "rank_change": 1, "rating": 1515.2601716419092, "sos": 1499.6326246177562, "t": 1, "team": "Rockville-Magruder", "w": 2, "win_pct": 0.625}, {"ga": 18, "gd": 3, "gf": 21, "l": 1, "last_game": "@ DC L 2-4", "rank": 7, "rank_change": -6, "rating": 1513.0641143485539, "sos": 1503.6326246177562, "t": 1, "team": "Silver Spring", "w": 2, "win_pct": 0.625}, {"ga": 12, "gd": -1, "gf": 11, "l": 2, "last_game": "@ Woot L 1-4", "rank": 8, "rank_change": -4, "rating": 1498.595054673454, "sos": 1499.6326246177562, "t": 0, "team": "Sherwood", "w": 2, "win_pct": 0.5}, {"ga": 26, "gd": -4, "gf": 22, "l": 3, "last_game": "vs RM L 2-9", "rank": 9, "rank_change": 0, "rating": 1470.2058083224977, "sos": 1496.3673753822438, "t": 0, "team": "NWQO", "w": 1, "win_pct": 0.25}, {"ga": 14, "gd": -4, "gf": 10, "l": 3, "last_game": "vs Chur L 0-2", "rank": 10, "rank_change": 0, "rating": 1469.4719922742818, "sos": 1508.0, "t": 0, "team": "Walter Johnson", "w": 1, "win_pct": 0.25}, {"ga": 23, "gd": -2, "gf": 21, "l": 3, "last_game": "vs RAM L 3-6", "rank": 11, "rank_change": 0, "rating": 1467.3374025773142, "sos": 1496.0167689370496, "t": 0, "team": "Upper Montgomery", "w": 1, "win_pct": 0.25}, {"ga": 14, "gd": -9, "gf": 5, "l": 4, "last_game": "vs Whit L 1-3", "rank": 12, "rank_change": 0, "rating": 1440.3795361402756, "sos": 1500.350606445194, "t": 0, "team": "Bethesda-Chevy Chase", "w": 0, "win_pct": 0.0}], "2025-W46": [{"ga": 7, "gd": 13, "gf": 20, "l": 1, "last_game": "vs Whit W 5-1", "rank": 1, "rank_change": 0, "rating": 1547.7990586215037, "sos": 1505.8044585491884, "t": 0, "team": "Winston Churchill", "w": 4, "win_pct": 0.8}, {"ga": 14, "gd": 8, "gf": 22, "l": 1, "last_game": "@ BCC W 6-0", "rank": 2, "rank_change": 0, "rating": 1542.4726050671866, "sos": 1494.1955414508116, "t": 0, "team": "Wootton", "w": 4, "win_pct": 0.8}, {"ga": 19, "gd": -3, "gf": 16, "l": 1, "last_game": "@ RAM W 2-1", "rank": 3, "rank_change": 1, "rating": 1533.3007987319932, "sos": 1507.4308985911837, "t": 0, "team": "DC Stars Varsity", "w": 3, "win_pct": 0.75}, {"ga": 11, "gd": 11, "gf": 22, "l": 1, "last_game": "@ UML W 9-4", "rank": 4, "rank_change": 1, "rating": 1530.4736381242521, "sos": 1492.2017260265725, "t": 0, "team": "Richard Montgomery", "w": 3, "win_pct": 0.75}, {"ga": 20, "gd": 6, "gf": 26, "l": 1, "last_game": "@ NWQO W 5-2", "rank": 5, "rank_change": 2, "rating": 1527.1003669336985, "sos": 1496.9472613587045, "t": 1, "team": "Silver Spring", "w": 3, "win_pct": 0.7}, {"ga": 14, "gd": -1, "gf": 13, "l": 2, "last_game": "@ Chur L 1-5", "rank": 6, "rank_change": -3, "rating": 1513.2207433791316, "sos": 1493.8932827778222, "t": 0, "team": "Walt Whitman", "w": 3, "win_pct": 0.6}, {"ga": 17, "gd": 0, "gf": 17, "l": 2, "last_game": "vs DC L 1-2", "rank": 7, "rank_change": -1, "rating": 1499.3586812841877, "sos": 1503.1859613690592, "t": 1, "team": "Rockville-Magruder", "w": 2, "win_pct": 0.5}, {"ga": 12, "gd": -1, "gf": 11, "l": 2, "last_game": "@ Woot L 1-4", "rank": 8, "rank_change": 0, "rating": 1498.595054673454, "sos": 1499.6326246177562, "t": 0, "team": "Sherwood", "w": 2, "win_pct": 0.5}, {"ga": 14, "gd": -4, "gf": 10, "l": 3, "last_game": "vs Chur L 0-2", "rank": 9, "rank_change": 1, "rating": 1469.4719922742818, "sos": 1508.0, "t": 0, "team": "Walter Johnson", "w": 1, "win_pct": 0.25}, {"ga": 31, "gd": -7, "gf": 24, "l": 4, "last_game": "vs SS L 2-5", "rank": 10, "rank_change": -1, "rating": 1456.169555737353, "sos": 1499.7067231755059, "t": 0, "team": "NWQO", "w": 1, "win_pct": 0.2}, {"ga": 32, "gd": -7, "gf": 25, "l": 4, "last_game": "vs RM L 4-9", "rank": 11, "rank_change": 0, "rating": 1453.5969591885155, "sos": 1500.1600540967304, "t": 0, "team": "Upper Montgomery", "w": 1, "win_pct": 0.2}, {"ga": 20, "gd": -15, "gf": 5, "l": 5, "last_game": "vs Woot L 0-6", "rank": 12, "rank_change": 0, "rating": 1428.4405459844425, "sos": 1506.3872081384259, "t": 0, "team": "Bethesda-Chevy Chase", "w": 0, "win_pct": 0.0}], "2025-W47": [{"ga": 8, "gd": 16, "gf": 24, "l": 1, "last_game": "vs Woot W 4-1", "rank": 1, "rank_change": 0, "rating": 1563.5537855858502, "sos": 1511.9158163021882, "t": 0, "team": "Winston Churchill", "w": 5, "win_pct": 0.8333333333333334}, {"ga": 16, "gd": 17, "gf": 33, "l": 1, "last_game": "vs UML W 7-4", "rank": 2, "rank_change": 2, "rating": 1558.420166757191, "sos": 1492.6174436711333, "t": 0, "team": "Richard Montgomery", "w": 5, "win_pct": 0.8333333333333334}, {"ga": 26, "gd": -5, "gf": 21, "l": 2, "last_game": "@ NWQO W 4-3", "rank": 3, "rank_change": 0, "rating": 1530.3899183922774, "sos": 1502.7277980377232, "t": 0, "team": "DC Stars Varsity", "w": 4, "win_pct": 0.6666666666666666}, {"ga": 18, "gd": 5, "gf": 23, "l": 2, "last_game": "@ Chur L 1-4", "rank": 4, "rank_change": -2, "rating": 1526.7178781028401, "sos": 1503.1294609792603, "t": 0, "team": "Wootton", "w": 4, "win_pct": 0.6666666666666666}, {"ga": 21, "gd": 6, "gf": 27, "l": 1, "last_game": "vs RAM T 1-1", "rank": 5, "rank_change": 0, "rating": 1525.8255232193571, "sos": 1497.3491646796183, "t": 2, "team": "Silver Spring", "w": 3, "win_pct": 0.6666666666666666}, {"ga": 12, "gd": 9, "gf": 21, "l": 2, "last_game": "vs BCC W 10-0", "rank": 6, "rank_change": 2, "rating": 1511.4075235875152, "sos": 1485.3942088910935, "t": 0, "team": "Sherwood", "w": 3, "win_pct": 0.6}, {"ga": 18, "gd": 0, "gf": 18, "l": 2, "last_game": "@ SS T 1-1", "rank": 7, "rank_change": 0, "rating": 1500.633524998529, "sos": 1507.1716956298324, "t": 2, "team": "Rockville-Magruder", "w": 2, "win_pct": 0.5}, {"ga": 19, "gd": -2, "gf": 17, "l": 3, "last_game": "vs WJ L 4-5", "rank": 8, "rank_change": -2, "rating": 1495.2166199511773, "sos": 1489.8230676938986, "t": 0, "team": "Walt Whitman", "w": 3, "win_pct": 0.5}, {"ga": 18, "gd": -3, "gf": 15, "l": 3, "last_game": "@ Whit W 5-4", "rank": 9, "rank_change": 0, "rating": 1487.476115702236, "sos": 1509.0441486758264, "t": 0, "team": "Walter Johnson", "w": 2, "win_pct": 0.4}, {"ga": 35, "gd": -8, "gf": 27, "l": 5, "last_game": "vs DC L 3-4", "rank": 10, "rank_change": 0, "rating": 1442.9502433931814, "sos": 1502.617370320939, "t": 0, "team": "NWQO", "w": 1, "win_pct": 0.16666666666666666}, {"ga": 39, "gd": -10, "gf": 29, "l": 5, "last_game": "@ RM L 4-7", "rank": 11, "rank_change": 0, "rating": 1441.780623239464, "sos": 1507.9006835486318, "t": 0, "team": "Upper Montgomery", "w": 1, "win_pct": 0.16666666666666666}, {"ga": 30, "gd": -25, "gf": 5, "l": 6, "last_game": "@ Shr L 0-10", "rank": 12, "rank_change": 0, "rating": 1415.628077070381, "sos": 1505.0885158942638, "t": 0, "team": "Bethesda-Chevy Chase", "w": 0, "win_pct": 0.0}], "2025-W49": [{"ga": 9, "gd": 25, "gf": 34, "l": 1, "last_game": "vs BCC W 10-1", "rank": 1, "rank_change": 0, "rating": 1573.125377562905, "sos": 1498.1604249833586, "t": 0, "team": "Winston Churchill", "w": 6, "win_pct": 0.8571428571428571}, {"ga": 26, "gd": -4, "gf": 22, "l": 2, "last_game": "vs Shr W 1-0", "rank": 2, "rank_change": 1, "rating": 1545.5166155877066, "sos": 1503.9677588305508, "t": 0, "team": "DC Stars Varsity", "w": 5, "win_pct": 0.7142857142857143}, {"ga": 21, "gd": 7, "gf": 28, "l": 2, "last_game": "vs RM W 5-3", "rank": 3, "rank_change": 1, "rating": 1544.173784099869, "sos": 1511.0281332332504, "t": 0, "team": "Wootton", "w": 5, "win_pct": 0.7142857142857143}, {"ga": 21, "gd": 15, "gf": 36, "l": 2, "last_game": "@ Woot L 3-5", "rank": 4, "rank_change": -2, "rating": 1540.9642607601622, "sos": 1497.4889343042341, "t": 0, "team": "Richard Montgomery", "w": 5, "win_pct": 0.7142857142857143}, {"ga": 21, "gd": 2, "gf": 23, "l": 3, "last_game": "@ SS W 6-2", "rank": 5, "rank_change": 3, "rating": 1512.6225764649544, "sos": 1494.966275626107, "t": 0, "team": "Walt Whitman", "w": 4, "win_pct": 0.5714285714285714}, {"ga": 27, "gd": 2, "gf": 29, "l": 2, "last_game": "vs Whit L 2-6", "rank": 6, "rank_change": -1, "rating": 1508.41956670558, "sos": 1497.0445154326983, "t": 2, "team": "Silver Spring", "w": 3, "win_pct": 0.5714285714285714}, {"ga": 19, "gd": -1, "gf": 18, "l": 3, "last_game": "@ RAM W 3-1", "rank": 7, "rank_change": 2, "rating": 1504.0817472994922, "sos": 1507.6423780629436, "t": 0, "team": "Walter Johnson", "w": 3, "win_pct": 0.5}, {"ga": 13, "gd": 8, "gf": 21, "l": 3, "last_game": "@ DC L 0-1", "rank": 8, "rank_change": -2, "rating": 1496.280826392086, "sos": 1492.8934938079574, "t": 0, "team": "Sherwood", "w": 3, "win_pct": 0.5}, {"ga": 21, "gd": -2, "gf": 19, "l": 3, "last_game": "vs WJ L 1-3", "rank": 9, "rank_change": -2, "rating": 1484.0278934012729, "sos": 1504.3580413544616, "t": 2, "team": "Rockville-Magruder", "w": 2, "win_pct": 0.42857142857142855}, {"ga": 41, "gd": -6, "gf": 35, "l": 5, "last_game": "@ NWQO W 6-2", "rank": 10, "rank_change": 1, "rating": 1457.8344860345985, "sos": 1498.6220492407103, "t": 0, "team": "Upper Montgomery", "w": 2, "win_pct": 0.2857142857142857}, {"ga": 41, "gd": -12, "gf": 29, "l": 6, "last_game": "vs UML L 2-6", "rank": 11, "rank_change": -1, "rating": 1426.8963805980468, "sos": 1493.926406452157, "t": 0, "team": "NWQO", "w": 1, "win_pct": 0.14285714285714285}, {"ga": 40, "gd": -34, "gf": 6, "l": 7, "last_game": "@ Chur L 1-10", "rank": 12, "rank_change": 0, "rating": 1406.0564850933263, "sos": 1513.440697278776, "t": 0, "team": "Bethesda-Chevy Chase", "w": 0, "win_pct": 0.0}], "2025-W50": [{"ga": 12, "gd": 32, "gf": 44, "l": 1, "last_game": "@ Shr W 10-3", "rank": 1, "rank_change": 0, "rating": 1585.6431531891376, "sos": 1497.9254751594494, "t": 0, "team": "Winston Churchill", "w": 7, "win_pct": 0.875}, {"ga": 22, "gd": 11, "gf": 33, "l": 2, "last_game": "vs Whit W 5-1", "rank": 2, "rank_change": 1, "rating": 1558.724778305566, "sos": 1511.2274386372133, "t": 0, "team": "Wootton", "w": 6, "win_pct": 0.75}, {"ga": 21, "gd": 24, "gf": 45, "l": 2, "last_game": "vs BCC W 9-0", "rank": 3, "rank_change": 1, "rating": 1551.0460189188955, "sos": 1486.0598781528706, "t": 0, "team": "Richard Montgomery", "w": 6, "win_pct": 0.75}, {"ga": 32, "gd": -10, "gf": 22, "l": 3, "last_game": "@ WJ L 0-6", "rank": 4, "rank_change": -2, "rating": 1527.6174645726448, "sos": 1503.9820073891683, "t": 0, "team": "DC Stars Varsity", "w": 5, "win_pct": 0.625}, {"ga": 31, "gd": 9, "gf": 40, "l": 2, "last_game": "@ UML W 11-4", "rank": 5, "rank_change": 1, "rating": 1522.1063597726577, "sos": 1492.1432617579358, "t": 2, "team": "Silver Spring", "w": 4, "win_pct": 0.625}, {"ga": 19, "gd": 5, "gf": 24, "l": 3, "last_game": "vs DC W 6-0", "rank": 6, "rank_change": 1, "rating": 1521.980898314554, "sos": 1513.052983423624, "t": 0, "team": "Walter Johnson", "w": 4, "win_pct": 0.5714285714285714}, {"ga": 26, "gd": -2, "gf": 24, "l": 4, "last_game": "@ Woot L 1-5", "rank": 7, "rank_change": -2, "rating": 1498.0715822592574, "sos": 1501.1172141853272, "t": 0, "team": "Walt Whitman", "w": 4, "win_pct": 0.5}, {"ga": 23, "gd": 4, "gf": 27, "l": 3, "last_game": "@ NWQO W 8-2", "rank": 8, "rank_change": 1, "rating": 1497.4203501974548, "sos": 1494.6753337599098, "t": 2, "team": "Rockville-Magruder", "w": 3, "win_pct": 0.5}, {"ga": 23, "gd": 1, "gf": 24, "l": 4, "last_game": "vs Chur L 3-10", "rank": 9, "rank_change": -1, "rating": 1483.7630507658534, "sos": 1504.3551914872355, "t": 0, "team": "Sherwood", "w": 3, "win_pct": 0.42857142857142855}, {"ga": 52, "gd": -13, "gf": 39, "l": 6, "last_game": "vs SS L 4-11", "rank": 10, "rank_change": 0, "rating": 1444.147692967521, "sos": 1499.846738923819, "t": 0, "team": "Upper Montgomery", "w": 2, "win_pct": 0.25}, {"ga": 49, "gd": -18, "gf": 31, "l": 7, "last_game": "vs RAM L 2-8", "rank": 11, "rank_change": 0, "rating": 1413.5039238018649, "sos": 1492.6890923207964, "t": 0, "team": "NWQO", "w": 1, "win_pct": 0.125}, {"ga": 49, "gd": -43, "gf": 6, "l": 8, "last_game": "@ RM L 0-9", "rank": 12, "rank_change": 0, "rating": 1395.974726934593, "sos": 1516.8811427139492, "t": 0, "team": "Bethesda-Chevy Chase", "w": 0, "win_pct": 0.0}], "2025-W51": [{"ga": 13, "gd": 35, "gf": 48, "l": 1, "last_game": "vs SS W 4-1", "rank": 1, "rank_change": 0, "rating": 1598.749362798489, "sos": 1500.6122401164725, "t": 0, "team": "Winston Churchill", "w": 8, "win_pct": 0.8888888888888888}, {"ga": 19, "gd": 15, "gf": 34, "l": 3, "last_game": "vs Woot W 5-0", "rank": 2, "rank_change": 4, "rating": 1549.426324095412, "sos": 1504.9111176242104, "t": 0, "team": "Walter Johnson", "w": 6, "win_pct": 0.6666666666666666}, {"ga": 37, "gd": -8, "gf": 29, "l": 3, "last_game": "@ Whit W 7-5", "rank": 3, "rank_change": 1, "rating": 1542.260096895139, "sos": 1503.325293485845, "t": 0, "team": "DC Stars Varsity", "w": 6, "win_pct": 0.6666666666666666}, {"ga": 26, "gd": 22, "gf": 48, "l": 3, "last_game": "vs NWQO L 3-5", "rank": 4, "rank_change": -1, "rating": 1528.5876289375742, "sos": 1476.7580290528358, "t": 0, "team": "Richard Montgomery", "w": 6, "win_pct": 0.6666666666666666}, {"ga": 28, "gd": 5, "gf": 33, "l": 4, "last_game": "@ WJ L 0-5", "rank": 5, "rank_change": -3, "rating": 1523.0405126191104, "sos": 1510.6724145727424, "t": 0, "team": "Wootton", "w": 6, "win_pct": 0.6}, {"ga": 25, "gd": 4, "gf": 29, "l": 4, "last_game": "@ BCC W 4-2", "rank": 6, "rank_change": 3, "rating": 1514.3772615908829, "sos": 1498.3539828500898, "t": 0, "team": "Sherwood", "w": 5, "win_pct": 0.5555555555555556}, {"ga": 25, "gd": 6, "gf": 31, "l": 3, "last_game": "vs UML W 4-2", "rank": 7, "rank_change": 1, "rating": 1510.9861005682008, "sos": 1489.0611514496443, "t": 2, "team": "Rockville-Magruder", "w": 4, "win_pct": 0.5555555555555556}, {"ga": 35, "gd": 6, "gf": 41, "l": 3, "last_game": "@ Chur L 1-4", "rank": 8, "rank_change": -3, "rating": 1509.0001501633062, "sos": 1502.5321385836248, "t": 2, "team": "Silver Spring", "w": 4, "win_pct": 0.5555555555555556}, {"ga": 33, "gd": -4, "gf": 29, "l": 5, "last_game": "vs DC L 5-7", "rank": 9, "rank_change": -2, "rating": 1483.4289499367633, "sos": 1504.0616864505846, "t": 0, "team": "Walt Whitman", "w": 4, "win_pct": 0.4444444444444444}, {"ga": 56, "gd": -15, "gf": 41, "l": 7, "last_game": "@ RAM L 2-4", "rank": 10, "rank_change": 0, "rating": 1430.581942596775, "sos": 1499.5771401764453, "t": 0, "team": "Upper Montgomery", "w": 2, "win_pct": 0.2222222222222222}, {"ga": 57, "gd": -21, "gf": 36, "l": 8, "last_game": "@ RM W 5-3", "rank": 11, "rank_change": 0, "rating": 1424.8016262338774, "sos": 1501.4539655799822, "t": 0, "team": "NWQO", "w": 2, "win_pct": 0.2}, {"ga": 53, "gd": -45, "gf": 8, "l": 9, "last_game": "vs Shr L 2-4", "rank": 12, "rank_change": 0, "rating": 1384.76004356447, "sos": 1515.3568577702615, "t": 0, "team": "Bethesda-Chevy Chase", "w": 0, "win_pct": 0.0}], "2026-W01": [{"ga": 13, "gd": 39, "gf": 52, "l": 1, "last_game": "@ RM W 4-0", "rank": 1, "rank_change": 0, "rating": 1611.5615121881524, "sos": 1503.4097789985826, "t": 0, "team": "Winston Churchill", "w": 9, "win_pct": 0.9}, {"ga": 22, "gd": 21, "gf": 43, "l": 3, "last_game": "@ UML W 9-3", "rank": 2, "rank_change": 0, "rating": 1560.157257132912, "sos": 1497.4782001214667, "t": 0, "team": "Walter Johnson", "w": 7, "win_pct": 0.7}, {"ga": 30, "gd": 10, "gf": 40, "l": 4, "last_game": "vs RAM W 7-2", "rank": 3, "rank_change": 2, "rating": 1538.4856090701035, "sos": 1510.7009314814204, "t": 0, "team": "Wootton", "w": 7, "win_pct": 0.6363636363636364}, {"ga": 27, "gd": 11, "gf": 38, "l": 4, "last_game": "@ Whit W 9-2", "rank": 4, "rank_change": 2, "rating": 1528.9557967697222, "sos": 1496.861479558757, "t": 0, "team": "Sherwood", "w": 6, "win_pct": 0.6}, {"ga": 37, "gd": 8, "gf": 45, "l": 3, "last_game": "vs DC W 4-2", "rank": 5, "rank_change": 3, "rating": 1526.527165537272, "sos": 1506.5049344147762, "t": 2, "team": "Silver Spring", "w": 5, "win_pct": 0.6}, {"ga": 41, "gd": -10, "gf": 31, "l": 4, "last_game": "@ SS L 2-4", "rank": 6, "rank_change": -3, "rating": 1524.7330815211733, "sos": 1503.8927791535912, "t": 0, "team": "DC Stars Varsity", "w": 6, "win_pct": 0.6}, {"ga": 30, "gd": 18, "gf": 48, "l": 4, "last_game": "vs Chur L 0-4", "rank": 7, "rank_change": -3, "rating": 1515.775479547911, "sos": 1488.957162427401, "t": 0, "team": "Richard Montgomery", "w": 6, "win_pct": 0.6}, {"ga": 32, "gd": 1, "gf": 33, "l": 4, "last_game": "@ Woot L 2-7", "rank": 8, "rank_change": -1, "rating": 1495.5410041172076, "sos": 1492.459087566591, "t": 2, "team": "Rockville-Magruder", "w": 4, "win_pct": 0.5}, {"ga": 42, "gd": -11, "gf": 31, "l": 6, "last_game": "vs Shr L 2-9", "rank": 9, "rank_change": 0, "rating": 1468.850414757924, "sos": 1505.0932439646144, "t": 0, "team": "Walt Whitman", "w": 4, "win_pct": 0.4}, {"ga": 65, "gd": -21, "gf": 44, "l": 8, "last_game": "vs WJ L 3-9", "rank": 10, "rank_change": 0, "rating": 1419.8510095592749, "sos": 1504.5620585683419, "t": 0, "team": "Upper Montgomery", "w": 2, "win_pct": 0.2}, {"ga": 64, "gd": -25, "gf": 39, "l": 9, "last_game": "vs BCC L 3-7", "rank": 11, "rank_change": 0, "rating": 1406.9657641863175, "sos": 1490.8454272149356, "t": 0, "team": "NWQO", "w": 2, "win_pct": 0.18181818181818182}, {"ga": 56, "gd": -41, "gf": 15, "l": 9, "last_game": "@ NWQO W 7-3", "rank": 12, "rank_change": 0, "rating": 1402.5959056120298, "sos": 1506.301334616623, "t": 0, "team": "Bethesda-Chevy Chase", "w": 1, "win_pct": 0.1}], "2026-W02": [{"ga": 15, "gd": 45, "gf": 60, "l": 1, "last_game": "@ Whit W 8-2", "rank": 1, "rank_change": 0, "rating": 1621.3356877575168, "sos": 1500.268018613068, "t": 0, "team": "Winston Churchill", "w": 10, "win_pct": 0.9090909090909091}, {"ga": 23, "gd": 27, "gf": 50, "l": 3, "last_game": "@ Shr W 7-1", "rank": 2, "rank_change": 0, "rating": 1574.724227147504, "sos": 1500.339799816763, "t": 0, "team": "Walter Johnson", "w": 8, "win_pct": 0.7272727272727273}, {"ga": 32, "gd": 11, "gf": 43, "l": 4, "last_game": "@ BCC W 3-2", "rank": 3, "rank_change": 0, "rating": 1548.528375513953, "sos": 1501.6921793256379, "t": 0, "team": "Wootton", "w": 8, "win_pct": 0.6666666666666666}, {"ga": 45, "gd": -9, "gf": 36, "l": 4, "last_game": "@ UML W 5-4", "rank": 4, "rank_change": 2, "rating": 1536.0446425447562, "sos": 1496.2526182813804, "t": 0, "team": "DC Stars Varsity", "w": 7, "win_pct": 0.6363636363636364}, {"ga": 42, "gd": 8, "gf": 50, "l": 3, "last_game": "vs NWQO T 5-5", "rank": 5, "rank_change": 0, "rating": 1521.2286796260987, "sos": 1497.4559189394618, "t": 3, "team": "Silver Spring", "w": 5, "win_pct": 0.5909090909090909}, {"ga": 34, "gd": 5, "gf": 39, "l": 5, "last_game": "vs WJ L 1-7", "rank": 6, "rank_change": -2, "rating": 1514.3888267551301, "sos": 1502.6156411564077, "t": 0, "team": "Sherwood", "w": 6, "win_pct": 0.5454545454545454}, {"ga": 33, "gd": 4, "gf": 37, "l": 4, "last_game": "vs RM W 4-1", "rank": 7, "rank_change": 1, "rating": 1512.4717840328653, "sos": 1494.5787595648928, "t": 2, "team": "Rockville-Magruder", "w": 5, "win_pct": 0.5454545454545454}, {"ga": 34, "gd": 15, "gf": 49, "l": 5, "last_game": "@ RAM L 1-4", "rank": 8, "rank_change": -1, "rating": 1498.8446996322532, "sos": 1489.5556934901108, "t": 0, "team": "Richard Montgomery", "w": 6, "win_pct": 0.5454545454545454}, {"ga": 50, "gd": -17, "gf": 33, "l": 7, "last_game": "vs Chur L 2-8", "rank": 9, "rank_change": 0, "rating": 1459.0762391885596, "sos": 1514.7721774394815, "t": 0, "team": "Walt Whitman", "w": 4, "win_pct": 0.36363636363636365}, {"ga": 69, "gd": -25, "gf": 44, "l": 9, "last_game": "@ SS T 5-5", "rank": 10, "rank_change": 1, "rating": 1412.2642500974907, "sos": 1493.8189054084635, "t": 1, "team": "NWQO", "w": 2, "win_pct": 0.20833333333333334}, {"ga": 70, "gd": -22, "gf": 48, "l": 9, "last_game": "vs DC L 4-5", "rank": 11, "rank_change": -1, "rating": 1408.539448535692, "sos": 1506.3957879276902, "t": 0, "team": "Upper Montgomery", "w": 2, "win_pct": 0.18181818181818182}, {"ga": 59, "gd": -42, "gf": 17, "l": 10, "last_game": "vs Woot L 2-3", "rank": 12, "rank_change": 0, "rating": 1392.5531391681802, "sos": 1509.2271777487576, "t": 0, "team": "Bethesda-Chevy Chase", "w": 1, "win_pct": 0.09090909090909091}], "2026-W04": [{"ga": 19, "gd": 42, "gf": 61, "l": 2, "last_game": "vs WJ L 1-4", "rank": 1, "rank_change": 0, "rating": 1603.2019367901685, "sos": 1506.4727026576045, "t": 0, "team": "Winston Churchill", "w": 10, "win_pct": 0.8333333333333334}, {"ga": 24, "gd": 30, "gf": 54, "l": 3, "last_game": "@ Chur W 4-1", "rank": 2, "rank_change": 0, "rating": 1592.8579781148524, "sos": 1510.4227904784923, "t": 0, "team": "Walter Johnson", "w": 9, "win_pct": 0.75}, {"ga": 32, "gd": 11, "gf": 43, "l": 4, "last_game": "@ BCC W 3-2", "rank": 3, "rank_change": 0, "rating": 1548.528375513953, "sos": 1501.6921793256379, "t": 0, "team": "Wootton", "w": 8, "win_pct": 0.6666666666666666}, {"ga": 48, "gd": 9, "gf": 57, "l": 3, "last_game": "@ Shr W 7-6", "rank": 4, "rank_change": 1, "rating": 1536.913733447275, "sos": 1498.8669945907675, "t": 3, "team": "Silver Spring", "w": 6, "win_pct": 0.625}, {"ga": 33, "gd": 8, "gf": 41, "l": 4, "last_game": "@ DC W 4-0", "rank": 5, "rank_change": 2, "rating": 1529.555691585996, "sos": 1498.0342498132147, "t": 2, "team": "Rockville-Magruder", "w": 6, "win_pct": 0.5833333333333334}, {"ga": 49, "gd": -13, "gf": 36, "l": 5, "last_game": "vs RAM L 0-4", "rank": 6, "rank_change": -2, "rating": 1518.9607349916255, "sos": 1497.6042154273375, "t": 0, "team": "DC Stars Varsity", "w": 7, "win_pct": 0.5833333333333334}, {"ga": 41, "gd": 4, "gf": 45, "l": 6, "last_game": "vs SS L 6-7", "rank": 7, "rank_change": -1, "rating": 1498.7037729339538, "sos": 1504.1667276955486, "t": 0, "team": "Sherwood", "w": 6, "win_pct": 0.5}, {"ga": 36, "gd": 13, "gf": 49, "l": 6, "last_game": "vs Whit L 0-2", "rank": 8, "rank_change": 0, "rating": 1481.0212508517793, "sos": 1487.0157389649814, "t": 0, "team": "Richard Montgomery", "w": 6, "win_pct": 0.5}, {"ga": 50, "gd": -15, "gf": 35, "l": 7, "last_game": "@ RM W 2-0", "rank": 9, "rank_change": 0, "rating": 1476.8996879690335, "sos": 1513.4448876222125, "t": 0, "team": "Walt Whitman", "w": 5, "win_pct": 0.4166666666666667}, {"ga": 69, "gd": -25, "gf": 44, "l": 9, "last_game": "@ SS T 5-5", "rank": 10, "rank_change": 0, "rating": 1412.2642500974907, "sos": 1493.8189054084635, "t": 1, "team": "NWQO", "w": 2, "win_pct": 0.20833333333333334}, {"ga": 61, "gd": -41, "gf": 20, "l": 10, "last_game": "vs UML W 3-2", "rank": 11, "rank_change": 1, "rating": 1409.2888168188376, "sos": 1500.8365336476688, "t": 0, "team": "Bethesda-Chevy Chase", "w": 2, "win_pct": 0.16666666666666666}, {"ga": 73, "gd": -23, "gf": 50, "l": 10, "last_game": "@ BCC L 2-3", "rank": 12, "rank_change": -1, "rating": 1391.8037708850345, "sos": 1496.9089005310643, "t": 0, "team": "Upper Montgomery", "w": 2, "win_pct": 0.16666666666666666}]};
+    const finalData = [{"ga": 19, "gd": 42, "gf": 61, "l": 2, "last_game": "vs WJ L 1-4", "rank": 1, "rank_change": 0, "rating": 1603.2019367901685, "sos": 1506.4727026576045, "t": 0, "team": "Winston Churchill", "w": 10, "win_pct": 0.8333333333333334}, {"ga": 24, "gd": 30, "gf": 54, "l": 3, "last_game": "@ Chur W 4-1", "rank": 2, "rank_change": 0, "rating": 1592.8579781148524, "sos": 1510.4227904784923, "t": 0, "team": "Walter Johnson", "w": 9, "win_pct": 0.75}, {"ga": 32, "gd": 11, "gf": 43, "l": 4, "last_game": "@ BCC W 3-2", "rank": 3, "rank_change": 0, "rating": 1548.528375513953, "sos": 1501.6921793256379, "t": 0, "team": "Wootton", "w": 8, "win_pct": 0.6666666666666666}, {"ga": 48, "gd": 9, "gf": 57, "l": 3, "last_game": "@ Shr W 7-6", "rank": 4, "rank_change": 1, "rating": 1536.913733447275, "sos": 1498.8669945907675, "t": 3, "team": "Silver Spring", "w": 6, "win_pct": 0.625}, {"ga": 33, "gd": 8, "gf": 41, "l": 4, "last_game": "@ DC W 4-0", "rank": 5, "rank_change": 2, "rating": 1529.555691585996, "sos": 1498.0342498132147, "t": 2, "team": "Rockville-Magruder", "w": 6, "win_pct": 0.5833333333333334}, {"ga": 49, "gd": -13, "gf": 36, "l": 5, "last_game": "vs RAM L 0-4", "rank": 6, "rank_change": -2, "rating": 1518.9607349916255, "sos": 1497.6042154273375, "t": 0, "team": "DC Stars Varsity", "w": 7, "win_pct": 0.5833333333333334}, {"ga": 41, "gd": 4, "gf": 45, "l": 6, "last_game": "vs SS L 6-7", "rank": 7, "rank_change": -1, "rating": 1498.7037729339538, "sos": 1504.1667276955486, "t": 0, "team": "Sherwood", "w": 6, "win_pct": 0.5}, {"ga": 36, "gd": 13, "gf": 49, "l": 6, "last_game": "vs Whit L 0-2", "rank": 8, "rank_change": 0, "rating": 1481.0212508517793, "sos": 1487.0157389649814, "t": 0, "team": "Richard Montgomery", "w": 6, "win_pct": 0.5}, {"ga": 50, "gd": -15, "gf": 35, "l": 7, "last_game": "@ RM W 2-0", "rank": 9, "rank_change": 0, "rating": 1476.8996879690335, "sos": 1513.4448876222125, "t": 0, "team": "Walt Whitman", "w": 5, "win_pct": 0.4166666666666667}, {"ga": 69, "gd": -25, "gf": 44, "l": 9, "last_game": "@ SS T 5-5", "rank": 10, "rank_change": 0, "rating": 1412.2642500974907, "sos": 1493.8189054084635, "t": 1, "team": "NWQO", "w": 2, "win_pct": 0.20833333333333334}, {"ga": 61, "gd": -41, "gf": 20, "l": 10, "last_game": "vs UML W 3-2", "rank": 11, "rank_change": 1, "rating": 1409.2888168188376, "sos": 1500.8365336476688, "t": 0, "team": "Bethesda-Chevy Chase", "w": 2, "win_pct": 0.16666666666666666}, {"ga": 73, "gd": -23, "gf": 50, "l": 10, "last_game": "@ BCC L 2-3", "rank": 12, "rank_change": -1, "rating": 1391.8037708850345, "sos": 1496.9089005310643, "t": 0, "team": "Upper Montgomery", "w": 2, "win_pct": 0.16666666666666666}];
+    weeklyData["Final"] = finalData;
+    
+    // Sort weeks, and ensure "Final" is at the end
+    const weeks = ["2025-W42", "2025-W43", "2025-W44", "2025-W45", "2025-W46", "2025-W47", "2025-W49", "2025-W50", "2025-W51", "2026-W01", "2026-W02", "2026-W04"];
+    weeks.push("Final");
+
+    const weekSelector = document.getElementById('weekSelector');
+    const prevWeekBtn = document.getElementById('prevWeekBtn');
+    const nextWeekBtn = document.getElementById('nextWeekBtn');
+    const rankingsBody = document.getElementById('rankingsBody');
+
+    function displayWeek(weekKey) {
+        weekSelector.value = weekKey;
+        const data = weeklyData[weekKey];
+        
+        // Update buttons state
+        const currentIndex = weeks.indexOf(weekKey);
+        prevWeekBtn.disabled = currentIndex <= 0;
+        nextWeekBtn.disabled = currentIndex >= weeks.length - 1;
+
+        // Clear and render table
+        rankingsBody.innerHTML = "";
+        data.forEach((teamData, index) => {
+            const rank = index + 1;
+            
+            // Format rank change
+            let changeHtml = '<span style="color: var(--secondary-color);">-</span>';
+            if (teamData.rank_change > 0) {
+                changeHtml = `<span style="color: #2ca02c;">&#9650; ${teamData.rank_change}</span>`;
+            } else if (teamData.rank_change < 0) {
+                changeHtml = `<span style="color: #d62728;">&#9660; ${Math.abs(teamData.rank_change)}</span>`;
+            }
+
+            const tr = document.createElement('tr');
+            tr.innerHTML = `
+                <td>${rank}</td>
+                <td style="font-weight: bold;">${changeHtml}</td>
+                <td>${teamData.team}</td>
+                <td>${teamData.rating.toFixed(4)}</td>
+                <td>${teamData.sos.toFixed(4)}</td>
+                <td>${teamData.win_pct.toFixed(3)}</td>
+                <td>${teamData.w}</td>
+                <td>${teamData.l}</td>
+                <td>${teamData.t}</td>
+                <td>${teamData.gf}</td>
+                <td>${teamData.ga}</td>
+                <td>${teamData.gd}</td>
+                <td>${teamData.last_game}</td>
+            `;
+            rankingsBody.appendChild(tr);
+        });
+    }
+
+    function changeWeek(direction) {
+        const currentIndex = weeks.indexOf(weekSelector.value);
+        const newIndex = currentIndex + direction;
+        if (newIndex >= 0 && newIndex < weeks.length) {
+            displayWeek(weeks[newIndex]);
+        }
+    }
+
+    // Initialize with the Final Rankings
+    displayWeek("Final");
+</script>
+
+</body>
+</html>

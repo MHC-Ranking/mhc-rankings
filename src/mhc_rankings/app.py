@@ -11,8 +11,8 @@ from .io import (
 )
 from .console import print_rankings_table
 from .plotting import save_matplotlib_plot
-from .rankings_math import compute_weekly_ratings, compute_final_rankings
-from .reporting import generate_html_report
+from .rankings_math import compute_weekly_ratings, compute_final_rankings, compute_team_game_logs
+from .reporting import generate_html_report, generate_team_reports
 
 
 def main() -> None:
@@ -41,11 +41,11 @@ def main() -> None:
         action="store_true", 
         help="Skip saving the raw TSV and PNG files."
     )
-    parser.add_argument(
-        "--include-sos-plot", 
-        action="store_true", 
-        help="Include a progress plot of the Strength of Schedule in the HTML report."
-    )
+    # parser.add_argument(
+    #     "--include-sos-plot", 
+    #     action="store_true", 
+    #     help="Include a progress plot of the Strength of Schedule in the HTML report."
+    # )
     
     parser.add_argument(
         "--method",
@@ -125,9 +125,9 @@ def main() -> None:
         save_matplotlib_plot(weekly_records, teams, plot_file, f"MHC {title_method} Ratings Plot", f"{title_method} Rating", metric="rating")
         save_matplotlib_plot(weekly_records, teams, rank_plot_file, "Rankings Progress", "Rank", metric="rank")
         
-        if args.include_sos_plot:
-            sos_plot_file = output_dir / "weekly_sos_plot.png"
-            save_matplotlib_plot(weekly_records, teams, sos_plot_file, "Strength of Schedule Progress", "SOS", metric="sos")
+        # if args.include_sos_plot:
+        sos_plot_file = output_dir / "weekly_sos_plot.png"
+        save_matplotlib_plot(weekly_records, teams, sos_plot_file, "Strength of Schedule Progress", "SOS", metric="sos")
             
         if args.method == "colley":
             matrix_file = output_dir / "colley_matrix_output.tsv"
@@ -144,12 +144,27 @@ def main() -> None:
         plot_engine=args.plot_engine,
         output_path=report_file,
         df=df,
-        include_sos_plot=args.include_sos_plot,
+        include_sos_plot=True,
         method=args.method,
         use_movm=args.use_movm
     )
     
     print(f"Done! Report saved to {report_file}")
+    
+    print("Computing team game logs...")
+    team_logs = compute_team_game_logs(df, method=args.method, **engine_kwargs)
+    team_report_file = output_dir / "mhc_team_reports.html"
+    print(f"Generating Team Reports ({args.plot_engine})...")
+    generate_team_reports(
+        date_str=latest_date,
+        rankings=rankings,
+        team_logs=team_logs,
+        plot_engine=args.plot_engine,
+        output_path=str(team_report_file),
+        method=args.method,
+        use_movm=args.use_movm
+    )
+    print(f"Team Reports saved to {team_report_file}")
     
     print_rankings_table(rankings, method=args.method)
 

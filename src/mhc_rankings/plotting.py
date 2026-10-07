@@ -221,3 +221,125 @@ def get_plotly_html(weekly_records: Dict[str, List[TeamRecord]], teams: List[str
     }
     
     return fig.to_html(full_html=False, include_plotlyjs="cdn", config=config)
+
+
+def get_team_gd_plot_html(team_logs: List[Dict[str, Any]], team_name: str, plot_engine: str = "plotly") -> str:
+    """
+    Generates a bar chart of goal differentials for a single team.
+    """
+    if not team_logs:
+        return "<p>No data available.</p>"
+        
+    dates = [log["date"] for log in team_logs]
+    gds = [log["gd"] for log in team_logs]
+    opponents = [log["opponent"] for log in team_logs]
+    colors = ['#2ca02c' if gd > 0 else '#d62728' if gd < 0 else '#7f7f7f' for gd in gds]
+    
+    if plot_engine == "plotly":
+        fig = go.Figure()
+        fig.add_trace(go.Bar(
+            x=dates,
+            y=gds,
+            marker_color=colors,
+            text=gds,
+            textposition='auto',
+            hoverinfo='text',
+            hovertext=[f"vs {opp}<br>GD: {gd}" for opp, gd in zip(opponents, gds)]
+        ))
+        
+        fig.update_layout(
+            title=f"Goal Differential by Game",
+            xaxis_title="Date",
+            yaxis_title="Goal Differential",
+            template="plotly_white",
+            height=350,
+            margin=dict(l=50, r=50, t=50, b=50),
+            xaxis=dict(type='category')
+        )
+        return fig.to_html(full_html=False, include_plotlyjs=False)
+    else:
+        # Matplotlib fallback
+        fig, ax = plt.subplots(figsize=(8, 4))
+        ax.bar(dates, gds, color=colors)
+        ax.set_title(f"Goal Differential by Game")
+        ax.set_xlabel("Date")
+        ax.set_ylabel("Goal Differential")
+        ax.axhline(0, color='black', linewidth=1)
+        plt.xticks(rotation=45)
+        fig.tight_layout()
+        
+        buf = io.BytesIO()
+        fig.savefig(buf, format="png", dpi=150, bbox_inches="tight")
+        plt.close(fig)
+        buf.seek(0)
+        img_base64 = base64.b64encode(buf.read()).decode("utf-8")
+        return f'<img src="data:image/png;base64,{img_base64}" alt="Goal Differential">'
+
+def get_team_rating_sos_plot_html(team_logs: List[Dict[str, Any]], team_name: str, plot_engine: str = "plotly") -> str:
+    """
+    Generates a line graph of Rating and SOS over time for a single team.
+    """
+    if not team_logs:
+        return "<p>No data available.</p>"
+        
+    dates = [log["date"] for log in team_logs]
+    ratings = [log["rating_post"] for log in team_logs]
+    soses = [log["sos_post"] for log in team_logs]
+    
+    if plot_engine == "plotly":
+        fig = go.Figure()
+        
+        fig.add_trace(go.Scatter(
+            x=dates,
+            y=ratings,
+            mode='lines+markers',
+            name='Rating',
+            line=dict(color='#1f77b4', width=2),
+            marker=dict(symbol='circle', size=8)
+        ))
+        
+        fig.add_trace(go.Scatter(
+            x=dates,
+            y=soses,
+            mode='lines+markers',
+            name='SOS',
+            line=dict(color='#ff7f0e', width=2, dash='dash'),
+            marker=dict(symbol='square', size=8)
+        ))
+        
+        fig.update_layout(
+            title=f"Rating and SOS over Time",
+            xaxis_title="Date",
+            yaxis_title="Value",
+            template="plotly_white",
+            height=350,
+            margin=dict(l=50, r=50, t=50, b=50),
+            xaxis=dict(type='category'),
+            legend=dict(
+                orientation="h",
+                yanchor="bottom",
+                y=1.02,
+                xanchor="right",
+                x=1
+            )
+        )
+        return fig.to_html(full_html=False, include_plotlyjs=False)
+    else:
+        # Matplotlib fallback
+        fig, ax = plt.subplots(figsize=(8, 4))
+        ax.plot(dates, ratings, marker='o', label='Rating', color='#1f77b4', linewidth=2)
+        ax.plot(dates, soses, marker='s', linestyle='--', label='SOS', color='#ff7f0e', linewidth=2)
+        ax.set_title(f"Rating and SOS over Time")
+        ax.set_xlabel("Date")
+        ax.set_ylabel("Value")
+        ax.legend()
+        plt.xticks(rotation=45)
+        fig.tight_layout()
+        
+        buf = io.BytesIO()
+        fig.savefig(buf, format="png", dpi=150, bbox_inches="tight")
+        plt.close(fig)
+        buf.seek(0)
+        img_base64 = base64.b64encode(buf.read()).decode("utf-8")
+        return f'<img src="data:image/png;base64,{img_base64}" alt="Rating and SOS">'
+

@@ -5,7 +5,7 @@ from typing import Any, Dict, List, Tuple
 from jinja2 import Environment, FileSystemLoader
 
 from .models import TeamRecord
-from .plotting import get_matplotlib_base64, get_plotly_html
+from .plotting import get_matplotlib_base64, get_plotly_html, get_team_gd_plot_html, get_team_rating_sos_plot_html
 
 import pandas as pd
 
@@ -86,3 +86,60 @@ def generate_html_report(
     
     with open(output_path, "w", encoding="utf-8") as f:
         f.write(html_content)
+
+def generate_team_reports(
+    date_str: str,
+    rankings: list,
+    team_logs: dict,
+    plot_engine: str,
+    output_path: str,
+    method: str,
+    use_movm: bool = False
+) -> None:
+    """Generates the HTML team reports."""
+    env = Environment(loader=FileSystemLoader(TEMPLATE_DIR))
+    template = env.get_template("team_reports.html")
+    
+    team_names = sorted(team_logs.keys())
+    
+    teams_data = []
+    for tname in team_names:
+        record = next((r for r in rankings if r.team == tname), None)
+        logs = team_logs[tname]
+        
+        plot_html = get_team_gd_plot_html(logs, tname, plot_engine)
+        rating_sos_plot_html = get_team_rating_sos_plot_html(logs, tname, plot_engine)
+        
+        team_dict = {
+            "name": tname,
+            "rank": record.rank if record else "-",
+            "rating": record.rating if record else 0.0,
+            "w": record.wins + record.ot_wins if record else 0,
+            "l": record.losses + record.ot_losses if record else 0,
+            "t": record.t if record else 0,
+            "sos": record.sos if record else 0.0,
+            "gf": record.gf if record else 0,
+            "ga": record.ga if record else 0,
+            "logs": logs,
+            "plot_html": plot_html,
+            "rating_sos_plot_html": rating_sos_plot_html
+        }
+        teams_data.append(team_dict)
+        
+    if method == "colley":
+        title_method = "Colley Matrix" 
+    else:
+        title_method = "Bradley-Terry Elo"
+        if use_movm:
+            title_method += " (MOVM)"
+    
+    html_out = template.render(
+        date=date_str,
+        team_names=team_names,
+        teams_data=teams_data,
+        method=method,
+        title_method=title_method
+    )
+    
+    with open(output_path, 'w', encoding='utf-8') as f:
+        f.write(html_out)

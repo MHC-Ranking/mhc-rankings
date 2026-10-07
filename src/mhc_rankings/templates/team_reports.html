@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MHC Team Reports</title>
+    <!-- Plotly -->
+    <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+    <style>
+        :root {
+            --primary-color: #0f204b;
+            --secondary-color: #a3aaaf;
+            --accent-color: #d11241;
+            --bg-color: #f4f6f8;
+            --text-color: #333;
+            --white: #ffffff;
+        }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            margin: 0;
+            display: flex;
+        }
+        .sidebar {
+            width: 250px;
+            position: fixed;
+            top: 0;
+            left: 0;
+            height: 100vh;
+            overflow-y: auto;
+            background-color: var(--primary-color);
+            color: var(--white);
+            padding: 1.5rem 1rem;
+            box-sizing: border-box;
+        }
+        .sidebar h2 {
+            color: var(--white);
+            border-bottom: 2px solid var(--accent-color);
+            padding-bottom: 0.5rem;
+            margin-top: 0;
+        }
+        .sidebar a {
+            color: var(--white);
+            text-decoration: none;
+            display: block;
+            margin-bottom: 0.8rem;
+            font-size: 1.05rem;
+        }
+        .sidebar a:hover {
+            color: var(--accent-color);
+        }
+        .main-content {
+            margin-left: 250px;
+            padding: 2rem;
+            width: calc(100% - 250px);
+            box-sizing: border-box;
+        }
+        .team-section {
+            background-color: var(--white);
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            padding: 2rem;
+            margin-bottom: 3rem;
+            scroll-margin-top: 2rem;
+        }
+        .team-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 2px solid var(--secondary-color);
+            padding-bottom: 0.5rem;
+            margin-bottom: 1.5rem;
+        }
+        .team-header h2 {
+            color: var(--primary-color);
+            margin: 0;
+            font-size: 2rem;
+        }
+        .back-to-top {
+            font-size: 0.9rem;
+            color: var(--primary-color);
+            text-decoration: none;
+        }
+        .back-to-top:hover {
+            text-decoration: underline;
+        }
+        .summary-stats {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1.5rem;
+            background-color: #e9ecef;
+            padding: 1.5rem;
+            border-radius: 8px;
+            margin-bottom: 2rem;
+            border-left: 5px solid var(--accent-color);
+        }
+        .stat-box {
+            flex: 1;
+            min-width: 120px;
+            text-align: center;
+        }
+        .stat-value {
+            font-size: 1.8rem;
+            font-weight: bold;
+            color: var(--primary-color);
+        }
+        .stat-label {
+            font-size: 0.9rem;
+            color: #666;
+            text-transform: uppercase;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 1rem 0;
+            font-size: 0.95rem;
+        }
+        th, td {
+            padding: 10px 12px;
+            text-align: center;
+            border-bottom: 1px solid #ddd;
+        }
+        th {
+            background-color: var(--primary-color);
+            color: var(--white);
+            font-weight: 600;
+        }
+        td.opponent-col {
+            text-align: left;
+            font-weight: bold;
+        }
+        tbody tr:hover {
+            background-color: #f1f1f1;
+        }
+        tbody tr:nth-of-type(even) {
+            background-color: #f9f9f9;
+        }
+        .win { color: #2ca02c; font-weight: bold; }
+        .loss { color: #d62728; font-weight: bold; }
+        .tie { color: #7f7f7f; font-weight: bold; }
+        .plots-row {
+            display: flex;
+            flex-direction: column;
+            gap: 2rem;
+            margin-bottom: 2rem;
+        }
+        .plot-container {
+            width: 100%;
+            overflow-x: auto;
+        }
+        
+        /* Print Styles */
+        @media print {
+            .sidebar, .back-to-top { display: none; }
+            .main-content { margin-left: 0; width: 100%; padding: 0; }
+            .team-section { page-break-after: always; box-shadow: none; padding: 0; margin-bottom: 0; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="sidebar">
+        <h2>Teams</h2>
+        {% for team in team_names %}
+        <a href="#team-{{ team|replace(' ', '-') }}">{{ team }}</a>
+        {% endfor %}
+    </div>
+
+    <div class="main-content">
+        <h1>MHC Team Reports - {{ date }}</h1>
+        <p>Ranking Method: {{ title_method }}</p>
+
+        {% for team_data in teams_data %}
+        <div id="team-{{ team_data.name|replace(' ', '-') }}" class="team-section">
+            <div class="team-header">
+                <h2>{{ team_data.name }}</h2>
+                <a href="#" class="back-to-top">&#8593; Back to Top</a>
+            </div>
+
+            <div class="summary-stats">
+                <div class="stat-box">
+                    <div class="stat-value">{{ team_data.rank }}</div>
+                    <div class="stat-label">Final Rank</div>
+                </div>
+                <div class="stat-box">
+                    <div class="stat-value">{{ "%.1f"|format(team_data.rating) if method == 'bt-elo' else "%.4f"|format(team_data.rating) }}</div>
+                    <div class="stat-label">Final Rating</div>
+                </div>
+                <div class="stat-box">
+                    <div class="stat-value">{{ team_data.w }}-{{ team_data.l }}-{{ team_data.t }}</div>
+                    <div class="stat-label">Record</div>
+                </div>
+                <div class="stat-box">
+                    <div class="stat-value">{{ "%.1f"|format(team_data.sos) if method == 'bt-elo' else "%.4f"|format(team_data.sos) }}</div>
+                    <div class="stat-label">SOS</div>
+                </div>
+                <div class="stat-box">
+                    <div class="stat-value">{{ team_data.gf }} / {{ team_data.ga }}</div>
+                    <div class="stat-label">GF / GA</div>
+                </div>
+            </div>
+
+            <div class="plots-row">
+                <div class="plot-container">
+                    {{ team_data.plot_html | safe }}
+                </div>
+                <div class="plot-container">
+                    {{ team_data.rating_sos_plot_html | safe }}
+                </div>
+            </div>
+
+            <h3>Game Log</h3>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Date</th>
+                        <th>Opponent</th>
+                        <th>Result</th>
+                        <th>Score</th>
+                        <th>GD</th>
+                        {% if method == 'bt-elo' %}
+                        <th>Opp Rating</th>
+                        <th>Exp Win %</th>
+                        <th>Rating +/-</th>
+                        {% endif %}
+                        <th>New Rating</th>
+                        <th>New Rank</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for game in team_data.logs %}
+                    <tr>
+                        <td>{{ game.date }}</td>
+                        <td class="opponent-col">{{ "@ " if not game.is_home else "vs " }}{{ game.opponent }}</td>
+                        <td>
+                            {% if game.gd > 0 %}
+                                <span class="win">W{{ ' (OT)' if game.ot else '' }}</span>
+                            {% elif game.gd < 0 %}
+                                <span class="loss">L{{ ' (OT)' if game.ot else '' }}</span>
+                            {% else %}
+                                <span class="tie">T{{ ' (OT)' if game.ot else '' }}</span>
+                            {% endif %}
+                        </td>
+                        <td>{{ game.team_score }} - {{ game.opp_score }}</td>
+                        <td>
+                            {% if game.gd > 0 %}
+                                <span class="win">+{{ game.gd }}</span>
+                            {% elif game.gd < 0 %}
+                                <span class="loss">{{ game.gd }}</span>
+                            {% else %}
+                                <span class="tie">{{ game.gd }}</span>
+                            {% endif %}
+                        </td>
+                        
+                        {% if method == 'bt-elo' %}
+                        <td>{{ "%.1f"|format(game.opp_rating_pre) }}</td>
+                        <td>{{ "%.1f"|format(game.expected_win_prob * 100) }}%</td>
+                        <td style="font-weight:bold; color: {{ '#2ca02c' if game.rating_change > 0 else '#d62728' if game.rating_change < 0 else '#333' }};">
+                            {{ "+" if game.rating_change > 0 else ""}}{{ "%.1f"|format(game.rating_change) }}
+                        </td>
+                        {% endif %}
+                        
+                        <td>{{ "%.1f"|format(game.rating_post) if method == 'bt-elo' else "%.4f"|format(game.rating_post) }}</td>
+                        <td>{{ game.rank_post }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% endfor %}
+    </div>
+
+</body>
+</html>

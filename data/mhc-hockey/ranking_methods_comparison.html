@@ -1,0 +1,796 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MHC Rankings Comparison</title>
+    
+    <style>
+        :root {
+            --primary-color: #0f204b; /* Deep Navy */
+            --secondary-color: #a3aaaf; /* Silver/Gray */
+            --accent-color: #d11241; /* Sporty Red */
+            --bg-color: #f4f6f8;
+            --text-color: #333;
+            --white: #ffffff;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            line-height: 1.6;
+            margin: 0;
+            padding: 0;
+        }
+
+        header {
+            background-color: var(--primary-color);
+            color: var(--white);
+            padding: 2rem 0;
+            text-align: center;
+            border-bottom: 5px solid var(--accent-color);
+        }
+
+        h1 {
+            margin: 0;
+            font-size: 2.5rem;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+
+        .container {
+            max-width: 1500px;
+            margin: 2rem auto;
+            padding: 0 20px;
+        }
+
+        .section {
+            background-color: var(--white);
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            padding: 2rem;
+            margin-bottom: 2rem;
+            overflow-x: auto;
+        }
+
+        h2 {
+            color: var(--primary-color);
+            border-bottom: 2px solid var(--secondary-color);
+            padding-bottom: 0.5rem;
+            margin-top: 0;
+        }
+
+        /* Table Styles */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 1rem 0;
+            font-size: 0.95rem;
+        }
+
+        th, td {
+            padding: 12px 15px;
+            text-align: center;
+            border-bottom: 1px solid #ddd;
+        }
+
+        th {
+            background-color: var(--primary-color);
+            color: var(--white);
+            font-weight: 600;
+            position: sticky;
+            top: 0;
+        }
+
+        th.sortable {
+            cursor: pointer;
+            user-select: none;
+        }
+        
+        .diff-col {
+            white-space: nowrap;
+            min-width: 45px;
+        }
+        
+        .team-col {
+            width: 15%;
+        }
+        
+        .rank-col {
+            width: 5%;
+        }
+
+        th.sort-asc::after {
+            content: " \25B2"; /* Up Arrow */
+            font-size: 0.8em;
+        }
+
+        th.sort-desc::after {
+            content: " \25BC"; /* Down Arrow */
+            font-size: 0.8em;
+        }
+
+        td:nth-child(1) {
+            text-align: left;
+            font-weight: bold;
+        }
+
+        tbody tr:hover {
+            background-color: #f1f1f1;
+        }
+
+        tbody tr:nth-of-type(even) {
+            background-color: #f9f9f9;
+        }
+        
+        .method-group {
+            border-left: 2px solid var(--secondary-color);
+        }
+        
+        .method-header {
+            background-color: #1a3673;
+        }
+
+        /* Print Styles */
+        @media print {
+            @page {
+                size: 11in 8.5in landscape;
+                margin: 0.5in;
+            }
+
+            body {
+                background-color: var(--white);
+                color: #000;
+                font-size: 10pt;
+            }
+
+            .container {
+                margin: 0;
+                padding: 0;
+                max-width: 100%;
+            }
+
+            .section {
+                box-shadow: none;
+                border: 1px solid #ddd;
+                padding: 1rem;
+                margin-bottom: 1rem;
+                page-break-inside: avoid;
+            }
+
+            header {
+                padding: 1rem 0;
+                background-color: transparent;
+                color: var(--primary-color);
+                border-bottom: 3px solid var(--primary-color);
+            }
+
+            th {
+                position: static;
+                background-color: #e9ecef;
+                color: var(--primary-color);
+                border-bottom: 2px solid var(--primary-color);
+            }
+            
+            .method-header {
+                background-color: #d1d6e0;
+            }
+
+            th, td {
+                padding: 6px 10px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+
+
+<header>
+    <h1>MHC Rankings Comparison</h1>
+    <h3 style="margin-top: 0; color: var(--secondary-color);">Final Algorithm Evaluation</h3>
+</header>
+
+<div class="container">
+
+    <div class="section">
+        <h2>Ranking Method Combinations vs Committee Rank</h2>
+        
+        <table>
+            <thead>
+                <tr>
+                    <th rowspan="2" class="sortable team-col" title="Team Name" onclick="sortTable(0, this)">Team</th>
+                    <th rowspan="2" class="sortable rank-col" title="MHC Committee Rank" onclick="sortTable(1, this)">MHC Rank</th>
+                    <th rowspan="2" class="sortable" title="Raw Win Percentage" onclick="sortTable(2, this)">Win %</th>
+                    <th colspan="4" class="method-group method-header">Colley Matrix</th>
+                    <th colspan="4" class="method-group method-header">BT-Elo</th>
+                    <th colspan="4" class="method-group method-header">BT-Elo + Goal Diff</th>
+                    <th colspan="4" class="method-group method-header">BT-Elo+GD Reversed</th>
+                </tr>
+                <tr>
+                    <th class="method-group sortable" title="Colley Final Rank" onclick="sortTable(3, this)">Rank</th>
+                    <th class="sortable diff-col" title="Difference from MHC Rank" onclick="sortTable(4, this)">+/-</th>
+                    <th class="sortable" title="Colley Final Rating" onclick="sortTable(5, this)">Rating</th>
+                    <th class="sortable" title="Colley Strength of Schedule" onclick="sortTable(6, this)">SOS</th>
+                    <th class="method-group sortable" title="BT-Elo Final Rank" onclick="sortTable(7, this)">Rank</th>
+                    <th class="sortable diff-col" title="Difference from MHC Rank" onclick="sortTable(8, this)">+/-</th>
+                    <th class="sortable" title="BT-Elo Final Rating" onclick="sortTable(9, this)">Rating</th>
+                    <th class="sortable" title="BT-Elo Strength of Schedule" onclick="sortTable(10, this)">SOS</th>
+                    <th class="method-group sortable" title="BT-Elo+GD Final Rank" onclick="sortTable(11, this)">Rank</th>
+                    <th class="sortable diff-col" title="Difference from MHC Rank" onclick="sortTable(12, this)">+/-</th>
+                    <th class="sortable" title="BT-Elo+GD Final Rating" onclick="sortTable(13, this)">Rating</th>
+                    <th class="sortable" title="BT-Elo+GD Strength of Schedule" onclick="sortTable(14, this)">SOS</th>
+                    <th class="method-group sortable" title="BT-Elo+GD Rev Final Rank" onclick="sortTable(15, this)">Rank</th>
+                    <th class="sortable diff-col" title="Difference from MHC Rank" onclick="sortTable(16, this)">+/-</th>
+                    <th class="sortable" title="BT-Elo+GD Rev Final Rating" onclick="sortTable(17, this)">Rating</th>
+                    <th class="sortable" title="BT-Elo+GD Rev Strength of Schedule" onclick="sortTable(18, this)">SOS</th>
+                </tr>
+            </thead>
+            <tbody>
+                
+                <tr>
+                    <td>Chur</td>
+                    <td>1</td>
+                    <td>0.833</td>
+                    
+                    <td class="method-group">1</td>
+                    <td class="diff-col" style="font-weight: bold;">
+    
+        <span style="color: var(--secondary-color);">-</span>
+    
+</td>
+                    <td>0.8206</td>
+                    <td>0.5407</td>
+                    
+                    <td class="method-group">1</td>
+                    <td class="diff-col" style="font-weight: bold;">
+    
+        <span style="color: var(--secondary-color);">-</span>
+    
+</td>
+                    <td>1603.16</td>
+                    <td>1506.51</td>
+                    
+                    <td class="method-group">1</td>
+                    <td class="diff-col" style="font-weight: bold;">
+    
+        <span style="color: var(--secondary-color);">-</span>
+    
+</td>
+                    <td>1646.29</td>
+                    <td>1508.93</td>
+                    
+                    <td class="method-group">1</td>
+                    <td class="diff-col" style="font-weight: bold;">
+    
+        <span style="color: var(--secondary-color);">-</span>
+    
+</td>
+                    <td>1656.51</td>
+                    <td>1506.37</td>
+                </tr>
+                
+                <tr>
+                    <td>WJ</td>
+                    <td>2</td>
+                    <td>0.722</td>
+                    
+                    <td class="method-group">2</td>
+                    <td class="diff-col" style="font-weight: bold;">
+    
+        <span style="color: var(--secondary-color);">-</span>
+    
+</td>
+                    <td>0.7174</td>
+                    <td>0.5314</td>
+                    
+                    <td class="method-group">2</td>
+                    <td class="diff-col" style="font-weight: bold;">
+    
+        <span style="color: var(--secondary-color);">-</span>
+    
+</td>
+                    <td>1585.18</td>
+                    <td>1510.60</td>
+                    
+                    <td class="method-group">2</td>
+                    <td class="diff-col" style="font-weight: bold;">
+    
+        <span style="color: var(--secondary-color);">-</span>
+    
+</td>
+                    <td>1636.50</td>
+                    <td>1512.73</td>
+                    
+                    <td class="method-group">3</td>
+                    <td class="diff-col" style="font-weight: bold;">
+    
+        <span style="color: #d62728;">&#9660; 1</span>
+    
+</td>
+                    <td>1579.16</td>
+                    <td>1502.57</td>
+                </tr>
+                
+                <tr>
+                    <td>Woot</td>
+                    <td>3</td>
+                    <td>0.667</td>
+                    
+                    <td class="method-group">3</td>
+                    <td class="diff-col" style="font-weight: bold;">
+    
+        <span style="color: var(--secondary-color);">-</span>
+    
+</td>
+                    <td>0.6948</td>
+                    <td>0.5606</td>
+                    
+                    <td class="method-group">3</td>
+                    <td class="diff-col" style="font-weight: bold;">
+    
+        <span style="color: var(--secondary-color);">-</span>
+    
+</td>
+                    <td>1548.86</td>
+                    <td>1502.39</td>
+                    
+                    <td class="method-group">3</td>
+                    <td class="diff-col" style="font-weight: bold;">
+    
+        <span style="color: var(--secondary-color);">-</span>
+    
+</td>
+                    <td>1563.30</td>
+                    <td>1508.06</td>
+                    
+                    <td class="method-group">2</td>
+                    <td class="diff-col" style="font-weight: bold;">
+    
+        <span style="color: #2ca02c;">&#9650; 1</span>
+    
+</td>
+                    <td>1579.95</td>
+                    <td>1524.16</td>
+                </tr>
+                
+                <tr>
+                    <td>Shr</td>
+                    <td>4</td>
+                    <td>0.500</td>
+                    
+                    <td class="method-group">4</td>
+                    <td class="diff-col" style="font-weight: bold;">
+    
+        <span style="color: var(--secondary-color);">-</span>
+    
+</td>
+                    <td>0.5738</td>
+                    <td>0.5860</td>
+                    
+                    <td class="method-group">7</td>
+                    <td class="diff-col" style="font-weight: bold;">
+    
+        <span style="color: #d62728;">&#9660; 3</span>
+    
+</td>
+                    <td>1498.40</td>
+                    <td>1503.46</td>
+                    
+                    <td class="method-group">6</td>
+                    <td class="diff-col" style="font-weight: bold;">
+    
+        <span style="color: #d62728;">&#9660; 2</span>
+    
+</td>
+                    <td>1499.95</td>
+                    <td>1504.43</td>
+                    
+                    <td class="method-group">7</td>
+                    <td class="diff-col" style="font-weight: bold;">
+    
+        <span style="color: #d62728;">&#9660; 3</span>
+    
+</td>
+                    <td>1520.03</td>
+                    <td>1526.55</td>
+                </tr>
+                
+                <tr>
+                    <td>RAM</td>
+                    <td>5</td>
+                    <td>0.611</td>
+                    
+                    <td class="method-group">6</td>
+                    <td class="diff-col" style="font-weight: bold;">
+    
+        <span style="color: #d62728;">&#9660; 1</span>
+    
+</td>
+                    <td>0.5382</td>
+                    <td>0.4334</td>
+                    
+                    <td class="method-group">5</td>
+                    <td class="diff-col" style="font-weight: bold;">
+    
+        <span style="color: var(--secondary-color);">-</span>
+    
+</td>
+                    <td>1536.47</td>
+                    <td>1496.44</td>
+                    
+                    <td class="method-group">4</td>
+                    <td class="diff-col" style="font-weight: bold;">
+    
+        <span style="color: #2ca02c;">&#9650; 1</span>
+    
+</td>
+                    <td>1543.63</td>
+                    <td>1492.56</td>
+                    
+                    <td class="method-group">6</td>
+                    <td class="diff-col" style="font-weight: bold;">
+    
+        <span style="color: #d62728;">&#9660; 1</span>
+    
+</td>
+                    <td>1525.42</td>
+                    <td>1487.02</td>
+                </tr>
+                
+                <tr>
+                    <td>SS</td>
+                    <td>6</td>
+                    <td>0.625</td>
+                    
+                    <td class="method-group">5</td>
+                    <td class="diff-col" style="font-weight: bold;">
+    
+        <span style="color: #2ca02c;">&#9650; 1</span>
+    
+</td>
+                    <td>0.5519</td>
+                    <td>0.4356</td>
+                    
+                    <td class="method-group">4</td>
+                    <td class="diff-col" style="font-weight: bold;">
+    
+        <span style="color: #2ca02c;">&#9650; 2</span>
+    
+</td>
+                    <td>1537.29</td>
+                    <td>1499.88</td>
+                    
+                    <td class="method-group">5</td>
+                    <td class="diff-col" style="font-weight: bold;">
+    
+        <span style="color: #2ca02c;">&#9650; 1</span>
+    
+</td>
+                    <td>1533.43</td>
+                    <td>1496.22</td>
+                    
+                    <td class="method-group">4</td>
+                    <td class="diff-col" style="font-weight: bold;">
+    
+        <span style="color: #2ca02c;">&#9650; 2</span>
+    
+</td>
+                    <td>1531.09</td>
+                    <td>1480.58</td>
+                </tr>
+                
+                <tr>
+                    <td>Whit</td>
+                    <td>7</td>
+                    <td>0.444</td>
+                    
+                    <td class="method-group">7</td>
+                    <td class="diff-col" style="font-weight: bold;">
+    
+        <span style="color: var(--secondary-color);">-</span>
+    
+</td>
+                    <td>0.5149</td>
+                    <td>0.5730</td>
+                    
+                    <td class="method-group">8</td>
+                    <td class="diff-col" style="font-weight: bold;">
+    
+        <span style="color: #d62728;">&#9660; 1</span>
+    
+</td>
+                    <td>1484.63</td>
+                    <td>1512.68</td>
+                    
+                    <td class="method-group">9</td>
+                    <td class="diff-col" style="font-weight: bold;">
+    
+        <span style="color: #d62728;">&#9660; 2</span>
+    
+</td>
+                    <td>1465.87</td>
+                    <td>1514.68</td>
+                    
+                    <td class="method-group">8</td>
+                    <td class="diff-col" style="font-weight: bold;">
+    
+        <span style="color: #d62728;">&#9660; 1</span>
+    
+</td>
+                    <td>1473.01</td>
+                    <td>1507.09</td>
+                </tr>
+                
+                <tr>
+                    <td>DC</td>
+                    <td>8</td>
+                    <td>0.556</td>
+                    
+                    <td class="method-group">8</td>
+                    <td class="diff-col" style="font-weight: bold;">
+    
+        <span style="color: var(--secondary-color);">-</span>
+    
+</td>
+                    <td>0.4934</td>
+                    <td>0.4368</td>
+                    
+                    <td class="method-group">6</td>
+                    <td class="diff-col" style="font-weight: bold;">
+    
+        <span style="color: #2ca02c;">&#9650; 2</span>
+    
+</td>
+                    <td>1512.01</td>
+                    <td>1498.31</td>
+                    
+                    <td class="method-group">8</td>
+                    <td class="diff-col" style="font-weight: bold;">
+    
+        <span style="color: var(--secondary-color);">-</span>
+    
+</td>
+                    <td>1470.56</td>
+                    <td>1498.29</td>
+                    
+                    <td class="method-group">9</td>
+                    <td class="diff-col" style="font-weight: bold;">
+    
+        <span style="color: #d62728;">&#9660; 1</span>
+    
+</td>
+                    <td>1462.71</td>
+                    <td>1483.42</td>
+                </tr>
+                
+                <tr>
+                    <td>RM</td>
+                    <td>9</td>
+                    <td>0.500</td>
+                    
+                    <td class="method-group">9</td>
+                    <td class="diff-col" style="font-weight: bold;">
+    
+        <span style="color: var(--secondary-color);">-</span>
+    
+</td>
+                    <td>0.4435</td>
+                    <td>0.4341</td>
+                    
+                    <td class="method-group">9</td>
+                    <td class="diff-col" style="font-weight: bold;">
+    
+        <span style="color: var(--secondary-color);">-</span>
+    
+</td>
+                    <td>1481.37</td>
+                    <td>1487.44</td>
+                    
+                    <td class="method-group">7</td>
+                    <td class="diff-col" style="font-weight: bold;">
+    
+        <span style="color: #2ca02c;">&#9650; 2</span>
+    
+</td>
+                    <td>1483.48</td>
+                    <td>1483.52</td>
+                    
+                    <td class="method-group">5</td>
+                    <td class="diff-col" style="font-weight: bold;">
+    
+        <span style="color: #2ca02c;">&#9650; 4</span>
+    
+</td>
+                    <td>1526.47</td>
+                    <td>1486.80</td>
+                </tr>
+                
+                <tr>
+                    <td>UML</td>
+                    <td>10</td>
+                    <td>0.194</td>
+                    
+                    <td class="method-group">12</td>
+                    <td class="diff-col" style="font-weight: bold;">
+    
+        <span style="color: #d62728;">&#9660; 2</span>
+    
+</td>
+                    <td>0.1976</td>
+                    <td>0.4528</td>
+                    
+                    <td class="method-group">11</td>
+                    <td class="diff-col" style="font-weight: bold;">
+    
+        <span style="color: #d62728;">&#9660; 1</span>
+    
+</td>
+                    <td>1402.15</td>
+                    <td>1496.24</td>
+                    
+                    <td class="method-group">10</td>
+                    <td class="diff-col" style="font-weight: bold;">
+    
+        <span style="color: var(--secondary-color);">-</span>
+    
+</td>
+                    <td>1388.68</td>
+                    <td>1498.24</td>
+                    
+                    <td class="method-group">10</td>
+                    <td class="diff-col" style="font-weight: bold;">
+    
+        <span style="color: var(--secondary-color);">-</span>
+    
+</td>
+                    <td>1398.29</td>
+                    <td>1485.39</td>
+                </tr>
+                
+                <tr>
+                    <td>NWQO</td>
+                    <td>11</td>
+                    <td>0.208</td>
+                    
+                    <td class="method-group">11</td>
+                    <td class="diff-col" style="font-weight: bold;">
+    
+        <span style="color: var(--secondary-color);">-</span>
+    
+</td>
+                    <td>0.2080</td>
+                    <td>0.4510</td>
+                    
+                    <td class="method-group">10</td>
+                    <td class="diff-col" style="font-weight: bold;">
+    
+        <span style="color: #2ca02c;">&#9650; 1</span>
+    
+</td>
+                    <td>1411.90</td>
+                    <td>1492.93</td>
+                    
+                    <td class="method-group">12</td>
+                    <td class="diff-col" style="font-weight: bold;">
+    
+        <span style="color: #d62728;">&#9660; 1</span>
+    
+</td>
+                    <td>1383.74</td>
+                    <td>1491.21</td>
+                    
+                    <td class="method-group">11</td>
+                    <td class="diff-col" style="font-weight: bold;">
+    
+        <span style="color: var(--secondary-color);">-</span>
+    
+</td>
+                    <td>1386.69</td>
+                    <td>1490.78</td>
+                </tr>
+                
+                <tr>
+                    <td>BCC</td>
+                    <td>12</td>
+                    <td>0.139</td>
+                    
+                    <td class="method-group">10</td>
+                    <td class="diff-col" style="font-weight: bold;">
+    
+        <span style="color: #2ca02c;">&#9650; 2</span>
+    
+</td>
+                    <td>0.2458</td>
+                    <td>0.5646</td>
+                    
+                    <td class="method-group">12</td>
+                    <td class="diff-col" style="font-weight: bold;">
+    
+        <span style="color: var(--secondary-color);">-</span>
+    
+</td>
+                    <td>1398.58</td>
+                    <td>1500.73</td>
+                    
+                    <td class="method-group">11</td>
+                    <td class="diff-col" style="font-weight: bold;">
+    
+        <span style="color: #2ca02c;">&#9650; 1</span>
+    
+</td>
+                    <td>1384.55</td>
+                    <td>1503.28</td>
+                    
+                    <td class="method-group">12</td>
+                    <td class="diff-col" style="font-weight: bold;">
+    
+        <span style="color: var(--secondary-color);">-</span>
+    
+</td>
+                    <td>1360.68</td>
+                    <td>1511.90</td>
+                </tr>
+                
+            </tbody>
+        </table>
+    </div>
+
+</div>
+
+<script>
+    let currentSortColumn = -1;
+    let currentSortDirection = 1;
+
+    function sortTable(columnIndex, headerElement) {
+        const tbody = document.querySelector('tbody');
+        const rows = Array.from(tbody.querySelectorAll('tr'));
+        const headers = document.querySelectorAll('th.sortable');
+
+        if (currentSortColumn === columnIndex) {
+            currentSortDirection *= -1;
+        } else {
+            currentSortColumn = columnIndex;
+            currentSortDirection = -1; // Default descending for most metrics
+            // Except for rank columns and team name, ascending is usually better
+            if ([0, 1, 3, 7, 11, 15].includes(columnIndex)) {
+                currentSortDirection = 1;
+            }
+        }
+
+        headers.forEach((th) => {
+            th.classList.remove('sort-asc', 'sort-desc');
+        });
+        headerElement.classList.add(currentSortDirection === 1 ? 'sort-asc' : 'sort-desc');
+
+        rows.sort((a, b) => {
+            let valA = a.children[columnIndex].innerText.trim();
+            let valB = b.children[columnIndex].innerText.trim();
+
+            let numA = parseFloat(valA.replace(/[^0-9.-]+/g, ""));
+            let numB = parseFloat(valB.replace(/[^0-9.-]+/g, ""));
+            
+            if (valA === '-') numA = 0;
+            if (valB === '-') numB = 0;
+            // Handle negative rank changes rendered with the down arrow
+            if (valA.includes('▼')) numA = -Math.abs(numA);
+            if (valB.includes('▼')) numB = -Math.abs(numB);
+
+            let isNumA = !isNaN(numA) && /[0-9]/.test(valA);
+            let isNumB = !isNaN(numB) && /[0-9]/.test(valB);
+
+            if (isNumA && isNumB) {
+                return (numA - numB) * currentSortDirection;
+            } else {
+                return valA.localeCompare(valB) * currentSortDirection;
+            }
+        });
+
+        tbody.innerHTML = '';
+        rows.forEach(row => tbody.appendChild(row));
+    }
+</script>
+
+</body>
+</html>

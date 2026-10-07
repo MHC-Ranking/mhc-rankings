@@ -1,0 +1,408 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MHC Rankings Comparison</title>
+    
+    <style>
+        :root {
+            --primary-color: #0f204b; /* Deep Navy */
+            --secondary-color: #a3aaaf; /* Silver/Gray */
+            --accent-color: #d11241; /* Sporty Red */
+            --bg-color: #f4f6f8;
+            --text-color: #333;
+            --white: #ffffff;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            line-height: 1.6;
+            margin: 0;
+            padding: 0;
+        }
+
+        header {
+            background-color: var(--primary-color);
+            color: var(--white);
+            padding: 2rem 0;
+            text-align: center;
+            border-bottom: 5px solid var(--accent-color);
+        }
+
+        h1 {
+            margin: 0;
+            font-size: 2.5rem;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+
+        .container {
+            max-width: 1500px;
+            margin: 2rem auto;
+            padding: 0 20px;
+        }
+
+        .section {
+            background-color: var(--white);
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            padding: 2rem;
+            margin-bottom: 2rem;
+            overflow-x: auto;
+        }
+
+        h2 {
+            color: var(--primary-color);
+            border-bottom: 2px solid var(--secondary-color);
+            padding-bottom: 0.5rem;
+            margin-top: 0;
+        }
+
+        /* Table Styles */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 1rem 0;
+            font-size: 0.95rem;
+        }
+
+        th, td {
+            padding: 12px 15px;
+            text-align: center;
+            border-bottom: 1px solid #ddd;
+        }
+
+        th {
+            background-color: var(--primary-color);
+            color: var(--white);
+            font-weight: 600;
+            position: sticky;
+            top: 0;
+            cursor: help;
+        }
+
+        td:nth-child(1) {
+            text-align: left;
+            font-weight: bold;
+        }
+
+        tbody tr:hover {
+            background-color: #f1f1f1;
+        }
+
+        tbody tr:nth-of-type(even) {
+            background-color: #f9f9f9;
+        }
+        
+        .method-group {
+            border-left: 2px solid var(--secondary-color);
+        }
+        
+        .method-header {
+            background-color: #1a3673;
+        }
+
+        /* Print Styles */
+        @media print {
+            @page {
+                size: 11in 8.5in landscape;
+                margin: 0.5in;
+            }
+
+            body {
+                background-color: var(--white);
+                color: #000;
+                font-size: 10pt;
+            }
+
+            .container {
+                margin: 0;
+                padding: 0;
+                max-width: 100%;
+            }
+
+            .section {
+                box-shadow: none;
+                border: 1px solid #ddd;
+                padding: 1rem;
+                margin-bottom: 1rem;
+                page-break-inside: avoid;
+            }
+
+            header {
+                padding: 1rem 0;
+                background-color: transparent;
+                color: var(--primary-color);
+                border-bottom: 3px solid var(--primary-color);
+            }
+
+            th {
+                position: static;
+                background-color: #e9ecef;
+                color: var(--primary-color);
+                border-bottom: 2px solid var(--primary-color);
+            }
+            
+            .method-header {
+                background-color: #d1d6e0;
+            }
+
+            th, td {
+                padding: 6px 10px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<header>
+    <h1>MHC Rankings Comparison</h1>
+    <h3 style="margin-top: 0; color: var(--secondary-color);">Final Algorithm Evaluation</h3>
+</header>
+
+<div class="container">
+
+    <div class="section">
+        <h2>Ranking Method Combinations vs Committee Rank</h2>
+        
+        <table>
+            <thead>
+                <tr>
+                    <th rowspan="2" title="Team Name">Team</th>
+                    <th rowspan="2" title="MHC Committee Rank">MHC Rank</th>
+                    <th rowspan="2" title="Raw Win Percentage">Win %</th>
+                    <th colspan="4" class="method-group method-header">Colley Matrix</th>
+                    <th colspan="4" class="method-group method-header">BT-Elo</th>
+                    <th colspan="4" class="method-group method-header">BT-Elo + Goal Diff</th>
+                </tr>
+                <tr>
+                    <th class="method-group" title="Colley Final Rank">Rank</th>
+                    <th title="Difference from MHC Rank">+/-</th>
+                    <th title="Colley Final Rating">Rating</th>
+                    <th title="Colley Strength of Schedule">SOS</th>
+                    <th class="method-group" title="BT-Elo Final Rank">Rank</th>
+                    <th title="Difference from MHC Rank">+/-</th>
+                    <th title="BT-Elo Final Rating">Rating</th>
+                    <th title="BT-Elo Strength of Schedule">SOS</th>
+                    <th class="method-group" title="BT-Elo+GD Final Rank">Rank</th>
+                    <th title="Difference from MHC Rank">+/-</th>
+                    <th title="BT-Elo+GD Final Rating">Rating</th>
+                    <th title="BT-Elo+GD Strength of Schedule">SOS</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>Winston Churchill</td>
+                    <td>1</td>
+                    <td>0.833</td>
+                    <td class="method-group">1</td>
+                    <td style="font-weight: bold;"><span style="color: var(--secondary-color);">-</span></td>
+                    <td>0.8257</td>
+                    <td>0.5467</td>
+                    <td class="method-group">1</td>
+                    <td style="font-weight: bold;"><span style="color: var(--secondary-color);">-</span></td>
+                    <td>1603.20</td>
+                    <td>1506.47</td>
+                    <td class="method-group">1</td>
+                    <td style="font-weight: bold;"><span style="color: var(--secondary-color);">-</span></td>
+                    <td>1646.36</td>
+                    <td>1508.88</td>
+                </tr>
+                <tr>
+                    <td>Walter Johnson</td>
+                    <td>2</td>
+                    <td>0.750</td>
+                    <td class="method-group">2</td>
+                    <td style="font-weight: bold;"><span style="color: var(--secondary-color);">-</span></td>
+                    <td>0.7414</td>
+                    <td>0.5316</td>
+                    <td class="method-group">2</td>
+                    <td style="font-weight: bold;"><span style="color: var(--secondary-color);">-</span></td>
+                    <td>1592.86</td>
+                    <td>1510.42</td>
+                    <td class="method-group">2</td>
+                    <td style="font-weight: bold;"><span style="color: var(--secondary-color);">-</span></td>
+                    <td>1640.69</td>
+                    <td>1512.52</td>
+                </tr>
+                <tr>
+                    <td>Wootton</td>
+                    <td>3</td>
+                    <td>0.667</td>
+                    <td class="method-group">3</td>
+                    <td style="font-weight: bold;"><span style="color: var(--secondary-color);">-</span></td>
+                    <td>0.6987</td>
+                    <td>0.5651</td>
+                    <td class="method-group">3</td>
+                    <td style="font-weight: bold;"><span style="color: var(--secondary-color);">-</span></td>
+                    <td>1548.53</td>
+                    <td>1501.69</td>
+                    <td class="method-group">3</td>
+                    <td style="font-weight: bold;"><span style="color: var(--secondary-color);">-</span></td>
+                    <td>1562.92</td>
+                    <td>1507.62</td>
+                </tr>
+                <tr>
+                    <td>Sherwood</td>
+                    <td>4</td>
+                    <td>0.500</td>
+                    <td class="method-group">4</td>
+                    <td style="font-weight: bold;"><span style="color: var(--secondary-color);">-</span></td>
+                    <td>0.5802</td>
+                    <td>0.5936</td>
+                    <td class="method-group">7</td>
+                    <td style="font-weight: bold;"><span style="color: #d62728;">&#9660; 3</span></td>
+                    <td>1498.70</td>
+                    <td>1504.17</td>
+                    <td class="method-group">6</td>
+                    <td style="font-weight: bold;"><span style="color: #d62728;">&#9660; 2</span></td>
+                    <td>1500.07</td>
+                    <td>1504.86</td>
+                </tr>
+                <tr>
+                    <td>Rockville-Magruder</td>
+                    <td>5</td>
+                    <td>0.583</td>
+                    <td class="method-group">6</td>
+                    <td style="font-weight: bold;"><span style="color: #d62728;">&#9660; 1</span></td>
+                    <td>0.5133</td>
+                    <td>0.4322</td>
+                    <td class="method-group">5</td>
+                    <td style="font-weight: bold;"><span style="color: var(--secondary-color);">-</span></td>
+                    <td>1529.56</td>
+                    <td>1498.03</td>
+                    <td class="method-group">4</td>
+                    <td style="font-weight: bold;"><span style="color: #2ca02c;">&#9650; 1</span></td>
+                    <td>1540.01</td>
+                    <td>1493.67</td>
+                </tr>
+                <tr>
+                    <td>Silver Spring</td>
+                    <td>6</td>
+                    <td>0.625</td>
+                    <td class="method-group">5</td>
+                    <td style="font-weight: bold;"><span style="color: #2ca02c;">&#9650; 1</span></td>
+                    <td>0.5462</td>
+                    <td>0.4289</td>
+                    <td class="method-group">4</td>
+                    <td style="font-weight: bold;"><span style="color: #2ca02c;">&#9650; 2</span></td>
+                    <td>1536.91</td>
+                    <td>1498.87</td>
+                    <td class="method-group">5</td>
+                    <td style="font-weight: bold;"><span style="color: #2ca02c;">&#9650; 1</span></td>
+                    <td>1533.03</td>
+                    <td>1495.49</td>
+                </tr>
+                <tr>
+                    <td>Walt Whitman</td>
+                    <td>7</td>
+                    <td>0.417</td>
+                    <td class="method-group">8</td>
+                    <td style="font-weight: bold;"><span style="color: #d62728;">&#9660; 1</span></td>
+                    <td>0.4987</td>
+                    <td>0.5819</td>
+                    <td class="method-group">9</td>
+                    <td style="font-weight: bold;"><span style="color: #d62728;">&#9660; 2</span></td>
+                    <td>1476.90</td>
+                    <td>1513.44</td>
+                    <td class="method-group">9</td>
+                    <td style="font-weight: bold;"><span style="color: #d62728;">&#9660; 2</span></td>
+                    <td>1461.43</td>
+                    <td>1515.20</td>
+                </tr>
+                <tr>
+                    <td>DC Stars Varsity</td>
+                    <td>8</td>
+                    <td>0.583</td>
+                    <td class="method-group">7</td>
+                    <td style="font-weight: bold;"><span style="color: #2ca02c;">&#9650; 1</span></td>
+                    <td>0.5097</td>
+                    <td>0.4280</td>
+                    <td class="method-group">6</td>
+                    <td style="font-weight: bold;"><span style="color: #2ca02c;">&#9650; 2</span></td>
+                    <td>1518.96</td>
+                    <td>1497.60</td>
+                    <td class="method-group">8</td>
+                    <td style="font-weight: bold;"><span style="color: var(--secondary-color);">-</span></td>
+                    <td>1474.87</td>
+                    <td>1497.88</td>
+                </tr>
+                <tr>
+                    <td>Richard Montgomery</td>
+                    <td>9</td>
+                    <td>0.500</td>
+                    <td class="method-group">9</td>
+                    <td style="font-weight: bold;"><span style="color: var(--secondary-color);">-</span></td>
+                    <td>0.4381</td>
+                    <td>0.4277</td>
+                    <td class="method-group">8</td>
+                    <td style="font-weight: bold;"><span style="color: #2ca02c;">&#9650; 1</span></td>
+                    <td>1481.02</td>
+                    <td>1487.02</td>
+                    <td class="method-group">7</td>
+                    <td style="font-weight: bold;"><span style="color: #2ca02c;">&#9650; 2</span></td>
+                    <td>1483.19</td>
+                    <td>1483.35</td>
+                </tr>
+                <tr>
+                    <td>Upper Montgomery</td>
+                    <td>10</td>
+                    <td>0.167</td>
+                    <td class="method-group">12</td>
+                    <td style="font-weight: bold;"><span style="color: #d62728;">&#9660; 2</span></td>
+                    <td>0.1739</td>
+                    <td>0.4529</td>
+                    <td class="method-group">12</td>
+                    <td style="font-weight: bold;"><span style="color: #d62728;">&#9660; 2</span></td>
+                    <td>1391.80</td>
+                    <td>1496.91</td>
+                    <td class="method-group">12</td>
+                    <td style="font-weight: bold;"><span style="color: #d62728;">&#9660; 2</span></td>
+                    <td>1381.48</td>
+                    <td>1498.66</td>
+                </tr>
+                <tr>
+                    <td>NWQO</td>
+                    <td>11</td>
+                    <td>0.208</td>
+                    <td class="method-group">11</td>
+                    <td style="font-weight: bold;"><span style="color: var(--secondary-color);">-</span></td>
+                    <td>0.2052</td>
+                    <td>0.4477</td>
+                    <td class="method-group">10</td>
+                    <td style="font-weight: bold;"><span style="color: #2ca02c;">&#9650; 1</span></td>
+                    <td>1412.26</td>
+                    <td>1493.82</td>
+                    <td class="method-group">11</td>
+                    <td style="font-weight: bold;"><span style="color: var(--secondary-color);">-</span></td>
+                    <td>1383.91</td>
+                    <td>1491.82</td>
+                </tr>
+                <tr>
+                    <td>Bethesda-Chevy Chase</td>
+                    <td>12</td>
+                    <td>0.167</td>
+                    <td class="method-group">10</td>
+                    <td style="font-weight: bold;"><span style="color: #2ca02c;">&#9650; 2</span></td>
+                    <td>0.2689</td>
+                    <td>0.5638</td>
+                    <td class="method-group">11</td>
+                    <td style="font-weight: bold;"><span style="color: #2ca02c;">&#9650; 1</span></td>
+                    <td>1409.29</td>
+                    <td>1500.84</td>
+                    <td class="method-group">10</td>
+                    <td style="font-weight: bold;"><span style="color: #2ca02c;">&#9650; 2</span></td>
+                    <td>1392.03</td>
+                    <td>1503.34</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+</div>
+
+</body>
+</html>
