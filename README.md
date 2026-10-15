@@ -62,14 +62,14 @@ The input should be a TSV (Tab-Separated Values) file containing the following c
 - `Home Team`
 - `Score` (Formatted as `AwayScore-HomeScore`, e.g., `3-2`)
 
-Optional: `Overtime` (`OT`, also used for ties) and `Game URL` (a link to the game's GameSheet page, which turns the Last Game result into a link). The scraper fills `Game URL` when the source is a GameSheet URL or `--season-id` is given. In `teams.toml`, an optional top-level `schedule_url` adds a schedule link under the rankings table.
+Optional: `Overtime` (`OT`, also used for ties) and `Game URL` (a link to the game's GameSheet page, which turns the Last Game result into a link). The scraper fills `Game URL` when the source is a GameSheet URL or `--season-id` is given. In `teams.toml`, an optional top-level `schedule_url` adds a schedule link under the rankings table. An optional top-level `division` (for example `"Varsity"` or `"JV"`) names the division in the report titles, such as "MHC JV Rankings - Oct 09, 2026" and "MHC JV Team Reports - Oct 09, 2026".
 
 ### Outputs
 
 When run, the application will generate the following in the specified output directory:
 - `mhc_rankings_report.html`: The main interactive visual report containing the table and progress plots.
 - `rankings_output.tsv`: Final rankings table data.
-- `weekly_ratings_output.tsv`: Matrix of team ratings over time.
+- `weekly_ratings_output.tsv`: Matrix of team ratings by game week. Weeks run Monday to Sunday and are numbered from Week 01 (the first week with a game); Week 00 is the starting point where every team is at 0.5.
 - `colley_matrix_output.tsv`: The final calculated Colley Matrix.
 
 ## 2025-26 Data Processing

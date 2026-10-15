@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>MHC Rankings</title>
+    <title>MHC JV Rankings - Oct 09, 2026</title>
     <!-- MathJax for rendering equations -->
     <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     
@@ -80,24 +80,46 @@
             background-color: var(--primary-color);
             color: var(--white);
             font-weight: 600;
+        }
+
+        /* Rankings table: compact one-line rows; scrolls sideways on narrow screens. */
+        .table-scroll {
+            overflow-x: auto;
+        }
+
+        .rankings-table {
+            font-size: 0.9em;
+        }
+
+        .rankings-table th,
+        .rankings-table td {
+            padding: 6px 10px;
+            white-space: nowrap;
+        }
+
+        .rankings-table th {
             position: sticky;
             top: 0;
             cursor: pointer; /* Changed for sortability */
             user-select: none;
         }
 
-        th.sort-asc::after {
+        .rankings-table th.sort-asc::after {
             content: " \25B2"; /* Up Arrow */
             font-size: 0.8em;
         }
 
-        th.sort-desc::after {
+        .rankings-table th.sort-desc::after {
             content: " \25BC"; /* Down Arrow */
             font-size: 0.8em;
         }
 
-        td:nth-child(2) {
+        .rankings-table th:nth-child(3),
+        .rankings-table td:nth-child(3) {
             text-align: left;
+        }
+
+        .rankings-table td:nth-child(3) {
             font-weight: bold;
         }
 
@@ -193,14 +215,73 @@
             overflow-x: auto;
         }
 
+        .matrix-note {
+            margin: 0 0 0.75rem;
+            font-size: 0.9rem;
+        }
+
         .matrix-table {
-            font-family: monospace;
+            width: auto;
+            margin: 0 auto;
+            border-collapse: separate;
+            border-spacing: 3px;
             font-size: 0.85rem;
         }
-        
-        .matrix-table th {
-            background-color: var(--secondary-color);
-            color: var(--primary-color);
+
+        .matrix-table th,
+        .matrix-table td {
+            min-width: 2.6rem;
+            padding: 6px 8px;
+            border: none;
+            border-radius: 6px;
+            text-align: center;
+            font-weight: normal;
+        }
+
+        .matrix-table thead th,
+        .matrix-table tbody th {
+            background-color: var(--primary-color);
+            color: var(--white);
+            font-weight: 600;
+            cursor: default;
+            user-select: auto;
+        }
+
+        .matrix-table tbody th {
+            position: sticky;
+            left: 0;
+            text-align: left;
+        }
+
+        .matrix-table tbody tr:hover,
+        .matrix-table tbody tr:nth-of-type(even) {
+            background-color: transparent;
+        }
+
+        .matrix-table td.g0 {
+            background-color: #f4f6f8;
+            color: var(--secondary-color);
+        }
+
+        .matrix-table td.g1 {
+            background-color: #dbe3f3;
+            font-weight: 600;
+        }
+
+        .matrix-table td.g2 {
+            background-color: #a9bde6;
+            font-weight: 600;
+        }
+
+        .matrix-table td.g3 {
+            background-color: #6f8ccf;
+            color: var(--white);
+            font-weight: 700;
+        }
+
+        .matrix-table td.self {
+            background-image: repeating-linear-gradient(135deg, #e9ecef, #e9ecef 4px, #f4f6f8 4px, #f4f6f8 8px);
+            color: var(--secondary-color);
         }
 
         .schedule-link {
@@ -261,18 +342,69 @@
             padding-bottom: 0.25rem;
         }
 
-        .points-table th {
-            position: static;
-            cursor: default;
-        }
-
-        .points-table td:nth-child(2) {
-            text-align: center;
-            font-weight: normal;
-        }
-
         .points-table td:first-child {
             text-align: left;
+        }
+
+        /* Phones: same page with tighter spacing; wider screens are unchanged. */
+        @media (max-width: 700px) {
+            header {
+                padding: 1.25rem 0.75rem;
+            }
+
+            h1 {
+                font-size: 1.5rem;
+                letter-spacing: 1px;
+            }
+
+            .container {
+                margin: 1rem auto;
+                padding: 0 10px;
+            }
+
+            .section,
+            .method-description {
+                padding: 1rem;
+                margin-bottom: 1rem;
+            }
+
+            .week-controls {
+                flex-wrap: wrap;
+                gap: 0.5rem;
+            }
+
+            .week-controls select {
+                order: -1;
+                flex: 1 1 100%;
+                min-height: 44px;
+            }
+
+            .week-controls .btn {
+                flex: 1;
+                min-height: 44px;
+            }
+
+            .tab-list button {
+                min-height: 44px;
+                padding: 0.5rem 0.75rem;
+            }
+
+            .matrix-table th,
+            .matrix-table td {
+                min-width: 2.2rem;
+                padding: 4px 5px;
+            }
+
+            .points-table {
+                width: 100%;
+                min-width: 0;
+            }
+
+            mjx-container[display="true"] {
+                max-width: 100%;
+                overflow-x: auto;
+                overflow-y: hidden;
+            }
         }
 
         /* Print Styles */
@@ -324,8 +456,17 @@
                 border-bottom: 2px solid var(--primary-color);
             }
 
-            th, td {
+            th, td,
+            .rankings-table th,
+            .rankings-table td {
                 padding: 4px 8px; /* Less vertical space between rows */
+                white-space: normal;
+            }
+
+            .matrix-table thead th,
+            .matrix-table tbody th {
+                background-color: #e9ecef;
+                color: var(--primary-color);
             }
 
             /* Make sure details are fully expanded on print */
@@ -368,7 +509,7 @@
 <body>
 
 <header>
-    <h1>MHC Rankings - Oct 02, 2026</h1>
+    <h1>MHC JV Rankings - Oct 09, 2026</h1>
     <h3 style="margin-top: 0; color: var(--secondary-color);">Colley Method</h3>
 </header>
 
@@ -381,16 +522,18 @@
             <button id="prevWeekBtn" class="btn" onclick="changeWeek(-1)">&#9664; Previous</button>
             <select id="weekSelector" onchange="displayWeek(this.value)">
                 
-                <option value="2026-W39">2026-W39</option>
+                <option value="Week 01">Week 01 - Sep 27, 2026</option>
                 
-                <option value="2026-W40">2026-W40</option>
+                <option value="Week 02">Week 02 - Oct 4, 2026</option>
                 
-                <option value="Final">Final Rankings</option>
+                <option value="Week 03">Week 03 - Oct 11, 2026</option>
+                
             </select>
             <button id="nextWeekBtn" class="btn" onclick="changeWeek(1)">Next &#9654;</button>
         </div>
 
-        <table>
+        <div class="table-scroll">
+        <table class="rankings-table">
             <thead>
                 <tr>
                     <th title="Overall Rank">Rank</th>
@@ -414,6 +557,7 @@
                 <!-- Rows injected via JS -->
             </tbody>
         </table>
+        </div>
         
         <p class="schedule-link"><a href="https://gamesheetstats.com/seasons/15412/games?configuration%5Bcompact-view%5D=true&amp;configuration%5Bprimary-colour%5D=C80F2E&amp;configuration%5Bsecondary-colour%5D=041E42&amp;filter%5Bdivision%5D=83134&amp;filter%5Btype%5D=regular_season&amp;filter%5Bstatus%5D=scheduled" target="_blank" rel="noopener noreferrer">See the upcoming games schedule on GameSheet</a></p>
         
@@ -429,297 +573,588 @@
         <div class="tab-panels">
             <div class="tab-panel" role="tabpanel" id="panel-ratings" aria-labelledby="tab-ratings" data-active="true">
                 <div class="plot-container"><div>                        <script>window.PlotlyConfig = {MathJaxConfig: 'local'};</script>
-        <script charset="utf-8" src="https://cdn.plot.ly/plotly-3.5.0.min.js" integrity="sha256-fHbNLP+GlIXN+efbQec78UkemUz3NJp7UmfGxC1tNxs=" crossorigin="anonymous"></script>                <div id="a07ad996-4350-4034-b025-7eb55ddfd55b" class="plotly-graph-div" style="height:623px; width:100%;"></div>            <script>                window.PLOTLYENV=window.PLOTLYENV || {};                                if (document.getElementById("a07ad996-4350-4034-b025-7eb55ddfd55b")) {                    Plotly.newPlot(                        "a07ad996-4350-4034-b025-7eb55ddfd55b",                        [{"line":{"color":"#1f5fbf","dash":"longdash","width":2},"marker":{"size":8,"symbol":"hexagon"},"mode":"lines+markers","name":"Winston Churchill JV","x":["2026-W39","2026-W40"],"y":[0.6250000000000001,0.7667464114832535],"type":"scatter"},{"line":{"color":"#111111","dash":"dashdot","width":2},"marker":{"size":8,"symbol":"star"},"mode":"lines+markers","name":"Walter Johnson JV","x":["2026-W39","2026-W40"],"y":[0.6250000000000001,0.6997607655502391],"type":"scatter"},{"line":{"color":"#c80f2e","dash":"longdashdot","width":2},"marker":{"size":8,"symbol":"triangle-down"},"mode":"lines+markers","name":"Rockville-Magruder JV","x":["2026-W39","2026-W40"],"y":[0.625,0.5633971291866029],"type":"scatter"},{"line":{"color":"#02a7e2","dash":"dash","width":2},"marker":{"size":8,"symbol":"pentagon"},"mode":"lines+markers","name":"Walt Whitman JV","x":["2026-W39","2026-W40"],"y":[0.5,0.5490430622009569],"type":"scatter"},{"line":{"color":"#ff6b6b","dash":"dashdot","width":2},"marker":{"size":8,"symbol":"triangle-up"},"mode":"lines+markers","name":"DC Stars JV","x":["2026-W39","2026-W40"],"y":[0.375,0.5035885167464115],"type":"scatter"},{"line":{"color":"#7a0f1f","dash":"dot","width":2},"marker":{"size":8,"symbol":"triangle-left"},"mode":"lines+markers","name":"Silver Spring JV","x":["2026-W39","2026-W40"],"y":[0.6250000000000001,0.48684210526315785],"type":"scatter"},{"line":{"color":"#f2c200","dash":"solid","width":2},"marker":{"size":8,"symbol":"triangle-right"},"mode":"lines+markers","name":"Upper Montgomery JV","x":["2026-W39","2026-W40"],"y":[0.375,0.48684210526315785],"type":"scatter"},{"line":{"color":"#2a52be","dash":"dash","width":2},"marker":{"size":8,"symbol":"square"},"mode":"lines+markers","name":"Central MOCO JV","x":["2026-W39","2026-W40"],"y":[0.5,0.38397129186602874],"type":"scatter"},{"line":{"color":"#001f5b","dash":"solid","width":2},"marker":{"size":8,"symbol":"circle"},"mode":"lines+markers","name":"Bethesda-Chevy Chase JV","x":["2026-W39","2026-W40"],"y":[0.375,0.31220095693779903],"type":"scatter"},{"line":{"color":"#c77700","dash":"longdash","width":2},"marker":{"size":8,"symbol":"diamond"},"mode":"lines+markers","name":"Richard Montgomery-Sherwood JV","x":["2026-W39","2026-W40"],"y":[0.375,0.24760765550239233],"type":"scatter"}],                        {"template":{"data":{"barpolar":[{"marker":{"line":{"color":"white","width":0.5},"pattern":{"fillmode":"overlay","size":10,"solidity":0.2}},"type":"barpolar"}],"bar":[{"error_x":{"color":"#2a3f5f"},"error_y":{"color":"#2a3f5f"},"marker":{"line":{"color":"white","width":0.5},"pattern":{"fillmode":"overlay","size":10,"solidity":0.2}},"type":"bar"}],"carpet":[{"aaxis":{"endlinecolor":"#2a3f5f","gridcolor":"#C8D4E3","linecolor":"#C8D4E3","minorgridcolor":"#C8D4E3","startlinecolor":"#2a3f5f"},"baxis":{"endlinecolor":"#2a3f5f","gridcolor":"#C8D4E3","linecolor":"#C8D4E3","minorgridcolor":"#C8D4E3","startlinecolor":"#2a3f5f"},"type":"carpet"}],"choropleth":[{"colorbar":{"outlinewidth":0,"ticks":""},"type":"choropleth"}],"contourcarpet":[{"colorbar":{"outlinewidth":0,"ticks":""},"type":"contourcarpet"}],"contour":[{"colorbar":{"outlinewidth":0,"ticks":""},"colorscale":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]],"type":"contour"}],"heatmap":[{"colorbar":{"outlinewidth":0,"ticks":""},"colorscale":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]],"type":"heatmap"}],"histogram2dcontour":[{"colorbar":{"outlinewidth":0,"ticks":""},"colorscale":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]],"type":"histogram2dcontour"}],"histogram2d":[{"colorbar":{"outlinewidth":0,"ticks":""},"colorscale":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]],"type":"histogram2d"}],"histogram":[{"marker":{"pattern":{"fillmode":"overlay","size":10,"solidity":0.2}},"type":"histogram"}],"mesh3d":[{"colorbar":{"outlinewidth":0,"ticks":""},"type":"mesh3d"}],"parcoords":[{"line":{"colorbar":{"outlinewidth":0,"ticks":""}},"type":"parcoords"}],"pie":[{"automargin":true,"type":"pie"}],"scatter3d":[{"line":{"colorbar":{"outlinewidth":0,"ticks":""}},"marker":{"colorbar":{"outlinewidth":0,"ticks":""}},"type":"scatter3d"}],"scattercarpet":[{"marker":{"colorbar":{"outlinewidth":0,"ticks":""}},"type":"scattercarpet"}],"scattergeo":[{"marker":{"colorbar":{"outlinewidth":0,"ticks":""}},"type":"scattergeo"}],"scattergl":[{"marker":{"colorbar":{"outlinewidth":0,"ticks":""}},"type":"scattergl"}],"scattermapbox":[{"marker":{"colorbar":{"outlinewidth":0,"ticks":""}},"type":"scattermapbox"}],"scattermap":[{"marker":{"colorbar":{"outlinewidth":0,"ticks":""}},"type":"scattermap"}],"scatterpolargl":[{"marker":{"colorbar":{"outlinewidth":0,"ticks":""}},"type":"scatterpolargl"}],"scatterpolar":[{"marker":{"colorbar":{"outlinewidth":0,"ticks":""}},"type":"scatterpolar"}],"scatter":[{"fillpattern":{"fillmode":"overlay","size":10,"solidity":0.2},"type":"scatter"}],"scatterternary":[{"marker":{"colorbar":{"outlinewidth":0,"ticks":""}},"type":"scatterternary"}],"surface":[{"colorbar":{"outlinewidth":0,"ticks":""},"colorscale":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]],"type":"surface"}],"table":[{"cells":{"fill":{"color":"#EBF0F8"},"line":{"color":"white"}},"header":{"fill":{"color":"#C8D4E3"},"line":{"color":"white"}},"type":"table"}]},"layout":{"annotationdefaults":{"arrowcolor":"#2a3f5f","arrowhead":0,"arrowwidth":1},"autotypenumbers":"strict","coloraxis":{"colorbar":{"outlinewidth":0,"ticks":""}},"colorscale":{"diverging":[[0,"#8e0152"],[0.1,"#c51b7d"],[0.2,"#de77ae"],[0.3,"#f1b6da"],[0.4,"#fde0ef"],[0.5,"#f7f7f7"],[0.6,"#e6f5d0"],[0.7,"#b8e186"],[0.8,"#7fbc41"],[0.9,"#4d9221"],[1,"#276419"]],"sequential":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]],"sequentialminus":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]]},"colorway":["#636efa","#EF553B","#00cc96","#ab63fa","#FFA15A","#19d3f3","#FF6692","#B6E880","#FF97FF","#FECB52"],"font":{"color":"#2a3f5f"},"geo":{"bgcolor":"white","lakecolor":"white","landcolor":"white","showlakes":true,"showland":true,"subunitcolor":"#C8D4E3"},"hoverlabel":{"align":"left"},"hovermode":"closest","mapbox":{"style":"light"},"paper_bgcolor":"white","plot_bgcolor":"white","polar":{"angularaxis":{"gridcolor":"#EBF0F8","linecolor":"#EBF0F8","ticks":""},"bgcolor":"white","radialaxis":{"gridcolor":"#EBF0F8","linecolor":"#EBF0F8","ticks":""}},"scene":{"xaxis":{"backgroundcolor":"white","gridcolor":"#DFE8F3","gridwidth":2,"linecolor":"#EBF0F8","showbackground":true,"ticks":"","zerolinecolor":"#EBF0F8"},"yaxis":{"backgroundcolor":"white","gridcolor":"#DFE8F3","gridwidth":2,"linecolor":"#EBF0F8","showbackground":true,"ticks":"","zerolinecolor":"#EBF0F8"},"zaxis":{"backgroundcolor":"white","gridcolor":"#DFE8F3","gridwidth":2,"linecolor":"#EBF0F8","showbackground":true,"ticks":"","zerolinecolor":"#EBF0F8"}},"shapedefaults":{"line":{"color":"#2a3f5f"}},"ternary":{"aaxis":{"gridcolor":"#DFE8F3","linecolor":"#A2B1C6","ticks":""},"baxis":{"gridcolor":"#DFE8F3","linecolor":"#A2B1C6","ticks":""},"bgcolor":"white","caxis":{"gridcolor":"#DFE8F3","linecolor":"#A2B1C6","ticks":""}},"title":{"x":0.05},"xaxis":{"automargin":true,"gridcolor":"#EBF0F8","linecolor":"#EBF0F8","ticks":"","title":{"standoff":15},"zerolinecolor":"#EBF0F8","zerolinewidth":2},"yaxis":{"automargin":true,"gridcolor":"#EBF0F8","linecolor":"#EBF0F8","ticks":"","title":{"standoff":15},"zerolinecolor":"#EBF0F8","zerolinewidth":2}}},"yaxis":{"title":{"text":"Colley Rating"},"range":[0.22165071770334926,0.7927033492822966]},"legend":{"title":{"text":"Teams"},"yanchor":"top","y":0.99,"xanchor":"left","x":1.01,"itemclick":"toggleothers","itemdoubleclick":"toggle"},"xaxis":{"title":{"text":"Week"},"type":"category"},"margin":{"r":150,"t":100},"hovermode":"x unified","updatemenus":[{"buttons":[{"args":[{"visible":[true,true,true,true,true,true,true,true,true,true]}],"label":"All Teams","method":"update"},{"args":[{"visible":[true,true,true,true,true,true,false,false,false,false]}],"label":"Top 6 Teams","method":"update"},{"args":[{"visible":[false,false,false,false,false,false,true,true,true,true]}],"label":"Bottom 6 Teams","method":"update"},{"args":[{"visible":[true,false,false,false,false,false,false,false,false,false]}],"label":"Winston Churchill JV","method":"update"},{"args":[{"visible":[false,true,false,false,false,false,false,false,false,false]}],"label":"Walter Johnson JV","method":"update"},{"args":[{"visible":[false,false,true,false,false,false,false,false,false,false]}],"label":"Rockville-Magruder JV","method":"update"},{"args":[{"visible":[false,false,false,true,false,false,false,false,false,false]}],"label":"Walt Whitman JV","method":"update"},{"args":[{"visible":[false,false,false,false,true,false,false,false,false,false]}],"label":"DC Stars JV","method":"update"},{"args":[{"visible":[false,false,false,false,false,true,false,false,false,false]}],"label":"Silver Spring JV","method":"update"},{"args":[{"visible":[false,false,false,false,false,false,true,false,false,false]}],"label":"Upper Montgomery JV","method":"update"},{"args":[{"visible":[false,false,false,false,false,false,false,true,false,false]}],"label":"Central MOCO JV","method":"update"},{"args":[{"visible":[false,false,false,false,false,false,false,false,true,false]}],"label":"Bethesda-Chevy Chase JV","method":"update"},{"args":[{"visible":[false,false,false,false,false,false,false,false,false,true]}],"label":"Richard Montgomery-Sherwood JV","method":"update"}],"direction":"down","type":"dropdown","x":0.0,"xanchor":"left","y":1.15,"yanchor":"top"}],"height":623},                        {"responsive": true, "toImageButtonOptions": {"format": "png", "filename": "mhc_plot", "height": 800, "width": 1200, "scale": 2}, "displaylogo": false}                    )                };            </script>        </div></div>
+        <script charset="utf-8" src="https://cdn.plot.ly/plotly-3.5.0.min.js" integrity="sha256-fHbNLP+GlIXN+efbQec78UkemUz3NJp7UmfGxC1tNxs=" crossorigin="anonymous"></script>                <div id="c20529e9-4947-400a-94fb-70cc0772dbdf" class="plotly-graph-div" style="height:623px; width:100%;"></div>            <script>                window.PLOTLYENV=window.PLOTLYENV || {};                                if (document.getElementById("c20529e9-4947-400a-94fb-70cc0772dbdf")) {                    Plotly.newPlot(                        "c20529e9-4947-400a-94fb-70cc0772dbdf",                        [{"hovertemplate":"%{meta}: %{y:.4f}\u003cextra\u003e\u003c\u002fextra\u003e","line":{"color":"#111111","dash":"dashdot","width":2},"marker":{"size":7,"symbol":"star"},"meta":"Walter Johnson JV","mode":"lines+markers","name":"WJ","x":["Week 00","Week 01","Week 02","Week 03"],"y":[0.5,0.6250000000000001,0.6997607655502391,0.7478851741513112],"type":"scatter"},{"hovertemplate":"%{meta}: %{y:.4f}\u003cextra\u003e\u003c\u002fextra\u003e","line":{"color":"#1f5fbf","dash":"longdash","width":2},"marker":{"size":7,"symbol":"hexagon"},"meta":"Winston Churchill JV","mode":"lines+markers","name":"Church","x":["Week 00","Week 01","Week 02","Week 03"],"y":[0.5,0.6250000000000001,0.7667464114832535,0.7281529294935453],"type":"scatter"},{"hovertemplate":"%{meta}: %{y:.4f}\u003cextra\u003e\u003c\u002fextra\u003e","line":{"color":"#02a7e2","dash":"dash","width":2},"marker":{"size":7,"symbol":"pentagon"},"meta":"Walt Whitman JV","mode":"lines+markers","name":"Whit","x":["Week 00","Week 01","Week 02","Week 03"],"y":[0.5,0.5,0.5490430622009569,0.6552925815587187],"type":"scatter"},{"hovertemplate":"%{meta}: %{y:.4f}\u003cextra\u003e\u003c\u002fextra\u003e","line":{"color":"#f2c200","dash":"solid","width":2},"marker":{"size":7,"symbol":"triangle-right"},"meta":"Upper Montgomery JV","mode":"lines+markers","name":"UML","x":["Week 00","Week 01","Week 02","Week 03"],"y":[0.5,0.375,0.48684210526315785,0.5369726727720769],"type":"scatter"},{"hovertemplate":"%{meta}: %{y:.4f}\u003cextra\u003e\u003c\u002fextra\u003e","line":{"color":"#2a52be","dash":"dash","width":2},"marker":{"size":7,"symbol":"square"},"meta":"Central MOCO JV","mode":"lines+markers","name":"CenMOCO","x":["Week 00","Week 01","Week 02","Week 03"],"y":[0.5,0.5,0.38397129186602874,0.5156589061752914],"type":"scatter"},{"hovertemplate":"%{meta}: %{y:.4f}\u003cextra\u003e\u003c\u002fextra\u003e","line":{"color":"#c80f2e","dash":"longdashdot","width":2},"marker":{"size":7,"symbol":"triangle-down"},"meta":"Rockville-Magruder JV","mode":"lines+markers","name":"RAM","x":["Week 00","Week 01","Week 02","Week 03"],"y":[0.5,0.625,0.5633971291866029,0.5026021552833868],"type":"scatter"},{"hovertemplate":"%{meta}: %{y:.4f}\u003cextra\u003e\u003c\u002fextra\u003e","line":{"color":"#ff6b6b","dash":"dashdot","width":2},"marker":{"size":7,"symbol":"triangle-up"},"meta":"DC Stars JV","mode":"lines+markers","name":"DC","x":["Week 00","Week 01","Week 02","Week 03"],"y":[0.5,0.375,0.5035885167464115,0.41000956269079414],"type":"scatter"},{"hovertemplate":"%{meta}: %{y:.4f}\u003cextra\u003e\u003c\u002fextra\u003e","line":{"color":"#7a0f1f","dash":"dot","width":2},"marker":{"size":7,"symbol":"triangle-left"},"meta":"Silver Spring JV","mode":"lines+markers","name":"SS","x":["Week 00","Week 01","Week 02","Week 03"],"y":[0.5,0.6250000000000001,0.48684210526315785,0.3860292765456619],"type":"scatter"},{"hovertemplate":"%{meta}: %{y:.4f}\u003cextra\u003e\u003c\u002fextra\u003e","line":{"color":"#001f5b","dash":"solid","width":2},"marker":{"size":7,"symbol":"circle"},"meta":"Bethesda-Chevy Chase JV","mode":"lines+markers","name":"BCC","x":["Week 00","Week 01","Week 02","Week 03"],"y":[0.5,0.375,0.31220095693779903,0.3507944389275075],"type":"scatter"},{"hovertemplate":"%{meta}: %{y:.4f}\u003cextra\u003e\u003c\u002fextra\u003e","line":{"color":"#c77700","dash":"longdash","width":2},"marker":{"size":7,"symbol":"diamond"},"meta":"Richard Montgomery-Sherwood JV","mode":"lines+markers","name":"RMS","x":["Week 00","Week 01","Week 02","Week 03"],"y":[0.5,0.375,0.24760765550239233,0.1666023024017066],"type":"scatter"}],                        {"template":{"data":{"barpolar":[{"marker":{"line":{"color":"white","width":0.5},"pattern":{"fillmode":"overlay","size":10,"solidity":0.2}},"type":"barpolar"}],"bar":[{"error_x":{"color":"#2a3f5f"},"error_y":{"color":"#2a3f5f"},"marker":{"line":{"color":"white","width":0.5},"pattern":{"fillmode":"overlay","size":10,"solidity":0.2}},"type":"bar"}],"carpet":[{"aaxis":{"endlinecolor":"#2a3f5f","gridcolor":"#C8D4E3","linecolor":"#C8D4E3","minorgridcolor":"#C8D4E3","startlinecolor":"#2a3f5f"},"baxis":{"endlinecolor":"#2a3f5f","gridcolor":"#C8D4E3","linecolor":"#C8D4E3","minorgridcolor":"#C8D4E3","startlinecolor":"#2a3f5f"},"type":"carpet"}],"choropleth":[{"colorbar":{"outlinewidth":0,"ticks":""},"type":"choropleth"}],"contourcarpet":[{"colorbar":{"outlinewidth":0,"ticks":""},"type":"contourcarpet"}],"contour":[{"colorbar":{"outlinewidth":0,"ticks":""},"colorscale":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]],"type":"contour"}],"heatmap":[{"colorbar":{"outlinewidth":0,"ticks":""},"colorscale":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]],"type":"heatmap"}],"histogram2dcontour":[{"colorbar":{"outlinewidth":0,"ticks":""},"colorscale":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]],"type":"histogram2dcontour"}],"histogram2d":[{"colorbar":{"outlinewidth":0,"ticks":""},"colorscale":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]],"type":"histogram2d"}],"histogram":[{"marker":{"pattern":{"fillmode":"overlay","size":10,"solidity":0.2}},"type":"histogram"}],"mesh3d":[{"colorbar":{"outlinewidth":0,"ticks":""},"type":"mesh3d"}],"parcoords":[{"line":{"colorbar":{"outlinewidth":0,"ticks":""}},"type":"parcoords"}],"pie":[{"automargin":true,"type":"pie"}],"scatter3d":[{"line":{"colorbar":{"outlinewidth":0,"ticks":""}},"marker":{"colorbar":{"outlinewidth":0,"ticks":""}},"type":"scatter3d"}],"scattercarpet":[{"marker":{"colorbar":{"outlinewidth":0,"ticks":""}},"type":"scattercarpet"}],"scattergeo":[{"marker":{"colorbar":{"outlinewidth":0,"ticks":""}},"type":"scattergeo"}],"scattergl":[{"marker":{"colorbar":{"outlinewidth":0,"ticks":""}},"type":"scattergl"}],"scattermapbox":[{"marker":{"colorbar":{"outlinewidth":0,"ticks":""}},"type":"scattermapbox"}],"scattermap":[{"marker":{"colorbar":{"outlinewidth":0,"ticks":""}},"type":"scattermap"}],"scatterpolargl":[{"marker":{"colorbar":{"outlinewidth":0,"ticks":""}},"type":"scatterpolargl"}],"scatterpolar":[{"marker":{"colorbar":{"outlinewidth":0,"ticks":""}},"type":"scatterpolar"}],"scatter":[{"fillpattern":{"fillmode":"overlay","size":10,"solidity":0.2},"type":"scatter"}],"scatterternary":[{"marker":{"colorbar":{"outlinewidth":0,"ticks":""}},"type":"scatterternary"}],"surface":[{"colorbar":{"outlinewidth":0,"ticks":""},"colorscale":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]],"type":"surface"}],"table":[{"cells":{"fill":{"color":"#EBF0F8"},"line":{"color":"white"}},"header":{"fill":{"color":"#C8D4E3"},"line":{"color":"white"}},"type":"table"}]},"layout":{"annotationdefaults":{"arrowcolor":"#2a3f5f","arrowhead":0,"arrowwidth":1},"autotypenumbers":"strict","coloraxis":{"colorbar":{"outlinewidth":0,"ticks":""}},"colorscale":{"diverging":[[0,"#8e0152"],[0.1,"#c51b7d"],[0.2,"#de77ae"],[0.3,"#f1b6da"],[0.4,"#fde0ef"],[0.5,"#f7f7f7"],[0.6,"#e6f5d0"],[0.7,"#b8e186"],[0.8,"#7fbc41"],[0.9,"#4d9221"],[1,"#276419"]],"sequential":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]],"sequentialminus":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]]},"colorway":["#636efa","#EF553B","#00cc96","#ab63fa","#FFA15A","#19d3f3","#FF6692","#B6E880","#FF97FF","#FECB52"],"font":{"color":"#2a3f5f"},"geo":{"bgcolor":"white","lakecolor":"white","landcolor":"white","showlakes":true,"showland":true,"subunitcolor":"#C8D4E3"},"hoverlabel":{"align":"left"},"hovermode":"closest","mapbox":{"style":"light"},"paper_bgcolor":"white","plot_bgcolor":"white","polar":{"angularaxis":{"gridcolor":"#EBF0F8","linecolor":"#EBF0F8","ticks":""},"bgcolor":"white","radialaxis":{"gridcolor":"#EBF0F8","linecolor":"#EBF0F8","ticks":""}},"scene":{"xaxis":{"backgroundcolor":"white","gridcolor":"#DFE8F3","gridwidth":2,"linecolor":"#EBF0F8","showbackground":true,"ticks":"","zerolinecolor":"#EBF0F8"},"yaxis":{"backgroundcolor":"white","gridcolor":"#DFE8F3","gridwidth":2,"linecolor":"#EBF0F8","showbackground":true,"ticks":"","zerolinecolor":"#EBF0F8"},"zaxis":{"backgroundcolor":"white","gridcolor":"#DFE8F3","gridwidth":2,"linecolor":"#EBF0F8","showbackground":true,"ticks":"","zerolinecolor":"#EBF0F8"}},"shapedefaults":{"line":{"color":"#2a3f5f"}},"ternary":{"aaxis":{"gridcolor":"#DFE8F3","linecolor":"#A2B1C6","ticks":""},"baxis":{"gridcolor":"#DFE8F3","linecolor":"#A2B1C6","ticks":""},"bgcolor":"white","caxis":{"gridcolor":"#DFE8F3","linecolor":"#A2B1C6","ticks":""}},"title":{"x":0.05},"xaxis":{"automargin":true,"gridcolor":"#EBF0F8","linecolor":"#EBF0F8","ticks":"","title":{"standoff":15},"zerolinecolor":"#EBF0F8","zerolinewidth":2},"yaxis":{"automargin":true,"gridcolor":"#EBF0F8","linecolor":"#EBF0F8","ticks":"","title":{"standoff":15},"zerolinecolor":"#EBF0F8","zerolinewidth":2}}},"font":{"family":"'Segoe UI', Tahoma, Geneva, Verdana, sans-serif"},"yaxis":{"title":{"text":"Colley Rating"},"range":[0.13659509694762925,0.7967536169373308]},"legend":{"title":{"text":"Teams"},"yanchor":"top","y":0.99,"xanchor":"left","x":1.01,"itemclick":"toggleothers","itemdoubleclick":"toggle"},"xaxis":{"title":{"text":"Week"},"type":"category"},"margin":{"r":109,"t":100},"hovermode":"x unified","updatemenus":[{"bgcolor":"#f4f6f8","bordercolor":"#a3aaaf","buttons":[{"args":[{"visible":[true,true,true,true,true,true,true,true,true,true]}],"label":"All Teams","method":"update"},{"args":[{"visible":[true,true,true,true,true,true,false,false,false,false]}],"label":"Top 6 Teams","method":"update"},{"args":[{"visible":[false,false,false,false,false,false,true,true,true,true]}],"label":"Bottom 6 Teams","method":"update"},{"args":[{"visible":[true,false,false,false,false,false,false,false,false,false]}],"label":"Walter Johnson JV","method":"update"},{"args":[{"visible":[false,true,false,false,false,false,false,false,false,false]}],"label":"Winston Churchill JV","method":"update"},{"args":[{"visible":[false,false,true,false,false,false,false,false,false,false]}],"label":"Walt Whitman JV","method":"update"},{"args":[{"visible":[false,false,false,true,false,false,false,false,false,false]}],"label":"Upper Montgomery JV","method":"update"},{"args":[{"visible":[false,false,false,false,true,false,false,false,false,false]}],"label":"Central MOCO JV","method":"update"},{"args":[{"visible":[false,false,false,false,false,true,false,false,false,false]}],"label":"Rockville-Magruder JV","method":"update"},{"args":[{"visible":[false,false,false,false,false,false,true,false,false,false]}],"label":"DC Stars JV","method":"update"},{"args":[{"visible":[false,false,false,false,false,false,false,true,false,false]}],"label":"Silver Spring JV","method":"update"},{"args":[{"visible":[false,false,false,false,false,false,false,false,true,false]}],"label":"Bethesda-Chevy Chase JV","method":"update"},{"args":[{"visible":[false,false,false,false,false,false,false,false,false,true]}],"label":"Richard Montgomery-Sherwood JV","method":"update"}],"direction":"down","type":"dropdown","x":0.0,"xanchor":"left","y":1.15,"yanchor":"top"}],"height":623},                        {"responsive": true, "toImageButtonOptions": {"format": "png", "filename": "mhc_plot", "height": 800, "width": 1200, "scale": 2}, "displaylogo": false}                    )                };            </script>        </div></div>
             </div>
             <div class="tab-panel" role="tabpanel" id="panel-rankings" aria-labelledby="tab-rankings" data-active="false">
-                <div class="plot-container"><div>                            <div id="1af7d467-ef03-4540-9e92-1abfe5a3e8d3" class="plotly-graph-div" style="height:623px; width:100%;"></div>            <script>                window.PLOTLYENV=window.PLOTLYENV || {};                                if (document.getElementById("1af7d467-ef03-4540-9e92-1abfe5a3e8d3")) {                    Plotly.newPlot(                        "1af7d467-ef03-4540-9e92-1abfe5a3e8d3",                        [{"line":{"color":"#c77700","dash":"longdash","width":2},"marker":{"size":8,"symbol":"diamond"},"mode":"lines+markers","name":"Richard Montgomery-Sherwood JV","x":["2026-W39","2026-W40"],"y":[9,10],"type":"scatter"},{"line":{"color":"#001f5b","dash":"solid","width":2},"marker":{"size":8,"symbol":"circle"},"mode":"lines+markers","name":"Bethesda-Chevy Chase JV","x":["2026-W39","2026-W40"],"y":[7,9],"type":"scatter"},{"line":{"color":"#2a52be","dash":"dash","width":2},"marker":{"size":8,"symbol":"square"},"mode":"lines+markers","name":"Central MOCO JV","x":["2026-W39","2026-W40"],"y":[5,8],"type":"scatter"},{"line":{"color":"#f2c200","dash":"solid","width":2},"marker":{"size":8,"symbol":"triangle-right"},"mode":"lines+markers","name":"Upper Montgomery JV","x":["2026-W39","2026-W40"],"y":[10,7],"type":"scatter"},{"line":{"color":"#7a0f1f","dash":"dot","width":2},"marker":{"size":8,"symbol":"triangle-left"},"mode":"lines+markers","name":"Silver Spring JV","x":["2026-W39","2026-W40"],"y":[1,6],"type":"scatter"},{"line":{"color":"#ff6b6b","dash":"dashdot","width":2},"marker":{"size":8,"symbol":"triangle-up"},"mode":"lines+markers","name":"DC Stars JV","x":["2026-W39","2026-W40"],"y":[8,5],"type":"scatter"},{"line":{"color":"#02a7e2","dash":"dash","width":2},"marker":{"size":8,"symbol":"pentagon"},"mode":"lines+markers","name":"Walt Whitman JV","x":["2026-W39","2026-W40"],"y":[6,4],"type":"scatter"},{"line":{"color":"#c80f2e","dash":"longdashdot","width":2},"marker":{"size":8,"symbol":"triangle-down"},"mode":"lines+markers","name":"Rockville-Magruder JV","x":["2026-W39","2026-W40"],"y":[4,3],"type":"scatter"},{"line":{"color":"#111111","dash":"dashdot","width":2},"marker":{"size":8,"symbol":"star"},"mode":"lines+markers","name":"Walter Johnson JV","x":["2026-W39","2026-W40"],"y":[2,2],"type":"scatter"},{"line":{"color":"#1f5fbf","dash":"longdash","width":2},"marker":{"size":8,"symbol":"hexagon"},"mode":"lines+markers","name":"Winston Churchill JV","x":["2026-W39","2026-W40"],"y":[3,1],"type":"scatter"}],                        {"template":{"data":{"barpolar":[{"marker":{"line":{"color":"white","width":0.5},"pattern":{"fillmode":"overlay","size":10,"solidity":0.2}},"type":"barpolar"}],"bar":[{"error_x":{"color":"#2a3f5f"},"error_y":{"color":"#2a3f5f"},"marker":{"line":{"color":"white","width":0.5},"pattern":{"fillmode":"overlay","size":10,"solidity":0.2}},"type":"bar"}],"carpet":[{"aaxis":{"endlinecolor":"#2a3f5f","gridcolor":"#C8D4E3","linecolor":"#C8D4E3","minorgridcolor":"#C8D4E3","startlinecolor":"#2a3f5f"},"baxis":{"endlinecolor":"#2a3f5f","gridcolor":"#C8D4E3","linecolor":"#C8D4E3","minorgridcolor":"#C8D4E3","startlinecolor":"#2a3f5f"},"type":"carpet"}],"choropleth":[{"colorbar":{"outlinewidth":0,"ticks":""},"type":"choropleth"}],"contourcarpet":[{"colorbar":{"outlinewidth":0,"ticks":""},"type":"contourcarpet"}],"contour":[{"colorbar":{"outlinewidth":0,"ticks":""},"colorscale":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]],"type":"contour"}],"heatmap":[{"colorbar":{"outlinewidth":0,"ticks":""},"colorscale":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]],"type":"heatmap"}],"histogram2dcontour":[{"colorbar":{"outlinewidth":0,"ticks":""},"colorscale":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]],"type":"histogram2dcontour"}],"histogram2d":[{"colorbar":{"outlinewidth":0,"ticks":""},"colorscale":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]],"type":"histogram2d"}],"histogram":[{"marker":{"pattern":{"fillmode":"overlay","size":10,"solidity":0.2}},"type":"histogram"}],"mesh3d":[{"colorbar":{"outlinewidth":0,"ticks":""},"type":"mesh3d"}],"parcoords":[{"line":{"colorbar":{"outlinewidth":0,"ticks":""}},"type":"parcoords"}],"pie":[{"automargin":true,"type":"pie"}],"scatter3d":[{"line":{"colorbar":{"outlinewidth":0,"ticks":""}},"marker":{"colorbar":{"outlinewidth":0,"ticks":""}},"type":"scatter3d"}],"scattercarpet":[{"marker":{"colorbar":{"outlinewidth":0,"ticks":""}},"type":"scattercarpet"}],"scattergeo":[{"marker":{"colorbar":{"outlinewidth":0,"ticks":""}},"type":"scattergeo"}],"scattergl":[{"marker":{"colorbar":{"outlinewidth":0,"ticks":""}},"type":"scattergl"}],"scattermapbox":[{"marker":{"colorbar":{"outlinewidth":0,"ticks":""}},"type":"scattermapbox"}],"scattermap":[{"marker":{"colorbar":{"outlinewidth":0,"ticks":""}},"type":"scattermap"}],"scatterpolargl":[{"marker":{"colorbar":{"outlinewidth":0,"ticks":""}},"type":"scatterpolargl"}],"scatterpolar":[{"marker":{"colorbar":{"outlinewidth":0,"ticks":""}},"type":"scatterpolar"}],"scatter":[{"fillpattern":{"fillmode":"overlay","size":10,"solidity":0.2},"type":"scatter"}],"scatterternary":[{"marker":{"colorbar":{"outlinewidth":0,"ticks":""}},"type":"scatterternary"}],"surface":[{"colorbar":{"outlinewidth":0,"ticks":""},"colorscale":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]],"type":"surface"}],"table":[{"cells":{"fill":{"color":"#EBF0F8"},"line":{"color":"white"}},"header":{"fill":{"color":"#C8D4E3"},"line":{"color":"white"}},"type":"table"}]},"layout":{"annotationdefaults":{"arrowcolor":"#2a3f5f","arrowhead":0,"arrowwidth":1},"autotypenumbers":"strict","coloraxis":{"colorbar":{"outlinewidth":0,"ticks":""}},"colorscale":{"diverging":[[0,"#8e0152"],[0.1,"#c51b7d"],[0.2,"#de77ae"],[0.3,"#f1b6da"],[0.4,"#fde0ef"],[0.5,"#f7f7f7"],[0.6,"#e6f5d0"],[0.7,"#b8e186"],[0.8,"#7fbc41"],[0.9,"#4d9221"],[1,"#276419"]],"sequential":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]],"sequentialminus":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]]},"colorway":["#636efa","#EF553B","#00cc96","#ab63fa","#FFA15A","#19d3f3","#FF6692","#B6E880","#FF97FF","#FECB52"],"font":{"color":"#2a3f5f"},"geo":{"bgcolor":"white","lakecolor":"white","landcolor":"white","showlakes":true,"showland":true,"subunitcolor":"#C8D4E3"},"hoverlabel":{"align":"left"},"hovermode":"closest","mapbox":{"style":"light"},"paper_bgcolor":"white","plot_bgcolor":"white","polar":{"angularaxis":{"gridcolor":"#EBF0F8","linecolor":"#EBF0F8","ticks":""},"bgcolor":"white","radialaxis":{"gridcolor":"#EBF0F8","linecolor":"#EBF0F8","ticks":""}},"scene":{"xaxis":{"backgroundcolor":"white","gridcolor":"#DFE8F3","gridwidth":2,"linecolor":"#EBF0F8","showbackground":true,"ticks":"","zerolinecolor":"#EBF0F8"},"yaxis":{"backgroundcolor":"white","gridcolor":"#DFE8F3","gridwidth":2,"linecolor":"#EBF0F8","showbackground":true,"ticks":"","zerolinecolor":"#EBF0F8"},"zaxis":{"backgroundcolor":"white","gridcolor":"#DFE8F3","gridwidth":2,"linecolor":"#EBF0F8","showbackground":true,"ticks":"","zerolinecolor":"#EBF0F8"}},"shapedefaults":{"line":{"color":"#2a3f5f"}},"ternary":{"aaxis":{"gridcolor":"#DFE8F3","linecolor":"#A2B1C6","ticks":""},"baxis":{"gridcolor":"#DFE8F3","linecolor":"#A2B1C6","ticks":""},"bgcolor":"white","caxis":{"gridcolor":"#DFE8F3","linecolor":"#A2B1C6","ticks":""}},"title":{"x":0.05},"xaxis":{"automargin":true,"gridcolor":"#EBF0F8","linecolor":"#EBF0F8","ticks":"","title":{"standoff":15},"zerolinecolor":"#EBF0F8","zerolinewidth":2},"yaxis":{"automargin":true,"gridcolor":"#EBF0F8","linecolor":"#EBF0F8","ticks":"","title":{"standoff":15},"zerolinecolor":"#EBF0F8","zerolinewidth":2}}},"yaxis":{"title":{"text":"Rank"},"range":[10.5,0.5],"dtick":1},"legend":{"title":{"text":"Teams"},"yanchor":"top","y":0.99,"xanchor":"left","x":1.01,"itemclick":"toggleothers","itemdoubleclick":"toggle"},"xaxis":{"title":{"text":"Week"},"type":"category"},"margin":{"r":150,"t":100},"hovermode":"x unified","updatemenus":[{"buttons":[{"args":[{"visible":[true,true,true,true,true,true,true,true,true,true]}],"label":"All Teams","method":"update"},{"args":[{"visible":[true,true,true,true,true,true,false,false,false,false]}],"label":"Top 6 Teams","method":"update"},{"args":[{"visible":[false,false,false,false,false,false,true,true,true,true]}],"label":"Bottom 6 Teams","method":"update"},{"args":[{"visible":[true,false,false,false,false,false,false,false,false,false]}],"label":"Richard Montgomery-Sherwood JV","method":"update"},{"args":[{"visible":[false,true,false,false,false,false,false,false,false,false]}],"label":"Bethesda-Chevy Chase JV","method":"update"},{"args":[{"visible":[false,false,true,false,false,false,false,false,false,false]}],"label":"Central MOCO JV","method":"update"},{"args":[{"visible":[false,false,false,true,false,false,false,false,false,false]}],"label":"Upper Montgomery JV","method":"update"},{"args":[{"visible":[false,false,false,false,true,false,false,false,false,false]}],"label":"Silver Spring JV","method":"update"},{"args":[{"visible":[false,false,false,false,false,true,false,false,false,false]}],"label":"DC Stars JV","method":"update"},{"args":[{"visible":[false,false,false,false,false,false,true,false,false,false]}],"label":"Walt Whitman JV","method":"update"},{"args":[{"visible":[false,false,false,false,false,false,false,true,false,false]}],"label":"Rockville-Magruder JV","method":"update"},{"args":[{"visible":[false,false,false,false,false,false,false,false,true,false]}],"label":"Walter Johnson JV","method":"update"},{"args":[{"visible":[false,false,false,false,false,false,false,false,false,true]}],"label":"Winston Churchill JV","method":"update"}],"direction":"down","type":"dropdown","x":0.0,"xanchor":"left","y":1.15,"yanchor":"top"}],"height":623},                        {"responsive": true, "toImageButtonOptions": {"format": "png", "filename": "mhc_plot", "height": 800, "width": 1200, "scale": 2}, "displaylogo": false}                    )                };            </script>        </div></div>
+                <div class="plot-container"><div>                            <div id="f4a6b4b8-2d92-431c-a847-ca10fb7209c1" class="plotly-graph-div" style="height:623px; width:100%;"></div>            <script>                window.PLOTLYENV=window.PLOTLYENV || {};                                if (document.getElementById("f4a6b4b8-2d92-431c-a847-ca10fb7209c1")) {                    Plotly.newPlot(                        "f4a6b4b8-2d92-431c-a847-ca10fb7209c1",                        [{"hovertemplate":"%{meta}: %{y}\u003cextra\u003e\u003c\u002fextra\u003e","line":{"color":"#111111","dash":"dashdot","width":2},"marker":{"size":7,"symbol":"star"},"meta":"Walter Johnson JV","mode":"lines+markers","name":"WJ","x":["Week 01","Week 02","Week 03"],"y":[2,2,1],"type":"scatter"},{"hovertemplate":"%{meta}: %{y}\u003cextra\u003e\u003c\u002fextra\u003e","line":{"color":"#1f5fbf","dash":"longdash","width":2},"marker":{"size":7,"symbol":"hexagon"},"meta":"Winston Churchill JV","mode":"lines+markers","name":"Church","x":["Week 01","Week 02","Week 03"],"y":[3,1,2],"type":"scatter"},{"hovertemplate":"%{meta}: %{y}\u003cextra\u003e\u003c\u002fextra\u003e","line":{"color":"#02a7e2","dash":"dash","width":2},"marker":{"size":7,"symbol":"pentagon"},"meta":"Walt Whitman JV","mode":"lines+markers","name":"Whit","x":["Week 01","Week 02","Week 03"],"y":[6,4,3],"type":"scatter"},{"hovertemplate":"%{meta}: %{y}\u003cextra\u003e\u003c\u002fextra\u003e","line":{"color":"#f2c200","dash":"solid","width":2},"marker":{"size":7,"symbol":"triangle-right"},"meta":"Upper Montgomery JV","mode":"lines+markers","name":"UML","x":["Week 01","Week 02","Week 03"],"y":[10,7,4],"type":"scatter"},{"hovertemplate":"%{meta}: %{y}\u003cextra\u003e\u003c\u002fextra\u003e","line":{"color":"#2a52be","dash":"dash","width":2},"marker":{"size":7,"symbol":"square"},"meta":"Central MOCO JV","mode":"lines+markers","name":"CenMOCO","x":["Week 01","Week 02","Week 03"],"y":[5,8,5],"type":"scatter"},{"hovertemplate":"%{meta}: %{y}\u003cextra\u003e\u003c\u002fextra\u003e","line":{"color":"#c80f2e","dash":"longdashdot","width":2},"marker":{"size":7,"symbol":"triangle-down"},"meta":"Rockville-Magruder JV","mode":"lines+markers","name":"RAM","x":["Week 01","Week 02","Week 03"],"y":[4,3,6],"type":"scatter"},{"hovertemplate":"%{meta}: %{y}\u003cextra\u003e\u003c\u002fextra\u003e","line":{"color":"#ff6b6b","dash":"dashdot","width":2},"marker":{"size":7,"symbol":"triangle-up"},"meta":"DC Stars JV","mode":"lines+markers","name":"DC","x":["Week 01","Week 02","Week 03"],"y":[8,5,7],"type":"scatter"},{"hovertemplate":"%{meta}: %{y}\u003cextra\u003e\u003c\u002fextra\u003e","line":{"color":"#7a0f1f","dash":"dot","width":2},"marker":{"size":7,"symbol":"triangle-left"},"meta":"Silver Spring JV","mode":"lines+markers","name":"SS","x":["Week 01","Week 02","Week 03"],"y":[1,6,8],"type":"scatter"},{"hovertemplate":"%{meta}: %{y}\u003cextra\u003e\u003c\u002fextra\u003e","line":{"color":"#001f5b","dash":"solid","width":2},"marker":{"size":7,"symbol":"circle"},"meta":"Bethesda-Chevy Chase JV","mode":"lines+markers","name":"BCC","x":["Week 01","Week 02","Week 03"],"y":[7,9,9],"type":"scatter"},{"hovertemplate":"%{meta}: %{y}\u003cextra\u003e\u003c\u002fextra\u003e","line":{"color":"#c77700","dash":"longdash","width":2},"marker":{"size":7,"symbol":"diamond"},"meta":"Richard Montgomery-Sherwood JV","mode":"lines+markers","name":"RMS","x":["Week 01","Week 02","Week 03"],"y":[9,10,10],"type":"scatter"}],                        {"template":{"data":{"barpolar":[{"marker":{"line":{"color":"white","width":0.5},"pattern":{"fillmode":"overlay","size":10,"solidity":0.2}},"type":"barpolar"}],"bar":[{"error_x":{"color":"#2a3f5f"},"error_y":{"color":"#2a3f5f"},"marker":{"line":{"color":"white","width":0.5},"pattern":{"fillmode":"overlay","size":10,"solidity":0.2}},"type":"bar"}],"carpet":[{"aaxis":{"endlinecolor":"#2a3f5f","gridcolor":"#C8D4E3","linecolor":"#C8D4E3","minorgridcolor":"#C8D4E3","startlinecolor":"#2a3f5f"},"baxis":{"endlinecolor":"#2a3f5f","gridcolor":"#C8D4E3","linecolor":"#C8D4E3","minorgridcolor":"#C8D4E3","startlinecolor":"#2a3f5f"},"type":"carpet"}],"choropleth":[{"colorbar":{"outlinewidth":0,"ticks":""},"type":"choropleth"}],"contourcarpet":[{"colorbar":{"outlinewidth":0,"ticks":""},"type":"contourcarpet"}],"contour":[{"colorbar":{"outlinewidth":0,"ticks":""},"colorscale":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]],"type":"contour"}],"heatmap":[{"colorbar":{"outlinewidth":0,"ticks":""},"colorscale":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]],"type":"heatmap"}],"histogram2dcontour":[{"colorbar":{"outlinewidth":0,"ticks":""},"colorscale":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]],"type":"histogram2dcontour"}],"histogram2d":[{"colorbar":{"outlinewidth":0,"ticks":""},"colorscale":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]],"type":"histogram2d"}],"histogram":[{"marker":{"pattern":{"fillmode":"overlay","size":10,"solidity":0.2}},"type":"histogram"}],"mesh3d":[{"colorbar":{"outlinewidth":0,"ticks":""},"type":"mesh3d"}],"parcoords":[{"line":{"colorbar":{"outlinewidth":0,"ticks":""}},"type":"parcoords"}],"pie":[{"automargin":true,"type":"pie"}],"scatter3d":[{"line":{"colorbar":{"outlinewidth":0,"ticks":""}},"marker":{"colorbar":{"outlinewidth":0,"ticks":""}},"type":"scatter3d"}],"scattercarpet":[{"marker":{"colorbar":{"outlinewidth":0,"ticks":""}},"type":"scattercarpet"}],"scattergeo":[{"marker":{"colorbar":{"outlinewidth":0,"ticks":""}},"type":"scattergeo"}],"scattergl":[{"marker":{"colorbar":{"outlinewidth":0,"ticks":""}},"type":"scattergl"}],"scattermapbox":[{"marker":{"colorbar":{"outlinewidth":0,"ticks":""}},"type":"scattermapbox"}],"scattermap":[{"marker":{"colorbar":{"outlinewidth":0,"ticks":""}},"type":"scattermap"}],"scatterpolargl":[{"marker":{"colorbar":{"outlinewidth":0,"ticks":""}},"type":"scatterpolargl"}],"scatterpolar":[{"marker":{"colorbar":{"outlinewidth":0,"ticks":""}},"type":"scatterpolar"}],"scatter":[{"fillpattern":{"fillmode":"overlay","size":10,"solidity":0.2},"type":"scatter"}],"scatterternary":[{"marker":{"colorbar":{"outlinewidth":0,"ticks":""}},"type":"scatterternary"}],"surface":[{"colorbar":{"outlinewidth":0,"ticks":""},"colorscale":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]],"type":"surface"}],"table":[{"cells":{"fill":{"color":"#EBF0F8"},"line":{"color":"white"}},"header":{"fill":{"color":"#C8D4E3"},"line":{"color":"white"}},"type":"table"}]},"layout":{"annotationdefaults":{"arrowcolor":"#2a3f5f","arrowhead":0,"arrowwidth":1},"autotypenumbers":"strict","coloraxis":{"colorbar":{"outlinewidth":0,"ticks":""}},"colorscale":{"diverging":[[0,"#8e0152"],[0.1,"#c51b7d"],[0.2,"#de77ae"],[0.3,"#f1b6da"],[0.4,"#fde0ef"],[0.5,"#f7f7f7"],[0.6,"#e6f5d0"],[0.7,"#b8e186"],[0.8,"#7fbc41"],[0.9,"#4d9221"],[1,"#276419"]],"sequential":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]],"sequentialminus":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]]},"colorway":["#636efa","#EF553B","#00cc96","#ab63fa","#FFA15A","#19d3f3","#FF6692","#B6E880","#FF97FF","#FECB52"],"font":{"color":"#2a3f5f"},"geo":{"bgcolor":"white","lakecolor":"white","landcolor":"white","showlakes":true,"showland":true,"subunitcolor":"#C8D4E3"},"hoverlabel":{"align":"left"},"hovermode":"closest","mapbox":{"style":"light"},"paper_bgcolor":"white","plot_bgcolor":"white","polar":{"angularaxis":{"gridcolor":"#EBF0F8","linecolor":"#EBF0F8","ticks":""},"bgcolor":"white","radialaxis":{"gridcolor":"#EBF0F8","linecolor":"#EBF0F8","ticks":""}},"scene":{"xaxis":{"backgroundcolor":"white","gridcolor":"#DFE8F3","gridwidth":2,"linecolor":"#EBF0F8","showbackground":true,"ticks":"","zerolinecolor":"#EBF0F8"},"yaxis":{"backgroundcolor":"white","gridcolor":"#DFE8F3","gridwidth":2,"linecolor":"#EBF0F8","showbackground":true,"ticks":"","zerolinecolor":"#EBF0F8"},"zaxis":{"backgroundcolor":"white","gridcolor":"#DFE8F3","gridwidth":2,"linecolor":"#EBF0F8","showbackground":true,"ticks":"","zerolinecolor":"#EBF0F8"}},"shapedefaults":{"line":{"color":"#2a3f5f"}},"ternary":{"aaxis":{"gridcolor":"#DFE8F3","linecolor":"#A2B1C6","ticks":""},"baxis":{"gridcolor":"#DFE8F3","linecolor":"#A2B1C6","ticks":""},"bgcolor":"white","caxis":{"gridcolor":"#DFE8F3","linecolor":"#A2B1C6","ticks":""}},"title":{"x":0.05},"xaxis":{"automargin":true,"gridcolor":"#EBF0F8","linecolor":"#EBF0F8","ticks":"","title":{"standoff":15},"zerolinecolor":"#EBF0F8","zerolinewidth":2},"yaxis":{"automargin":true,"gridcolor":"#EBF0F8","linecolor":"#EBF0F8","ticks":"","title":{"standoff":15},"zerolinecolor":"#EBF0F8","zerolinewidth":2}}},"font":{"family":"'Segoe UI', Tahoma, Geneva, Verdana, sans-serif"},"yaxis":{"title":{"text":"Rank"},"range":[10.5,0.5],"dtick":1},"legend":{"title":{"text":"Teams"},"yanchor":"top","y":0.99,"xanchor":"left","x":1.01,"itemclick":"toggleothers","itemdoubleclick":"toggle"},"xaxis":{"title":{"text":"Week"},"type":"category"},"margin":{"r":109,"t":100},"hovermode":"x unified","updatemenus":[{"bgcolor":"#f4f6f8","bordercolor":"#a3aaaf","buttons":[{"args":[{"visible":[true,true,true,true,true,true,true,true,true,true]}],"label":"All Teams","method":"update"},{"args":[{"visible":[true,true,true,true,true,true,false,false,false,false]}],"label":"Top 6 Teams","method":"update"},{"args":[{"visible":[false,false,false,false,false,false,true,true,true,true]}],"label":"Bottom 6 Teams","method":"update"},{"args":[{"visible":[true,false,false,false,false,false,false,false,false,false]}],"label":"Walter Johnson JV","method":"update"},{"args":[{"visible":[false,true,false,false,false,false,false,false,false,false]}],"label":"Winston Churchill JV","method":"update"},{"args":[{"visible":[false,false,true,false,false,false,false,false,false,false]}],"label":"Walt Whitman JV","method":"update"},{"args":[{"visible":[false,false,false,true,false,false,false,false,false,false]}],"label":"Upper Montgomery JV","method":"update"},{"args":[{"visible":[false,false,false,false,true,false,false,false,false,false]}],"label":"Central MOCO JV","method":"update"},{"args":[{"visible":[false,false,false,false,false,true,false,false,false,false]}],"label":"Rockville-Magruder JV","method":"update"},{"args":[{"visible":[false,false,false,false,false,false,true,false,false,false]}],"label":"DC Stars JV","method":"update"},{"args":[{"visible":[false,false,false,false,false,false,false,true,false,false]}],"label":"Silver Spring JV","method":"update"},{"args":[{"visible":[false,false,false,false,false,false,false,false,true,false]}],"label":"Bethesda-Chevy Chase JV","method":"update"},{"args":[{"visible":[false,false,false,false,false,false,false,false,false,true]}],"label":"Richard Montgomery-Sherwood JV","method":"update"}],"direction":"down","type":"dropdown","x":0.0,"xanchor":"left","y":1.15,"yanchor":"top"}],"height":623},                        {"responsive": true, "toImageButtonOptions": {"format": "png", "filename": "mhc_plot", "height": 800, "width": 1200, "scale": 2}, "displaylogo": false}                    )                };            </script>        </div></div>
             </div>
             <div class="tab-panel" role="tabpanel" id="panel-sos" aria-labelledby="tab-sos" data-active="false">
-                <div class="plot-container"><div>                            <div id="41b9bbc7-10bd-4a6c-8f26-3d8311308ec6" class="plotly-graph-div" style="height:623px; width:100%;"></div>            <script>                window.PLOTLYENV=window.PLOTLYENV || {};                                if (document.getElementById("41b9bbc7-10bd-4a6c-8f26-3d8311308ec6")) {                    Plotly.newPlot(                        "41b9bbc7-10bd-4a6c-8f26-3d8311308ec6",                        [{"line":{"color":"#c80f2e","dash":"longdashdot","width":2},"marker":{"size":8,"symbol":"triangle-down"},"mode":"lines+markers","name":"Rockville-Magruder JV","x":["2026-W39","2026-W40"],"y":[0.375,0.6267942583732058],"type":"scatter"},{"line":{"color":"#001f5b","dash":"solid","width":2},"marker":{"size":8,"symbol":"circle"},"mode":"lines+markers","name":"Bethesda-Chevy Chase JV","x":["2026-W39","2026-W40"],"y":[0.625,0.6244019138755981],"type":"scatter"},{"line":{"color":"#1f5fbf","dash":"longdash","width":2},"marker":{"size":8,"symbol":"hexagon"},"mode":"lines+markers","name":"Winston Churchill JV","x":["2026-W39","2026-W40"],"y":[0.37500000000000044,0.533492822966507],"type":"scatter"},{"line":{"color":"#2a52be","dash":"dash","width":2},"marker":{"size":8,"symbol":"square"},"mode":"lines+markers","name":"Central MOCO JV","x":["2026-W39","2026-W40"],"y":[0.5,0.5179425837320575],"type":"scatter"},{"line":{"color":"#ff6b6b","dash":"dashdot","width":2},"marker":{"size":8,"symbol":"triangle-up"},"mode":"lines+markers","name":"DC Stars JV","x":["2026-W39","2026-W40"],"y":[0.625,0.507177033492823],"type":"scatter"},{"line":{"color":"#c77700","dash":"longdash","width":2},"marker":{"size":8,"symbol":"diamond"},"mode":"lines+markers","name":"Richard Montgomery-Sherwood JV","x":["2026-W39","2026-W40"],"y":[0.625,0.49521531100478466],"type":"scatter"},{"line":{"color":"#7a0f1f","dash":"dot","width":2},"marker":{"size":8,"symbol":"triangle-left"},"mode":"lines+markers","name":"Silver Spring JV","x":["2026-W39","2026-W40"],"y":[0.37500000000000044,0.4736842105263157],"type":"scatter"},{"line":{"color":"#f2c200","dash":"solid","width":2},"marker":{"size":8,"symbol":"triangle-right"},"mode":"lines+markers","name":"Upper Montgomery JV","x":["2026-W39","2026-W40"],"y":[0.625,0.4736842105263157],"type":"scatter"},{"line":{"color":"#111111","dash":"dashdot","width":2},"marker":{"size":8,"symbol":"star"},"mode":"lines+markers","name":"Walter Johnson JV","x":["2026-W39","2026-W40"],"y":[0.37500000000000044,0.3995215311004783],"type":"scatter"},{"line":{"color":"#02a7e2","dash":"dash","width":2},"marker":{"size":8,"symbol":"pentagon"},"mode":"lines+markers","name":"Walt Whitman JV","x":["2026-W39","2026-W40"],"y":[0.5,0.3480861244019138],"type":"scatter"}],                        {"template":{"data":{"barpolar":[{"marker":{"line":{"color":"white","width":0.5},"pattern":{"fillmode":"overlay","size":10,"solidity":0.2}},"type":"barpolar"}],"bar":[{"error_x":{"color":"#2a3f5f"},"error_y":{"color":"#2a3f5f"},"marker":{"line":{"color":"white","width":0.5},"pattern":{"fillmode":"overlay","size":10,"solidity":0.2}},"type":"bar"}],"carpet":[{"aaxis":{"endlinecolor":"#2a3f5f","gridcolor":"#C8D4E3","linecolor":"#C8D4E3","minorgridcolor":"#C8D4E3","startlinecolor":"#2a3f5f"},"baxis":{"endlinecolor":"#2a3f5f","gridcolor":"#C8D4E3","linecolor":"#C8D4E3","minorgridcolor":"#C8D4E3","startlinecolor":"#2a3f5f"},"type":"carpet"}],"choropleth":[{"colorbar":{"outlinewidth":0,"ticks":""},"type":"choropleth"}],"contourcarpet":[{"colorbar":{"outlinewidth":0,"ticks":""},"type":"contourcarpet"}],"contour":[{"colorbar":{"outlinewidth":0,"ticks":""},"colorscale":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]],"type":"contour"}],"heatmap":[{"colorbar":{"outlinewidth":0,"ticks":""},"colorscale":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]],"type":"heatmap"}],"histogram2dcontour":[{"colorbar":{"outlinewidth":0,"ticks":""},"colorscale":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]],"type":"histogram2dcontour"}],"histogram2d":[{"colorbar":{"outlinewidth":0,"ticks":""},"colorscale":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]],"type":"histogram2d"}],"histogram":[{"marker":{"pattern":{"fillmode":"overlay","size":10,"solidity":0.2}},"type":"histogram"}],"mesh3d":[{"colorbar":{"outlinewidth":0,"ticks":""},"type":"mesh3d"}],"parcoords":[{"line":{"colorbar":{"outlinewidth":0,"ticks":""}},"type":"parcoords"}],"pie":[{"automargin":true,"type":"pie"}],"scatter3d":[{"line":{"colorbar":{"outlinewidth":0,"ticks":""}},"marker":{"colorbar":{"outlinewidth":0,"ticks":""}},"type":"scatter3d"}],"scattercarpet":[{"marker":{"colorbar":{"outlinewidth":0,"ticks":""}},"type":"scattercarpet"}],"scattergeo":[{"marker":{"colorbar":{"outlinewidth":0,"ticks":""}},"type":"scattergeo"}],"scattergl":[{"marker":{"colorbar":{"outlinewidth":0,"ticks":""}},"type":"scattergl"}],"scattermapbox":[{"marker":{"colorbar":{"outlinewidth":0,"ticks":""}},"type":"scattermapbox"}],"scattermap":[{"marker":{"colorbar":{"outlinewidth":0,"ticks":""}},"type":"scattermap"}],"scatterpolargl":[{"marker":{"colorbar":{"outlinewidth":0,"ticks":""}},"type":"scatterpolargl"}],"scatterpolar":[{"marker":{"colorbar":{"outlinewidth":0,"ticks":""}},"type":"scatterpolar"}],"scatter":[{"fillpattern":{"fillmode":"overlay","size":10,"solidity":0.2},"type":"scatter"}],"scatterternary":[{"marker":{"colorbar":{"outlinewidth":0,"ticks":""}},"type":"scatterternary"}],"surface":[{"colorbar":{"outlinewidth":0,"ticks":""},"colorscale":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]],"type":"surface"}],"table":[{"cells":{"fill":{"color":"#EBF0F8"},"line":{"color":"white"}},"header":{"fill":{"color":"#C8D4E3"},"line":{"color":"white"}},"type":"table"}]},"layout":{"annotationdefaults":{"arrowcolor":"#2a3f5f","arrowhead":0,"arrowwidth":1},"autotypenumbers":"strict","coloraxis":{"colorbar":{"outlinewidth":0,"ticks":""}},"colorscale":{"diverging":[[0,"#8e0152"],[0.1,"#c51b7d"],[0.2,"#de77ae"],[0.3,"#f1b6da"],[0.4,"#fde0ef"],[0.5,"#f7f7f7"],[0.6,"#e6f5d0"],[0.7,"#b8e186"],[0.8,"#7fbc41"],[0.9,"#4d9221"],[1,"#276419"]],"sequential":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]],"sequentialminus":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]]},"colorway":["#636efa","#EF553B","#00cc96","#ab63fa","#FFA15A","#19d3f3","#FF6692","#B6E880","#FF97FF","#FECB52"],"font":{"color":"#2a3f5f"},"geo":{"bgcolor":"white","lakecolor":"white","landcolor":"white","showlakes":true,"showland":true,"subunitcolor":"#C8D4E3"},"hoverlabel":{"align":"left"},"hovermode":"closest","mapbox":{"style":"light"},"paper_bgcolor":"white","plot_bgcolor":"white","polar":{"angularaxis":{"gridcolor":"#EBF0F8","linecolor":"#EBF0F8","ticks":""},"bgcolor":"white","radialaxis":{"gridcolor":"#EBF0F8","linecolor":"#EBF0F8","ticks":""}},"scene":{"xaxis":{"backgroundcolor":"white","gridcolor":"#DFE8F3","gridwidth":2,"linecolor":"#EBF0F8","showbackground":true,"ticks":"","zerolinecolor":"#EBF0F8"},"yaxis":{"backgroundcolor":"white","gridcolor":"#DFE8F3","gridwidth":2,"linecolor":"#EBF0F8","showbackground":true,"ticks":"","zerolinecolor":"#EBF0F8"},"zaxis":{"backgroundcolor":"white","gridcolor":"#DFE8F3","gridwidth":2,"linecolor":"#EBF0F8","showbackground":true,"ticks":"","zerolinecolor":"#EBF0F8"}},"shapedefaults":{"line":{"color":"#2a3f5f"}},"ternary":{"aaxis":{"gridcolor":"#DFE8F3","linecolor":"#A2B1C6","ticks":""},"baxis":{"gridcolor":"#DFE8F3","linecolor":"#A2B1C6","ticks":""},"bgcolor":"white","caxis":{"gridcolor":"#DFE8F3","linecolor":"#A2B1C6","ticks":""}},"title":{"x":0.05},"xaxis":{"automargin":true,"gridcolor":"#EBF0F8","linecolor":"#EBF0F8","ticks":"","title":{"standoff":15},"zerolinecolor":"#EBF0F8","zerolinewidth":2},"yaxis":{"automargin":true,"gridcolor":"#EBF0F8","linecolor":"#EBF0F8","ticks":"","title":{"standoff":15},"zerolinecolor":"#EBF0F8","zerolinewidth":2}}},"yaxis":{"title":{"text":"SOS"},"range":[0.3341507177033492,0.6407296650717704]},"legend":{"title":{"text":"Teams"},"yanchor":"top","y":0.99,"xanchor":"left","x":1.01,"itemclick":"toggleothers","itemdoubleclick":"toggle"},"xaxis":{"title":{"text":"Week"},"type":"category"},"margin":{"r":150,"t":100},"hovermode":"x unified","updatemenus":[{"buttons":[{"args":[{"visible":[true,true,true,true,true,true,true,true,true,true]}],"label":"All Teams","method":"update"},{"args":[{"visible":[true,true,true,true,true,true,false,false,false,false]}],"label":"Top 6 Teams","method":"update"},{"args":[{"visible":[false,false,false,false,false,false,true,true,true,true]}],"label":"Bottom 6 Teams","method":"update"},{"args":[{"visible":[true,false,false,false,false,false,false,false,false,false]}],"label":"Rockville-Magruder JV","method":"update"},{"args":[{"visible":[false,true,false,false,false,false,false,false,false,false]}],"label":"Bethesda-Chevy Chase JV","method":"update"},{"args":[{"visible":[false,false,true,false,false,false,false,false,false,false]}],"label":"Winston Churchill JV","method":"update"},{"args":[{"visible":[false,false,false,true,false,false,false,false,false,false]}],"label":"Central MOCO JV","method":"update"},{"args":[{"visible":[false,false,false,false,true,false,false,false,false,false]}],"label":"DC Stars JV","method":"update"},{"args":[{"visible":[false,false,false,false,false,true,false,false,false,false]}],"label":"Richard Montgomery-Sherwood JV","method":"update"},{"args":[{"visible":[false,false,false,false,false,false,true,false,false,false]}],"label":"Silver Spring JV","method":"update"},{"args":[{"visible":[false,false,false,false,false,false,false,true,false,false]}],"label":"Upper Montgomery JV","method":"update"},{"args":[{"visible":[false,false,false,false,false,false,false,false,true,false]}],"label":"Walter Johnson JV","method":"update"},{"args":[{"visible":[false,false,false,false,false,false,false,false,false,true]}],"label":"Walt Whitman JV","method":"update"}],"direction":"down","type":"dropdown","x":0.0,"xanchor":"left","y":1.15,"yanchor":"top"}],"height":623},                        {"responsive": true, "toImageButtonOptions": {"format": "png", "filename": "mhc_plot", "height": 800, "width": 1200, "scale": 2}, "displaylogo": false}                    )                };            </script>        </div></div>
+                <div class="plot-container"><div>                            <div id="cbbe3d08-877e-4ff4-9956-d3aa31d9e9c1" class="plotly-graph-div" style="height:623px; width:100%;"></div>            <script>                window.PLOTLYENV=window.PLOTLYENV || {};                                if (document.getElementById("cbbe3d08-877e-4ff4-9956-d3aa31d9e9c1")) {                    Plotly.newPlot(                        "cbbe3d08-877e-4ff4-9956-d3aa31d9e9c1",                        [{"hovertemplate":"%{meta}: %{y:.4f}\u003cextra\u003e\u003c\u002fextra\u003e","line":{"color":"#001f5b","dash":"solid","width":2},"marker":{"size":7,"symbol":"circle"},"meta":"Bethesda-Chevy Chase JV","mode":"lines+markers","name":"BCC","x":["Week 00","Week 01","Week 02","Week 03"],"y":[0.5,0.625,0.6244019138755981,0.701588877855015],"type":"scatter"},{"hovertemplate":"%{meta}: %{y:.4f}\u003cextra\u003e\u003c\u002fextra\u003e","line":{"color":"#c80f2e","dash":"longdashdot","width":2},"marker":{"size":7,"symbol":"triangle-down"},"meta":"Rockville-Magruder JV","mode":"lines+markers","name":"RAM","x":["Week 00","Week 01","Week 02","Week 03"],"y":[0.5,0.375,0.6267942583732058,0.671003592138978],"type":"scatter"},{"hovertemplate":"%{meta}: %{y:.4f}\u003cextra\u003e\u003c\u002fextra\u003e","line":{"color":"#2a52be","dash":"dash","width":2},"marker":{"size":7,"symbol":"square"},"meta":"Central MOCO JV","mode":"lines+markers","name":"CenMOCO","x":["Week 00","Week 01","Week 02","Week 03"],"y":[0.5,0.5,0.5179425837320575,0.526098176958819],"type":"scatter"},{"hovertemplate":"%{meta}: %{y:.4f}\u003cextra\u003e\u003c\u002fextra\u003e","line":{"color":"#ff6b6b","dash":"dashdot","width":2},"marker":{"size":7,"symbol":"triangle-up"},"meta":"DC Stars JV","mode":"lines+markers","name":"DC","x":["Week 00","Week 01","Week 02","Week 03"],"y":[0.5,0.625,0.507177033492823,0.5166826044846569],"type":"scatter"},{"hovertemplate":"%{meta}: %{y:.4f}\u003cextra\u003e\u003c\u002fextra\u003e","line":{"color":"#7a0f1f","dash":"dot","width":2},"marker":{"size":7,"symbol":"triangle-left"},"meta":"Silver Spring JV","mode":"lines+markers","name":"SS","x":["Week 00","Week 01","Week 02","Week 03"],"y":[0.5,0.37500000000000044,0.4736842105263157,0.47671546090943645],"type":"scatter"},{"hovertemplate":"%{meta}: %{y:.4f}\u003cextra\u003e\u003c\u002fextra\u003e","line":{"color":"#1f5fbf","dash":"longdash","width":2},"marker":{"size":7,"symbol":"hexagon"},"meta":"Winston Churchill JV","mode":"lines+markers","name":"Church","x":["Week 00","Week 01","Week 02","Week 03"],"y":[0.5,0.37500000000000044,0.533492822966507,0.45630585898709053],"type":"scatter"},{"hovertemplate":"%{meta}: %{y:.4f}\u003cextra\u003e\u003c\u002fextra\u003e","line":{"color":"#c77700","dash":"longdash","width":2},"marker":{"size":7,"symbol":"diamond"},"meta":"Richard Montgomery-Sherwood JV","mode":"lines+markers","name":"RMS","x":["Week 00","Week 01","Week 02","Week 03"],"y":[0.5,0.625,0.49521531100478466,0.44433717066951095],"type":"scatter"},{"hovertemplate":"%{meta}: %{y:.4f}\u003cextra\u003e\u003c\u002fextra\u003e","line":{"color":"#02a7e2","dash":"dash","width":2},"marker":{"size":7,"symbol":"pentagon"},"meta":"Walt Whitman JV","mode":"lines+markers","name":"Whit","x":["Week 00","Week 01","Week 02","Week 03"],"y":[0.5,0.5,0.3480861244019138,0.42548763593119787],"type":"scatter"},{"hovertemplate":"%{meta}: %{y:.4f}\u003cextra\u003e\u003c\u002fextra\u003e","line":{"color":"#111111","dash":"dashdot","width":2},"marker":{"size":7,"symbol":"star"},"meta":"Walter Johnson JV","mode":"lines+markers","name":"WJ","x":["Week 00","Week 01","Week 02","Week 03"],"y":[0.5,0.37500000000000044,0.3995215311004783,0.41314195691885197],"type":"scatter"},{"hovertemplate":"%{meta}: %{y:.4f}\u003cextra\u003e\u003c\u002fextra\u003e","line":{"color":"#f2c200","dash":"solid","width":2},"marker":{"size":7,"symbol":"triangle-right"},"meta":"Upper Montgomery JV","mode":"lines+markers","name":"UML","x":["Week 00","Week 01","Week 02","Week 03"],"y":[0.5,0.625,0.4736842105263157,0.3949544546201282],"type":"scatter"}],                        {"template":{"data":{"barpolar":[{"marker":{"line":{"color":"white","width":0.5},"pattern":{"fillmode":"overlay","size":10,"solidity":0.2}},"type":"barpolar"}],"bar":[{"error_x":{"color":"#2a3f5f"},"error_y":{"color":"#2a3f5f"},"marker":{"line":{"color":"white","width":0.5},"pattern":{"fillmode":"overlay","size":10,"solidity":0.2}},"type":"bar"}],"carpet":[{"aaxis":{"endlinecolor":"#2a3f5f","gridcolor":"#C8D4E3","linecolor":"#C8D4E3","minorgridcolor":"#C8D4E3","startlinecolor":"#2a3f5f"},"baxis":{"endlinecolor":"#2a3f5f","gridcolor":"#C8D4E3","linecolor":"#C8D4E3","minorgridcolor":"#C8D4E3","startlinecolor":"#2a3f5f"},"type":"carpet"}],"choropleth":[{"colorbar":{"outlinewidth":0,"ticks":""},"type":"choropleth"}],"contourcarpet":[{"colorbar":{"outlinewidth":0,"ticks":""},"type":"contourcarpet"}],"contour":[{"colorbar":{"outlinewidth":0,"ticks":""},"colorscale":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]],"type":"contour"}],"heatmap":[{"colorbar":{"outlinewidth":0,"ticks":""},"colorscale":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]],"type":"heatmap"}],"histogram2dcontour":[{"colorbar":{"outlinewidth":0,"ticks":""},"colorscale":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]],"type":"histogram2dcontour"}],"histogram2d":[{"colorbar":{"outlinewidth":0,"ticks":""},"colorscale":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]],"type":"histogram2d"}],"histogram":[{"marker":{"pattern":{"fillmode":"overlay","size":10,"solidity":0.2}},"type":"histogram"}],"mesh3d":[{"colorbar":{"outlinewidth":0,"ticks":""},"type":"mesh3d"}],"parcoords":[{"line":{"colorbar":{"outlinewidth":0,"ticks":""}},"type":"parcoords"}],"pie":[{"automargin":true,"type":"pie"}],"scatter3d":[{"line":{"colorbar":{"outlinewidth":0,"ticks":""}},"marker":{"colorbar":{"outlinewidth":0,"ticks":""}},"type":"scatter3d"}],"scattercarpet":[{"marker":{"colorbar":{"outlinewidth":0,"ticks":""}},"type":"scattercarpet"}],"scattergeo":[{"marker":{"colorbar":{"outlinewidth":0,"ticks":""}},"type":"scattergeo"}],"scattergl":[{"marker":{"colorbar":{"outlinewidth":0,"ticks":""}},"type":"scattergl"}],"scattermapbox":[{"marker":{"colorbar":{"outlinewidth":0,"ticks":""}},"type":"scattermapbox"}],"scattermap":[{"marker":{"colorbar":{"outlinewidth":0,"ticks":""}},"type":"scattermap"}],"scatterpolargl":[{"marker":{"colorbar":{"outlinewidth":0,"ticks":""}},"type":"scatterpolargl"}],"scatterpolar":[{"marker":{"colorbar":{"outlinewidth":0,"ticks":""}},"type":"scatterpolar"}],"scatter":[{"fillpattern":{"fillmode":"overlay","size":10,"solidity":0.2},"type":"scatter"}],"scatterternary":[{"marker":{"colorbar":{"outlinewidth":0,"ticks":""}},"type":"scatterternary"}],"surface":[{"colorbar":{"outlinewidth":0,"ticks":""},"colorscale":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]],"type":"surface"}],"table":[{"cells":{"fill":{"color":"#EBF0F8"},"line":{"color":"white"}},"header":{"fill":{"color":"#C8D4E3"},"line":{"color":"white"}},"type":"table"}]},"layout":{"annotationdefaults":{"arrowcolor":"#2a3f5f","arrowhead":0,"arrowwidth":1},"autotypenumbers":"strict","coloraxis":{"colorbar":{"outlinewidth":0,"ticks":""}},"colorscale":{"diverging":[[0,"#8e0152"],[0.1,"#c51b7d"],[0.2,"#de77ae"],[0.3,"#f1b6da"],[0.4,"#fde0ef"],[0.5,"#f7f7f7"],[0.6,"#e6f5d0"],[0.7,"#b8e186"],[0.8,"#7fbc41"],[0.9,"#4d9221"],[1,"#276419"]],"sequential":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]],"sequentialminus":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]]},"colorway":["#636efa","#EF553B","#00cc96","#ab63fa","#FFA15A","#19d3f3","#FF6692","#B6E880","#FF97FF","#FECB52"],"font":{"color":"#2a3f5f"},"geo":{"bgcolor":"white","lakecolor":"white","landcolor":"white","showlakes":true,"showland":true,"subunitcolor":"#C8D4E3"},"hoverlabel":{"align":"left"},"hovermode":"closest","mapbox":{"style":"light"},"paper_bgcolor":"white","plot_bgcolor":"white","polar":{"angularaxis":{"gridcolor":"#EBF0F8","linecolor":"#EBF0F8","ticks":""},"bgcolor":"white","radialaxis":{"gridcolor":"#EBF0F8","linecolor":"#EBF0F8","ticks":""}},"scene":{"xaxis":{"backgroundcolor":"white","gridcolor":"#DFE8F3","gridwidth":2,"linecolor":"#EBF0F8","showbackground":true,"ticks":"","zerolinecolor":"#EBF0F8"},"yaxis":{"backgroundcolor":"white","gridcolor":"#DFE8F3","gridwidth":2,"linecolor":"#EBF0F8","showbackground":true,"ticks":"","zerolinecolor":"#EBF0F8"},"zaxis":{"backgroundcolor":"white","gridcolor":"#DFE8F3","gridwidth":2,"linecolor":"#EBF0F8","showbackground":true,"ticks":"","zerolinecolor":"#EBF0F8"}},"shapedefaults":{"line":{"color":"#2a3f5f"}},"ternary":{"aaxis":{"gridcolor":"#DFE8F3","linecolor":"#A2B1C6","ticks":""},"baxis":{"gridcolor":"#DFE8F3","linecolor":"#A2B1C6","ticks":""},"bgcolor":"white","caxis":{"gridcolor":"#DFE8F3","linecolor":"#A2B1C6","ticks":""}},"title":{"x":0.05},"xaxis":{"automargin":true,"gridcolor":"#EBF0F8","linecolor":"#EBF0F8","ticks":"","title":{"standoff":15},"zerolinecolor":"#EBF0F8","zerolinewidth":2},"yaxis":{"automargin":true,"gridcolor":"#EBF0F8","linecolor":"#EBF0F8","ticks":"","title":{"standoff":15},"zerolinecolor":"#EBF0F8","zerolinewidth":2}}},"font":{"family":"'Segoe UI', Tahoma, Geneva, Verdana, sans-serif"},"yaxis":{"title":{"text":"SOS"},"range":[0.3304109867292587,0.71926401552767]},"legend":{"title":{"text":"Teams"},"yanchor":"top","y":0.99,"xanchor":"left","x":1.01,"itemclick":"toggleothers","itemdoubleclick":"toggle"},"xaxis":{"title":{"text":"Week"},"type":"category"},"margin":{"r":109,"t":100},"hovermode":"x unified","updatemenus":[{"bgcolor":"#f4f6f8","bordercolor":"#a3aaaf","buttons":[{"args":[{"visible":[true,true,true,true,true,true,true,true,true,true]}],"label":"All Teams","method":"update"},{"args":[{"visible":[true,true,true,true,true,true,false,false,false,false]}],"label":"Top 6 Teams","method":"update"},{"args":[{"visible":[false,false,false,false,false,false,true,true,true,true]}],"label":"Bottom 6 Teams","method":"update"},{"args":[{"visible":[true,false,false,false,false,false,false,false,false,false]}],"label":"Bethesda-Chevy Chase JV","method":"update"},{"args":[{"visible":[false,true,false,false,false,false,false,false,false,false]}],"label":"Rockville-Magruder JV","method":"update"},{"args":[{"visible":[false,false,true,false,false,false,false,false,false,false]}],"label":"Central MOCO JV","method":"update"},{"args":[{"visible":[false,false,false,true,false,false,false,false,false,false]}],"label":"DC Stars JV","method":"update"},{"args":[{"visible":[false,false,false,false,true,false,false,false,false,false]}],"label":"Silver Spring JV","method":"update"},{"args":[{"visible":[false,false,false,false,false,true,false,false,false,false]}],"label":"Winston Churchill JV","method":"update"},{"args":[{"visible":[false,false,false,false,false,false,true,false,false,false]}],"label":"Richard Montgomery-Sherwood JV","method":"update"},{"args":[{"visible":[false,false,false,false,false,false,false,true,false,false]}],"label":"Walt Whitman JV","method":"update"},{"args":[{"visible":[false,false,false,false,false,false,false,false,true,false]}],"label":"Walter Johnson JV","method":"update"},{"args":[{"visible":[false,false,false,false,false,false,false,false,false,true]}],"label":"Upper Montgomery JV","method":"update"}],"direction":"down","type":"dropdown","x":0.0,"xanchor":"left","y":1.15,"yanchor":"top"}],"height":623},                        {"responsive": true, "toImageButtonOptions": {"format": "png", "filename": "mhc_plot", "height": 800, "width": 1200, "scale": 2}, "displaylogo": false}                    )                };            </script>        </div></div>
             </div>
         </div>
     </div>
 
     <div class="section">
         <details>
-            <summary>Colley Details</summary>
+            <summary>Game Matrix</summary>
+            <p class="matrix-note">Each cell is the number of games the team in that row has played against the team in that column. Darker cells mean more meetings.</p>
             <div class="matrix-container">
-                <table class="matrix-table">
+                <table class="matrix-table" aria-label="Games played between each pair of teams">
                     <thead>
                         <tr>
-                            <th>Team</th>
+                            <th scope="col">Team</th>
                             
-                            <th>Bethesda-Chevy Chase JV</th>
+                            <th scope="col" title="Bethesda-Chevy Chase JV">BCC</th>
                             
-                            <th>Central MOCO JV</th>
+                            <th scope="col" title="Central MOCO JV">CenMOCO</th>
                             
-                            <th>DC Stars JV</th>
+                            <th scope="col" title="DC Stars JV">DC</th>
                             
-                            <th>Richard Montgomery-Sherwood JV</th>
+                            <th scope="col" title="Richard Montgomery-Sherwood JV">RMS</th>
                             
-                            <th>Rockville-Magruder JV</th>
+                            <th scope="col" title="Rockville-Magruder JV">RAM</th>
                             
-                            <th>Silver Spring JV</th>
+                            <th scope="col" title="Silver Spring JV">SS</th>
                             
-                            <th>Upper Montgomery JV</th>
+                            <th scope="col" title="Upper Montgomery JV">UML</th>
                             
-                            <th>Walt Whitman JV</th>
+                            <th scope="col" title="Walt Whitman JV">Whit</th>
                             
-                            <th>Walter Johnson JV</th>
+                            <th scope="col" title="Walter Johnson JV">WJ</th>
                             
-                            <th>Winston Churchill JV</th>
+                            <th scope="col" title="Winston Churchill JV">Church</th>
                             
                         </tr>
                     </thead>
                     <tbody>
                         
                         <tr>
-                            <th>Bethesda-Chevy Chase JV</th>
+                            <th scope="row" title="Bethesda-Chevy Chase JV">BCC</th>
                             
-                            <td>4</td>
                             
-                            <td>0</td>
+                            <td class="self">&ndash;</td>
                             
-                            <td>0</td>
                             
-                            <td>0</td>
                             
-                            <td>0</td>
                             
-                            <td>0</td>
+                            <td class="g0" title="Bethesda-Chevy Chase JV vs Central MOCO JV"></td>
                             
-                            <td>0</td>
                             
-                            <td>-1</td>
                             
-                            <td>-1</td>
                             
-                            <td>0</td>
+                            <td class="g0" title="Bethesda-Chevy Chase JV vs DC Stars JV"></td>
                             
-                        </tr>
-                        
-                        <tr>
-                            <th>Central MOCO JV</th>
                             
-                            <td>0</td>
                             
-                            <td>4</td>
                             
-                            <td>0</td>
+                            <td class="g0" title="Bethesda-Chevy Chase JV vs Richard Montgomery-Sherwood JV"></td>
                             
-                            <td>0</td>
                             
-                            <td>0</td>
                             
-                            <td>0</td>
                             
-                            <td>-1</td>
+                            <td class="g0" title="Bethesda-Chevy Chase JV vs Rockville-Magruder JV"></td>
                             
-                            <td>-1</td>
                             
-                            <td>0</td>
                             
-                            <td>0</td>
                             
-                        </tr>
-                        
-                        <tr>
-                            <th>DC Stars JV</th>
+                            <td class="g0" title="Bethesda-Chevy Chase JV vs Silver Spring JV"></td>
                             
-                            <td>0</td>
                             
-                            <td>0</td>
                             
-                            <td>4</td>
                             
-                            <td>-1</td>
+                            <td class="g0" title="Bethesda-Chevy Chase JV vs Upper Montgomery JV"></td>
                             
-                            <td>0</td>
                             
-                            <td>0</td>
                             
-                            <td>0</td>
                             
-                            <td>0</td>
+                            <td class="g1" title="Bethesda-Chevy Chase JV vs Walt Whitman JV">1</td>
                             
-                            <td>0</td>
                             
-                            <td>-1</td>
+                            
+                            
+                            <td class="g1" title="Bethesda-Chevy Chase JV vs Walter Johnson JV">1</td>
+                            
+                            
+                            
+                            
+                            <td class="g0" title="Bethesda-Chevy Chase JV vs Winston Churchill JV"></td>
+                            
                             
                         </tr>
                         
                         <tr>
-                            <th>Richard Montgomery-Sherwood JV</th>
+                            <th scope="row" title="Central MOCO JV">CenMOCO</th>
                             
-                            <td>0</td>
                             
-                            <td>0</td>
                             
-                            <td>-1</td>
+                            <td class="g0" title="Central MOCO JV vs Bethesda-Chevy Chase JV"></td>
                             
-                            <td>4</td>
                             
-                            <td>0</td>
                             
-                            <td>-1</td>
+                            <td class="self">&ndash;</td>
                             
-                            <td>0</td>
                             
-                            <td>0</td>
                             
-                            <td>0</td>
                             
-                            <td>0</td>
+                            <td class="g0" title="Central MOCO JV vs DC Stars JV"></td>
                             
-                        </tr>
-                        
-                        <tr>
-                            <th>Rockville-Magruder JV</th>
                             
-                            <td>0</td>
                             
-                            <td>0</td>
                             
-                            <td>0</td>
+                            <td class="g0" title="Central MOCO JV vs Richard Montgomery-Sherwood JV"></td>
                             
-                            <td>0</td>
                             
-                            <td>4</td>
                             
-                            <td>0</td>
                             
-                            <td>-1</td>
+                            <td class="g0" title="Central MOCO JV vs Rockville-Magruder JV"></td>
                             
-                            <td>0</td>
                             
-                            <td>0</td>
                             
-                            <td>-1</td>
                             
-                        </tr>
-                        
-                        <tr>
-                            <th>Silver Spring JV</th>
+                            <td class="g1" title="Central MOCO JV vs Silver Spring JV">1</td>
                             
-                            <td>0</td>
                             
-                            <td>0</td>
                             
-                            <td>0</td>
                             
-                            <td>-1</td>
+                            <td class="g1" title="Central MOCO JV vs Upper Montgomery JV">1</td>
                             
-                            <td>0</td>
                             
-                            <td>4</td>
                             
-                            <td>0</td>
                             
-                            <td>0</td>
+                            <td class="g1" title="Central MOCO JV vs Walt Whitman JV">1</td>
                             
-                            <td>-1</td>
                             
-                            <td>0</td>
+                            
+                            
+                            <td class="g0" title="Central MOCO JV vs Walter Johnson JV"></td>
+                            
+                            
+                            
+                            
+                            <td class="g0" title="Central MOCO JV vs Winston Churchill JV"></td>
+                            
                             
                         </tr>
                         
                         <tr>
-                            <th>Upper Montgomery JV</th>
+                            <th scope="row" title="DC Stars JV">DC</th>
                             
-                            <td>0</td>
                             
-                            <td>-1</td>
                             
-                            <td>0</td>
+                            <td class="g0" title="DC Stars JV vs Bethesda-Chevy Chase JV"></td>
                             
-                            <td>0</td>
                             
-                            <td>-1</td>
                             
-                            <td>0</td>
                             
-                            <td>4</td>
+                            <td class="g0" title="DC Stars JV vs Central MOCO JV"></td>
                             
-                            <td>0</td>
                             
-                            <td>0</td>
                             
-                            <td>0</td>
+                            <td class="self">&ndash;</td>
                             
-                        </tr>
-                        
-                        <tr>
-                            <th>Walt Whitman JV</th>
                             
-                            <td>-1</td>
                             
-                            <td>-1</td>
                             
-                            <td>0</td>
+                            <td class="g1" title="DC Stars JV vs Richard Montgomery-Sherwood JV">1</td>
                             
-                            <td>0</td>
                             
-                            <td>0</td>
                             
-                            <td>0</td>
                             
-                            <td>0</td>
+                            <td class="g0" title="DC Stars JV vs Rockville-Magruder JV"></td>
                             
-                            <td>4</td>
                             
-                            <td>0</td>
                             
-                            <td>0</td>
                             
-                        </tr>
-                        
-                        <tr>
-                            <th>Walter Johnson JV</th>
+                            <td class="g0" title="DC Stars JV vs Silver Spring JV"></td>
                             
-                            <td>-1</td>
                             
-                            <td>0</td>
                             
-                            <td>0</td>
                             
-                            <td>0</td>
+                            <td class="g0" title="DC Stars JV vs Upper Montgomery JV"></td>
                             
-                            <td>0</td>
                             
-                            <td>-1</td>
                             
-                            <td>0</td>
                             
-                            <td>0</td>
+                            <td class="g1" title="DC Stars JV vs Walt Whitman JV">1</td>
                             
-                            <td>4</td>
                             
-                            <td>0</td>
+                            
+                            
+                            <td class="g0" title="DC Stars JV vs Walter Johnson JV"></td>
+                            
+                            
+                            
+                            
+                            <td class="g1" title="DC Stars JV vs Winston Churchill JV">1</td>
+                            
                             
                         </tr>
                         
                         <tr>
-                            <th>Winston Churchill JV</th>
+                            <th scope="row" title="Richard Montgomery-Sherwood JV">RMS</th>
                             
-                            <td>0</td>
                             
-                            <td>0</td>
                             
-                            <td>-1</td>
+                            <td class="g0" title="Richard Montgomery-Sherwood JV vs Bethesda-Chevy Chase JV"></td>
                             
-                            <td>0</td>
                             
-                            <td>-1</td>
                             
-                            <td>0</td>
                             
-                            <td>0</td>
+                            <td class="g0" title="Richard Montgomery-Sherwood JV vs Central MOCO JV"></td>
                             
-                            <td>0</td>
                             
-                            <td>0</td>
                             
-                            <td>4</td>
+                            
+                            <td class="g1" title="Richard Montgomery-Sherwood JV vs DC Stars JV">1</td>
+                            
+                            
+                            
+                            <td class="self">&ndash;</td>
+                            
+                            
+                            
+                            
+                            <td class="g0" title="Richard Montgomery-Sherwood JV vs Rockville-Magruder JV"></td>
+                            
+                            
+                            
+                            
+                            <td class="g1" title="Richard Montgomery-Sherwood JV vs Silver Spring JV">1</td>
+                            
+                            
+                            
+                            
+                            <td class="g1" title="Richard Montgomery-Sherwood JV vs Upper Montgomery JV">1</td>
+                            
+                            
+                            
+                            
+                            <td class="g0" title="Richard Montgomery-Sherwood JV vs Walt Whitman JV"></td>
+                            
+                            
+                            
+                            
+                            <td class="g0" title="Richard Montgomery-Sherwood JV vs Walter Johnson JV"></td>
+                            
+                            
+                            
+                            
+                            <td class="g0" title="Richard Montgomery-Sherwood JV vs Winston Churchill JV"></td>
+                            
+                            
+                        </tr>
+                        
+                        <tr>
+                            <th scope="row" title="Rockville-Magruder JV">RAM</th>
+                            
+                            
+                            
+                            <td class="g0" title="Rockville-Magruder JV vs Bethesda-Chevy Chase JV"></td>
+                            
+                            
+                            
+                            
+                            <td class="g0" title="Rockville-Magruder JV vs Central MOCO JV"></td>
+                            
+                            
+                            
+                            
+                            <td class="g0" title="Rockville-Magruder JV vs DC Stars JV"></td>
+                            
+                            
+                            
+                            
+                            <td class="g0" title="Rockville-Magruder JV vs Richard Montgomery-Sherwood JV"></td>
+                            
+                            
+                            
+                            <td class="self">&ndash;</td>
+                            
+                            
+                            
+                            
+                            <td class="g0" title="Rockville-Magruder JV vs Silver Spring JV"></td>
+                            
+                            
+                            
+                            
+                            <td class="g1" title="Rockville-Magruder JV vs Upper Montgomery JV">1</td>
+                            
+                            
+                            
+                            
+                            <td class="g0" title="Rockville-Magruder JV vs Walt Whitman JV"></td>
+                            
+                            
+                            
+                            
+                            <td class="g1" title="Rockville-Magruder JV vs Walter Johnson JV">1</td>
+                            
+                            
+                            
+                            
+                            <td class="g1" title="Rockville-Magruder JV vs Winston Churchill JV">1</td>
+                            
+                            
+                        </tr>
+                        
+                        <tr>
+                            <th scope="row" title="Silver Spring JV">SS</th>
+                            
+                            
+                            
+                            <td class="g0" title="Silver Spring JV vs Bethesda-Chevy Chase JV"></td>
+                            
+                            
+                            
+                            
+                            <td class="g1" title="Silver Spring JV vs Central MOCO JV">1</td>
+                            
+                            
+                            
+                            
+                            <td class="g0" title="Silver Spring JV vs DC Stars JV"></td>
+                            
+                            
+                            
+                            
+                            <td class="g1" title="Silver Spring JV vs Richard Montgomery-Sherwood JV">1</td>
+                            
+                            
+                            
+                            
+                            <td class="g0" title="Silver Spring JV vs Rockville-Magruder JV"></td>
+                            
+                            
+                            
+                            <td class="self">&ndash;</td>
+                            
+                            
+                            
+                            
+                            <td class="g0" title="Silver Spring JV vs Upper Montgomery JV"></td>
+                            
+                            
+                            
+                            
+                            <td class="g0" title="Silver Spring JV vs Walt Whitman JV"></td>
+                            
+                            
+                            
+                            
+                            <td class="g1" title="Silver Spring JV vs Walter Johnson JV">1</td>
+                            
+                            
+                            
+                            
+                            <td class="g0" title="Silver Spring JV vs Winston Churchill JV"></td>
+                            
+                            
+                        </tr>
+                        
+                        <tr>
+                            <th scope="row" title="Upper Montgomery JV">UML</th>
+                            
+                            
+                            
+                            <td class="g0" title="Upper Montgomery JV vs Bethesda-Chevy Chase JV"></td>
+                            
+                            
+                            
+                            
+                            <td class="g1" title="Upper Montgomery JV vs Central MOCO JV">1</td>
+                            
+                            
+                            
+                            
+                            <td class="g0" title="Upper Montgomery JV vs DC Stars JV"></td>
+                            
+                            
+                            
+                            
+                            <td class="g1" title="Upper Montgomery JV vs Richard Montgomery-Sherwood JV">1</td>
+                            
+                            
+                            
+                            
+                            <td class="g1" title="Upper Montgomery JV vs Rockville-Magruder JV">1</td>
+                            
+                            
+                            
+                            
+                            <td class="g0" title="Upper Montgomery JV vs Silver Spring JV"></td>
+                            
+                            
+                            
+                            <td class="self">&ndash;</td>
+                            
+                            
+                            
+                            
+                            <td class="g0" title="Upper Montgomery JV vs Walt Whitman JV"></td>
+                            
+                            
+                            
+                            
+                            <td class="g0" title="Upper Montgomery JV vs Walter Johnson JV"></td>
+                            
+                            
+                            
+                            
+                            <td class="g0" title="Upper Montgomery JV vs Winston Churchill JV"></td>
+                            
+                            
+                        </tr>
+                        
+                        <tr>
+                            <th scope="row" title="Walt Whitman JV">Whit</th>
+                            
+                            
+                            
+                            <td class="g1" title="Walt Whitman JV vs Bethesda-Chevy Chase JV">1</td>
+                            
+                            
+                            
+                            
+                            <td class="g1" title="Walt Whitman JV vs Central MOCO JV">1</td>
+                            
+                            
+                            
+                            
+                            <td class="g1" title="Walt Whitman JV vs DC Stars JV">1</td>
+                            
+                            
+                            
+                            
+                            <td class="g0" title="Walt Whitman JV vs Richard Montgomery-Sherwood JV"></td>
+                            
+                            
+                            
+                            
+                            <td class="g0" title="Walt Whitman JV vs Rockville-Magruder JV"></td>
+                            
+                            
+                            
+                            
+                            <td class="g0" title="Walt Whitman JV vs Silver Spring JV"></td>
+                            
+                            
+                            
+                            
+                            <td class="g0" title="Walt Whitman JV vs Upper Montgomery JV"></td>
+                            
+                            
+                            
+                            <td class="self">&ndash;</td>
+                            
+                            
+                            
+                            
+                            <td class="g0" title="Walt Whitman JV vs Walter Johnson JV"></td>
+                            
+                            
+                            
+                            
+                            <td class="g0" title="Walt Whitman JV vs Winston Churchill JV"></td>
+                            
+                            
+                        </tr>
+                        
+                        <tr>
+                            <th scope="row" title="Walter Johnson JV">WJ</th>
+                            
+                            
+                            
+                            <td class="g1" title="Walter Johnson JV vs Bethesda-Chevy Chase JV">1</td>
+                            
+                            
+                            
+                            
+                            <td class="g0" title="Walter Johnson JV vs Central MOCO JV"></td>
+                            
+                            
+                            
+                            
+                            <td class="g0" title="Walter Johnson JV vs DC Stars JV"></td>
+                            
+                            
+                            
+                            
+                            <td class="g0" title="Walter Johnson JV vs Richard Montgomery-Sherwood JV"></td>
+                            
+                            
+                            
+                            
+                            <td class="g1" title="Walter Johnson JV vs Rockville-Magruder JV">1</td>
+                            
+                            
+                            
+                            
+                            <td class="g1" title="Walter Johnson JV vs Silver Spring JV">1</td>
+                            
+                            
+                            
+                            
+                            <td class="g0" title="Walter Johnson JV vs Upper Montgomery JV"></td>
+                            
+                            
+                            
+                            
+                            <td class="g0" title="Walter Johnson JV vs Walt Whitman JV"></td>
+                            
+                            
+                            
+                            <td class="self">&ndash;</td>
+                            
+                            
+                            
+                            
+                            <td class="g0" title="Walter Johnson JV vs Winston Churchill JV"></td>
+                            
+                            
+                        </tr>
+                        
+                        <tr>
+                            <th scope="row" title="Winston Churchill JV">Church</th>
+                            
+                            
+                            
+                            <td class="g0" title="Winston Churchill JV vs Bethesda-Chevy Chase JV"></td>
+                            
+                            
+                            
+                            
+                            <td class="g0" title="Winston Churchill JV vs Central MOCO JV"></td>
+                            
+                            
+                            
+                            
+                            <td class="g1" title="Winston Churchill JV vs DC Stars JV">1</td>
+                            
+                            
+                            
+                            
+                            <td class="g0" title="Winston Churchill JV vs Richard Montgomery-Sherwood JV"></td>
+                            
+                            
+                            
+                            
+                            <td class="g1" title="Winston Churchill JV vs Rockville-Magruder JV">1</td>
+                            
+                            
+                            
+                            
+                            <td class="g0" title="Winston Churchill JV vs Silver Spring JV"></td>
+                            
+                            
+                            
+                            
+                            <td class="g0" title="Winston Churchill JV vs Upper Montgomery JV"></td>
+                            
+                            
+                            
+                            
+                            <td class="g0" title="Winston Churchill JV vs Walt Whitman JV"></td>
+                            
+                            
+                            
+                            
+                            <td class="g0" title="Winston Churchill JV vs Walter Johnson JV"></td>
+                            
+                            
+                            
+                            <td class="self">&ndash;</td>
+                            
                             
                         </tr>
                         
@@ -749,6 +1184,12 @@
         <p>What makes it fair is that a win is worth more against a strong team than against a weak one. A team's rating depends on its opponents' ratings, and each opponent's rating depends on theirs. The computer works through all of these links at once and settles on one set of ratings where everything fits together. That is why a team can move up the rankings without playing, if a team it beat keeps winning.</p>
         <p><strong>Strength of schedule (SOS)</strong> is the average rating of the teams a team has played. A higher number means a tougher schedule. A team with a modest record and a high SOS may have faced harder opponents than a team with a better record and a low SOS.</p>
         <p><em>Example:</em> Team A and Team B each finish 1-1. Team A's win was over the league's best team. Team B's win was over the league's weakest team. Team A gets the higher rating, because its win was harder to earn.</p>
+        <h3>Things to Look Out For</h3>
+        <ul>
+            <li>Strength of schedule can be volatile early in the season.</li>
+            <li>Once inter-division play starts, the split in strength of schedule between the upper and lower divisions will become apparent.</li>
+            <li>Since strength of schedule is factored into a team's rating, their rating can change even if they don't play a game.</li>
+        </ul>
         <details>
         <summary>Technical details</summary>
         <p>The Colley Matrix is a bias-free, mathematically robust ranking system originally designed for college football. It uses a system of linear equations to distribute ratings such that every team's rating depends on the ratings of the teams they played.</p>
@@ -906,6 +1347,54 @@
                             <td></td>
                         </tr>
                         
+                        <tr>
+                            <td>2026-10-09</td>
+                            <td></td>
+                            <td>Upper Montgomery JV</td>
+                            <td>7</td>
+                            <td>1</td>
+                            <td>Richard Montgomery-Sherwood JV</td>
+                            <td></td>
+                            <td>Rockville Ice Arena Rink #3</td>
+                            <td></td>
+                        </tr>
+                        
+                        <tr>
+                            <td>2026-10-09</td>
+                            <td></td>
+                            <td>Silver Spring JV</td>
+                            <td>0</td>
+                            <td>5</td>
+                            <td>Central MOCO JV</td>
+                            <td></td>
+                            <td>Rockville Ice Arena Rink #1</td>
+                            <td></td>
+                        </tr>
+                        
+                        <tr>
+                            <td>2026-10-09</td>
+                            <td></td>
+                            <td>Rockville-Magruder JV</td>
+                            <td>1</td>
+                            <td>10</td>
+                            <td>Walter Johnson JV</td>
+                            <td></td>
+                            <td>Rockville Ice Arena Rink #2</td>
+                            <td></td>
+                        </tr>
+                        
+                        <tr>
+                            <td>2026-10-09</td>
+                            <td></td>
+                            <td>Walt Whitman JV</td>
+                            <td>5</td>
+                            <td>2</td>
+                            <td>DC Stars JV</td>
+                            <td></td>
+                            <td>Rockville Ice Arena Rink #3</td>
+                            <td></td>
+                        </tr>
+                        
                     </tbody>
                 </table>
             </div>
@@ -916,13 +1405,10 @@
 
 <script>
     // Embed the python dictionary as a JSON string
-    const weeklyData = {"2026-W39": [{"ga": 4, "gd": 10, "gf": 14, "last_game": "@ RMS W 14-4", "last_game_html": "\u003ca href=\"https://gamesheetstats.com/seasons/15412/games/2981118\" target=\"_blank\" rel=\"noopener noreferrer\"\u003e@ RMS W 14-4\u003c/a\u003e", "last_game_url": "https://gamesheetstats.com/seasons/15412/games/2981118", "losses": 0, "ot_losses": 0, "ot_wins": 0, "rank": 1, "rank_change": 0, "rating": 0.6250000000000001, "sos": 0.37500000000000044, "t": 0, "team": "Silver Spring JV", "team_html": "\u003ca href=\"https://gamesheetstats.com/seasons/15412/teams/531450/preview?configuration%5Bcompact-view%5D=true\u0026amp;configuration%5Bprimary-colour%5D=C80F2E\u0026amp;configuration%5Bsecondary-colour%5D=041E42\u0026amp;filter%5Bdivision%5D=83134\u0026amp;filter%5Btype%5D=regular_season\u0026amp;filter%5Bstatus%5D=scheduled\" target=\"_blank\" rel=\"noopener noreferrer\"\u003eSilver Spring JV\u003c/a\u003e", "win_pct": 1.0, "wins": 1}, {"ga": 2, "gd": 8, "gf": 10, "last_game": "vs BCC W 10-2", "last_game_html": "\u003ca href=\"https://gamesheetstats.com/seasons/15412/games/2981114\" target=\"_blank\" rel=\"noopener noreferrer\"\u003evs BCC W 10-2\u003c/a\u003e", "last_game_url": "https://gamesheetstats.com/seasons/15412/games/2981114", "losses": 0, "ot_losses": 0, "ot_wins": 0, "rank": 2, "rank_change": 0, "rating": 0.6250000000000001, "sos": 0.37500000000000044, "t": 0, "team": "Walter Johnson JV", "team_html": "\u003ca href=\"https://gamesheetstats.com/seasons/15412/teams/531434/preview?configuration%5Bcompact-view%5D=true\u0026amp;configuration%5Bprimary-colour%5D=C80F2E\u0026amp;configuration%5Bsecondary-colour%5D=041E42\u0026amp;filter%5Bdivision%5D=83134\u0026amp;filter%5Btype%5D=regular_season\u0026amp;filter%5Bstatus%5D=scheduled\" target=\"_blank\" rel=\"noopener noreferrer\"\u003eWalter Johnson JV\u003c/a\u003e", "win_pct": 1.0, "wins": 1}, {"ga": 0, "gd": 6, "gf": 6, "last_game": "@ DC W 6-0", "last_game_html": "\u003ca href=\"https://gamesheetstats.com/seasons/15412/games/2981116\" target=\"_blank\" rel=\"noopener noreferrer\"\u003e@ DC W 6-0\u003c/a\u003e", "last_game_url": "https://gamesheetstats.com/seasons/15412/games/2981116", "losses": 0, "ot_losses": 0, "ot_wins": 0, "rank": 3, "rank_change": 0, "rating": 0.6250000000000001, "sos": 0.37500000000000044, "t": 0, "team": "Winston Churchill JV", "team_html": "\u003ca href=\"https://gamesheetstats.com/seasons/15412/teams/531443/preview?configuration%5Bcompact-view%5D=true\u0026amp;configuration%5Bprimary-colour%5D=C80F2E\u0026amp;configuration%5Bsecondary-colour%5D=041E42\u0026amp;filter%5Bdivision%5D=83134\u0026amp;filter%5Btype%5D=regular_season\u0026amp;filter%5Bstatus%5D=scheduled\" target=\"_blank\" rel=\"noopener noreferrer\"\u003eWinston Churchill JV\u003c/a\u003e", "win_pct": 1.0, "wins": 1}, {"ga": 2, "gd": 1, "gf": 3, "last_game": "@ UML W 3-2", "last_game_html": "\u003ca href=\"https://gamesheetstats.com/seasons/15412/games/2981117\" target=\"_blank\" rel=\"noopener noreferrer\"\u003e@ UML W 3-2\u003c/a\u003e", "last_game_url": "https://gamesheetstats.com/seasons/15412/games/2981117", "losses": 0, "ot_losses": 0, "ot_wins": 0, "rank": 4, "rank_change": 0, "rating": 0.625, "sos": 0.375, "t": 0, "team": "Rockville-Magruder JV", "team_html": "\u003ca href=\"https://gamesheetstats.com/seasons/15412/teams/531441/preview?configuration%5Bcompact-view%5D=true\u0026amp;configuration%5Bprimary-colour%5D=C80F2E\u0026amp;configuration%5Bsecondary-colour%5D=041E42\u0026amp;filter%5Bdivision%5D=83134\u0026amp;filter%5Btype%5D=regular_season\u0026amp;filter%5Bstatus%5D=scheduled\" target=\"_blank\" rel=\"noopener noreferrer\"\u003eRockville-Magruder JV\u003c/a\u003e", "win_pct": 1.0, "wins": 1}, {"ga": 4, "gd": 0, "gf": 4, "last_game": "vs Whit T 4-4 (OT)", "last_game_html": "\u003ca href=\"https://gamesheetstats.com/seasons/15412/games/2981115\" target=\"_blank\" rel=\"noopener noreferrer\"\u003evs Whit T 4-4 (OT)\u003c/a\u003e", "last_game_url": "https://gamesheetstats.com/seasons/15412/games/2981115", "losses": 0, "ot_losses": 0, "ot_wins": 0, "rank": 5, "rank_change": 0, "rating": 0.5, "sos": 0.5, "t": 1, "team": "Central MOCO JV", "team_html": "\u003ca href=\"https://gamesheetstats.com/seasons/15412/teams/531437/preview?configuration%5Bcompact-view%5D=true\u0026amp;configuration%5Bprimary-colour%5D=C80F2E\u0026amp;configuration%5Bsecondary-colour%5D=041E42\u0026amp;filter%5Bdivision%5D=83134\u0026amp;filter%5Btype%5D=regular_season\u0026amp;filter%5Bstatus%5D=scheduled\" target=\"_blank\" rel=\"noopener noreferrer\"\u003eCentral MOCO JV\u003c/a\u003e", "win_pct": 0.5, "wins": 0}, {"ga": 4, "gd": 0, "gf": 4, "last_game": "@ CenMOCO T 4-4 (OT)", "last_game_html": "\u003ca href=\"https://gamesheetstats.com/seasons/15412/games/2981115\" target=\"_blank\" rel=\"noopener noreferrer\"\u003e@ CenMOCO T 4-4 (OT)\u003c/a\u003e", "last_game_url": "https://gamesheetstats.com/seasons/15412/games/2981115", "losses": 0, "ot_losses": 0, "ot_wins": 0, "rank": 6, "rank_change": 0, "rating": 0.5, "sos": 0.5, "t": 1, "team": "Walt Whitman JV", "team_html": "\u003ca href=\"https://gamesheetstats.com/seasons/15412/teams/531436/preview?configuration%5Bcompact-view%5D=true\u0026amp;configuration%5Bprimary-colour%5D=C80F2E\u0026amp;configuration%5Bsecondary-colour%5D=041E42\u0026amp;filter%5Bdivision%5D=83134\u0026amp;filter%5Btype%5D=regular_season\u0026amp;filter%5Bstatus%5D=scheduled\" target=\"_blank\" rel=\"noopener noreferrer\"\u003eWalt Whitman JV\u003c/a\u003e", "win_pct": 0.5, "wins": 0}, {"ga": 10, "gd": -8, "gf": 2, "last_game": "@ WJ L 2-10", "last_game_html": "\u003ca href=\"https://gamesheetstats.com/seasons/15412/games/2981114\" target=\"_blank\" rel=\"noopener noreferrer\"\u003e@ WJ L 2-10\u003c/a\u003e", "last_game_url": "https://gamesheetstats.com/seasons/15412/games/2981114", "losses": 1, "ot_losses": 0, "ot_wins": 0, "rank": 7, "rank_change": 0, "rating": 0.375, "sos": 0.625, "t": 0, "team": "Bethesda-Chevy Chase JV", "team_html": "\u003ca href=\"https://gamesheetstats.com/seasons/15412/teams/531440/preview?configuration%5Bcompact-view%5D=true\u0026amp;configuration%5Bprimary-colour%5D=C80F2E\u0026amp;configuration%5Bsecondary-colour%5D=041E42\u0026amp;filter%5Bdivision%5D=83134\u0026amp;filter%5Btype%5D=regular_season\u0026amp;filter%5Bstatus%5D=scheduled\" target=\"_blank\" rel=\"noopener noreferrer\"\u003eBethesda-Chevy Chase JV\u003c/a\u003e", "win_pct": 0.0, "wins": 0}, {"ga": 6, "gd": -6, "gf": 0, "last_game": "vs Church L 0-6", "last_game_html": "\u003ca href=\"https://gamesheetstats.com/seasons/15412/games/2981116\" target=\"_blank\" rel=\"noopener noreferrer\"\u003evs Church L 0-6\u003c/a\u003e", "last_game_url": "https://gamesheetstats.com/seasons/15412/games/2981116", "losses": 1, "ot_losses": 0, "ot_wins": 0, "rank": 8, "rank_change": 0, "rating": 0.375, "sos": 0.625, "t": 0, "team": "DC Stars JV", "team_html": "\u003ca href=\"https://gamesheetstats.com/seasons/15412/teams/531442/preview?configuration%5Bcompact-view%5D=true\u0026amp;configuration%5Bprimary-colour%5D=C80F2E\u0026amp;configuration%5Bsecondary-colour%5D=041E42\u0026amp;filter%5Bdivision%5D=83134\u0026amp;filter%5Btype%5D=regular_season\u0026amp;filter%5Bstatus%5D=scheduled\" target=\"_blank\" rel=\"noopener noreferrer\"\u003eDC Stars JV\u003c/a\u003e", "win_pct": 0.0, "wins": 0}, {"ga": 14, "gd": -10, "gf": 4, "last_game": "vs SS L 4-14", "last_game_html": "\u003ca href=\"https://gamesheetstats.com/seasons/15412/games/2981118\" target=\"_blank\" rel=\"noopener noreferrer\"\u003evs SS L 4-14\u003c/a\u003e", "last_game_url": "https://gamesheetstats.com/seasons/15412/games/2981118", "losses": 1, "ot_losses": 0, "ot_wins": 0, "rank": 9, "rank_change": 0, "rating": 0.375, "sos": 0.625, "t": 0, "team": "Richard Montgomery-Sherwood JV", "team_html": "\u003ca href=\"https://gamesheetstats.com/seasons/15412/teams/531435/preview?configuration%5Bcompact-view%5D=true\u0026amp;configuration%5Bprimary-colour%5D=C80F2E\u0026amp;configuration%5Bsecondary-colour%5D=041E42\u0026amp;filter%5Bdivision%5D=83134\u0026amp;filter%5Btype%5D=regular_season\u0026amp;filter%5Bstatus%5D=scheduled\" target=\"_blank\" rel=\"noopener noreferrer\"\u003eRichard Montgomery-Sherwood JV\u003c/a\u003e", "win_pct": 0.0, "wins": 0}, {"ga": 3, "gd": -1, "gf": 2, "last_game": "vs RAM L 2-3", "last_game_html": "\u003ca href=\"https://gamesheetstats.com/seasons/15412/games/2981117\" target=\"_blank\" rel=\"noopener noreferrer\"\u003evs RAM L 2-3\u003c/a\u003e", "last_game_url": "https://gamesheetstats.com/seasons/15412/games/2981117", "losses": 1, "ot_losses": 0, "ot_wins": 0, "rank": 10, "rank_change": 0, "rating": 0.375, "sos": 0.625, "t": 0, "team": "Upper Montgomery JV", "team_html": "\u003ca href=\"https://gamesheetstats.com/seasons/15412/teams/531439/preview?configuration%5Bcompact-view%5D=true\u0026amp;configuration%5Bprimary-colour%5D=C80F2E\u0026amp;configuration%5Bsecondary-colour%5D=041E42\u0026amp;filter%5Bdivision%5D=83134\u0026amp;filter%5Btype%5D=regular_season\u0026amp;filter%5Bstatus%5D=scheduled\" target=\"_blank\" rel=\"noopener noreferrer\"\u003eUpper Montgomery JV\u003c/a\u003e", "win_pct": 0.0, "wins": 0}], "2026-W40": [{"ga": 1, "gd": 15, "gf": 16, "last_game": "@ RAM W 10-1", "last_game_html": "\u003ca href=\"https://gamesheetstats.com/seasons/15412/games/2981122\" target=\"_blank\" rel=\"noopener noreferrer\"\u003e@ RAM W 10-1\u003c/a\u003e", "last_game_url": "https://gamesheetstats.com/seasons/15412/games/2981122", "losses": 0, "ot_losses": 0, "ot_wins": 0, "rank": 1, "rank_change": 2, "rating": 0.7667464114832535, "sos": 0.533492822966507, "t": 0, "team": "Winston Churchill JV", "team_html": "\u003ca href=\"https://gamesheetstats.com/seasons/15412/teams/531443/preview?configuration%5Bcompact-view%5D=true\u0026amp;configuration%5Bprimary-colour%5D=C80F2E\u0026amp;configuration%5Bsecondary-colour%5D=041E42\u0026amp;filter%5Bdivision%5D=83134\u0026amp;filter%5Btype%5D=regular_season\u0026amp;filter%5Bstatus%5D=scheduled\" target=\"_blank\" rel=\"noopener noreferrer\"\u003eWinston Churchill JV\u003c/a\u003e", "win_pct": 1.0, "wins": 2}, {"ga": 5, "gd": 9, "gf": 14, "last_game": "@ SS W 4-3", "last_game_html": "\u003ca href=\"https://gamesheetstats.com/seasons/15412/games/2981123\" target=\"_blank\" rel=\"noopener noreferrer\"\u003e@ SS W 4-3\u003c/a\u003e", "last_game_url": "https://gamesheetstats.com/seasons/15412/games/2981123", "losses": 0, "ot_losses": 0, "ot_wins": 0, "rank": 2, "rank_change": 0, "rating": 0.6997607655502391, "sos": 0.3995215311004783, "t": 0, "team": "Walter Johnson JV", "team_html": "\u003ca href=\"https://gamesheetstats.com/seasons/15412/teams/531434/preview?configuration%5Bcompact-view%5D=true\u0026amp;configuration%5Bprimary-colour%5D=C80F2E\u0026amp;configuration%5Bsecondary-colour%5D=041E42\u0026amp;filter%5Bdivision%5D=83134\u0026amp;filter%5Btype%5D=regular_season\u0026amp;filter%5Bstatus%5D=scheduled\" target=\"_blank\" rel=\"noopener noreferrer\"\u003eWalter Johnson JV\u003c/a\u003e", "win_pct": 1.0, "wins": 2}, {"ga": 12, "gd": -8, "gf": 4, "last_game": "vs Church L 1-10", "last_game_html": "\u003ca href=\"https://gamesheetstats.com/seasons/15412/games/2981122\" target=\"_blank\" rel=\"noopener noreferrer\"\u003evs Church L 1-10\u003c/a\u003e", "last_game_url": "https://gamesheetstats.com/seasons/15412/games/2981122", "losses": 1, "ot_losses": 0, "ot_wins": 0, "rank": 3, "rank_change": 1, "rating": 0.5633971291866029, "sos": 0.6267942583732058, "t": 0, "team": "Rockville-Magruder JV", "team_html": "\u003ca href=\"https://gamesheetstats.com/seasons/15412/teams/531441/preview?configuration%5Bcompact-view%5D=true\u0026amp;configuration%5Bprimary-colour%5D=C80F2E\u0026amp;configuration%5Bsecondary-colour%5D=041E42\u0026amp;filter%5Bdivision%5D=83134\u0026amp;filter%5Btype%5D=regular_season\u0026amp;filter%5Bstatus%5D=scheduled\" target=\"_blank\" rel=\"noopener noreferrer\"\u003eRockville-Magruder JV\u003c/a\u003e", "win_pct": 0.5, "wins": 1}, {"ga": 5, "gd": 4, "gf": 9, "last_game": "vs BCC W 5-1", "last_game_html": "\u003ca href=\"https://gamesheetstats.com/seasons/15412/games/2981119\" target=\"_blank\" rel=\"noopener noreferrer\"\u003evs BCC W 5-1\u003c/a\u003e", "last_game_url": "https://gamesheetstats.com/seasons/15412/games/2981119", "losses": 0, "ot_losses": 0, "ot_wins": 0, "rank": 4, "rank_change": 2, "rating": 0.5490430622009569, "sos": 0.3480861244019138, "t": 1, "team": "Walt Whitman JV", "team_html": "\u003ca href=\"https://gamesheetstats.com/seasons/15412/teams/531436/preview?configuration%5Bcompact-view%5D=true\u0026amp;configuration%5Bprimary-colour%5D=C80F2E\u0026amp;configuration%5Bsecondary-colour%5D=041E42\u0026amp;filter%5Bdivision%5D=83134\u0026amp;filter%5Btype%5D=regular_season\u0026amp;filter%5Bstatus%5D=scheduled\" target=\"_blank\" rel=\"noopener noreferrer\"\u003eWalt Whitman JV\u003c/a\u003e", "win_pct": 0.75, "wins": 1}, {"ga": 6, "gd": 4, "gf": 10, "last_game": "@ RMS W 10-0", "last_game_html": "\u003ca href=\"https://gamesheetstats.com/seasons/15412/games/2981121\" target=\"_blank\" rel=\"noopener noreferrer\"\u003e@ RMS W 10-0\u003c/a\u003e", "last_game_url": "https://gamesheetstats.com/seasons/15412/games/2981121", "losses": 1, "ot_losses": 0, "ot_wins": 0, "rank": 5, "rank_change": 3, "rating": 0.5035885167464115, "sos": 0.507177033492823, "t": 0, "team": "DC Stars JV", "team_html": "\u003ca href=\"https://gamesheetstats.com/seasons/15412/teams/531442/preview?configuration%5Bcompact-view%5D=true\u0026amp;configuration%5Bprimary-colour%5D=C80F2E\u0026amp;configuration%5Bsecondary-colour%5D=041E42\u0026amp;filter%5Bdivision%5D=83134\u0026amp;filter%5Btype%5D=regular_season\u0026amp;filter%5Bstatus%5D=scheduled\" target=\"_blank\" rel=\"noopener noreferrer\"\u003eDC Stars JV\u003c/a\u003e", "win_pct": 0.5, "wins": 1}, {"ga": 8, "gd": 9, "gf": 17, "last_game": "vs WJ L 3-4", "last_game_html": "\u003ca href=\"https://gamesheetstats.com/seasons/15412/games/2981123\" target=\"_blank\" rel=\"noopener noreferrer\"\u003evs WJ L 3-4\u003c/a\u003e", "last_game_url": "https://gamesheetstats.com/seasons/15412/games/2981123", "losses": 1, "ot_losses": 0, "ot_wins": 0, "rank": 6, "rank_change": -5, "rating": 0.48684210526315785, "sos": 0.4736842105263157, "t": 0, "team": "Silver Spring JV", "team_html": "\u003ca href=\"https://gamesheetstats.com/seasons/15412/teams/531450/preview?configuration%5Bcompact-view%5D=true\u0026amp;configuration%5Bprimary-colour%5D=C80F2E\u0026amp;configuration%5Bsecondary-colour%5D=041E42\u0026amp;filter%5Bdivision%5D=83134\u0026amp;filter%5Btype%5D=regular_season\u0026amp;filter%5Bstatus%5D=scheduled\" target=\"_blank\" rel=\"noopener noreferrer\"\u003eSilver Spring JV\u003c/a\u003e", "win_pct": 0.5, "wins": 1}, {"ga": 5, "gd": 5, "gf": 10, "last_game": "vs CenMOCO W 8-2", "last_game_html": "\u003ca href=\"https://gamesheetstats.com/seasons/15412/games/2981120\" target=\"_blank\" rel=\"noopener noreferrer\"\u003evs CenMOCO W 8-2\u003c/a\u003e", "last_game_url": "https://gamesheetstats.com/seasons/15412/games/2981120", "losses": 1, "ot_losses": 0, "ot_wins": 0, "rank": 7, "rank_change": 3, "rating": 0.48684210526315785, "sos": 0.4736842105263157, "t": 0, "team": "Upper Montgomery JV", "team_html": "\u003ca href=\"https://gamesheetstats.com/seasons/15412/teams/531439/preview?configuration%5Bcompact-view%5D=true\u0026amp;configuration%5Bprimary-colour%5D=C80F2E\u0026amp;configuration%5Bsecondary-colour%5D=041E42\u0026amp;filter%5Bdivision%5D=83134\u0026amp;filter%5Btype%5D=regular_season\u0026amp;filter%5Bstatus%5D=scheduled\" target=\"_blank\" rel=\"noopener noreferrer\"\u003eUpper Montgomery JV\u003c/a\u003e", "win_pct": 0.5, "wins": 1}, {"ga": 12, "gd": -6, "gf": 6, "last_game": "@ UML L 2-8", "last_game_html": "\u003ca href=\"https://gamesheetstats.com/seasons/15412/games/2981120\" target=\"_blank\" rel=\"noopener noreferrer\"\u003e@ UML L 2-8\u003c/a\u003e", "last_game_url": "https://gamesheetstats.com/seasons/15412/games/2981120", "losses": 1, "ot_losses": 0, "ot_wins": 0, "rank": 8, "rank_change": -3, "rating": 0.38397129186602874, "sos": 0.5179425837320575, "t": 1, "team": "Central MOCO JV", "team_html": "\u003ca href=\"https://gamesheetstats.com/seasons/15412/teams/531437/preview?configuration%5Bcompact-view%5D=true\u0026amp;configuration%5Bprimary-colour%5D=C80F2E\u0026amp;configuration%5Bsecondary-colour%5D=041E42\u0026amp;filter%5Bdivision%5D=83134\u0026amp;filter%5Btype%5D=regular_season\u0026amp;filter%5Bstatus%5D=scheduled\" target=\"_blank\" rel=\"noopener noreferrer\"\u003eCentral MOCO JV\u003c/a\u003e", "win_pct": 0.25, "wins": 0}, {"ga": 15, "gd": -12, "gf": 3, "last_game": "@ Whit L 1-5", "last_game_html": "\u003ca href=\"https://gamesheetstats.com/seasons/15412/games/2981119\" target=\"_blank\" rel=\"noopener noreferrer\"\u003e@ Whit L 1-5\u003c/a\u003e", "last_game_url": "https://gamesheetstats.com/seasons/15412/games/2981119", "losses": 2, "ot_losses": 0, "ot_wins": 0, "rank": 9, "rank_change": -2, "rating": 0.31220095693779903, "sos": 0.6244019138755981, "t": 0, "team": "Bethesda-Chevy Chase JV", "team_html": "\u003ca href=\"https://gamesheetstats.com/seasons/15412/teams/531440/preview?configuration%5Bcompact-view%5D=true\u0026amp;configuration%5Bprimary-colour%5D=C80F2E\u0026amp;configuration%5Bsecondary-colour%5D=041E42\u0026amp;filter%5Bdivision%5D=83134\u0026amp;filter%5Btype%5D=regular_season\u0026amp;filter%5Bstatus%5D=scheduled\" target=\"_blank\" rel=\"noopener noreferrer\"\u003eBethesda-Chevy Chase JV\u003c/a\u003e", "win_pct": 0.0, "wins": 0}, {"ga": 24, "gd": -20, "gf": 4, "last_game": "vs DC L 0-10", "last_game_html": "\u003ca href=\"https://gamesheetstats.com/seasons/15412/games/2981121\" target=\"_blank\" rel=\"noopener noreferrer\"\u003evs DC L 0-10\u003c/a\u003e", "last_game_url": "https://gamesheetstats.com/seasons/15412/games/2981121", "losses": 2, "ot_losses": 0, "ot_wins": 0, "rank": 10, "rank_change": -1, "rating": 0.24760765550239233, "sos": 0.49521531100478466, "t": 0, "team": "Richard Montgomery-Sherwood JV", "team_html": "\u003ca href=\"https://gamesheetstats.com/seasons/15412/teams/531435/preview?configuration%5Bcompact-view%5D=true\u0026amp;configuration%5Bprimary-colour%5D=C80F2E\u0026amp;configuration%5Bsecondary-colour%5D=041E42\u0026amp;filter%5Bdivision%5D=83134\u0026amp;filter%5Btype%5D=regular_season\u0026amp;filter%5Bstatus%5D=scheduled\" target=\"_blank\" rel=\"noopener noreferrer\"\u003eRichard Montgomery-Sherwood JV\u003c/a\u003e", "win_pct": 0.0, "wins": 0}]};
-    const finalData = [{"ga": 1, "gd": 15, "gf": 16, "last_game": "@ RAM W 10-1", "last_game_html": "\u003ca href=\"https://gamesheetstats.com/seasons/15412/games/2981122\" target=\"_blank\" rel=\"noopener noreferrer\"\u003e@ RAM W 10-1\u003c/a\u003e", "last_game_url": "https://gamesheetstats.com/seasons/15412/games/2981122", "losses": 0, "ot_losses": 0, "ot_wins": 0, "rank": 1, "rank_change": 2, "rating": 0.7667464114832535, "sos": 0.533492822966507, "t": 0, "team": "Winston Churchill JV", "team_html": "\u003ca href=\"https://gamesheetstats.com/seasons/15412/teams/531443/preview?configuration%5Bcompact-view%5D=true\u0026amp;configuration%5Bprimary-colour%5D=C80F2E\u0026amp;configuration%5Bsecondary-colour%5D=041E42\u0026amp;filter%5Bdivision%5D=83134\u0026amp;filter%5Btype%5D=regular_season\u0026amp;filter%5Bstatus%5D=scheduled\" target=\"_blank\" rel=\"noopener noreferrer\"\u003eWinston Churchill JV\u003c/a\u003e", "win_pct": 1.0, "wins": 2}, {"ga": 5, "gd": 9, "gf": 14, "last_game": "@ SS W 4-3", "last_game_html": "\u003ca href=\"https://gamesheetstats.com/seasons/15412/games/2981123\" target=\"_blank\" rel=\"noopener noreferrer\"\u003e@ SS W 4-3\u003c/a\u003e", "last_game_url": "https://gamesheetstats.com/seasons/15412/games/2981123", "losses": 0, "ot_losses": 0, "ot_wins": 0, "rank": 2, "rank_change": 0, "rating": 0.6997607655502391, "sos": 0.3995215311004783, "t": 0, "team": "Walter Johnson JV", "team_html": "\u003ca href=\"https://gamesheetstats.com/seasons/15412/teams/531434/preview?configuration%5Bcompact-view%5D=true\u0026amp;configuration%5Bprimary-colour%5D=C80F2E\u0026amp;configuration%5Bsecondary-colour%5D=041E42\u0026amp;filter%5Bdivision%5D=83134\u0026amp;filter%5Btype%5D=regular_season\u0026amp;filter%5Bstatus%5D=scheduled\" target=\"_blank\" rel=\"noopener noreferrer\"\u003eWalter Johnson JV\u003c/a\u003e", "win_pct": 1.0, "wins": 2}, {"ga": 12, "gd": -8, "gf": 4, "last_game": "vs Church L 1-10", "last_game_html": "\u003ca href=\"https://gamesheetstats.com/seasons/15412/games/2981122\" target=\"_blank\" rel=\"noopener noreferrer\"\u003evs Church L 1-10\u003c/a\u003e", "last_game_url": "https://gamesheetstats.com/seasons/15412/games/2981122", "losses": 1, "ot_losses": 0, "ot_wins": 0, "rank": 3, "rank_change": 1, "rating": 0.5633971291866029, "sos": 0.6267942583732058, "t": 0, "team": "Rockville-Magruder JV", "team_html": "\u003ca href=\"https://gamesheetstats.com/seasons/15412/teams/531441/preview?configuration%5Bcompact-view%5D=true\u0026amp;configuration%5Bprimary-colour%5D=C80F2E\u0026amp;configuration%5Bsecondary-colour%5D=041E42\u0026amp;filter%5Bdivision%5D=83134\u0026amp;filter%5Btype%5D=regular_season\u0026amp;filter%5Bstatus%5D=scheduled\" target=\"_blank\" rel=\"noopener noreferrer\"\u003eRockville-Magruder JV\u003c/a\u003e", "win_pct": 0.5, "wins": 1}, {"ga": 5, "gd": 4, "gf": 9, "last_game": "vs BCC W 5-1", "last_game_html": "\u003ca href=\"https://gamesheetstats.com/seasons/15412/games/2981119\" target=\"_blank\" rel=\"noopener noreferrer\"\u003evs BCC W 5-1\u003c/a\u003e", "last_game_url": "https://gamesheetstats.com/seasons/15412/games/2981119", "losses": 0, "ot_losses": 0, "ot_wins": 0, "rank": 4, "rank_change": 2, "rating": 0.5490430622009569, "sos": 0.3480861244019138, "t": 1, "team": "Walt Whitman JV", "team_html": "\u003ca href=\"https://gamesheetstats.com/seasons/15412/teams/531436/preview?configuration%5Bcompact-view%5D=true\u0026amp;configuration%5Bprimary-colour%5D=C80F2E\u0026amp;configuration%5Bsecondary-colour%5D=041E42\u0026amp;filter%5Bdivision%5D=83134\u0026amp;filter%5Btype%5D=regular_season\u0026amp;filter%5Bstatus%5D=scheduled\" target=\"_blank\" rel=\"noopener noreferrer\"\u003eWalt Whitman JV\u003c/a\u003e", "win_pct": 0.75, "wins": 1}, {"ga": 6, "gd": 4, "gf": 10, "last_game": "@ RMS W 10-0", "last_game_html": "\u003ca href=\"https://gamesheetstats.com/seasons/15412/games/2981121\" target=\"_blank\" rel=\"noopener noreferrer\"\u003e@ RMS W 10-0\u003c/a\u003e", "last_game_url": "https://gamesheetstats.com/seasons/15412/games/2981121", "losses": 1, "ot_losses": 0, "ot_wins": 0, "rank": 5, "rank_change": 3, "rating": 0.5035885167464115, "sos": 0.507177033492823, "t": 0, "team": "DC Stars JV", "team_html": "\u003ca href=\"https://gamesheetstats.com/seasons/15412/teams/531442/preview?configuration%5Bcompact-view%5D=true\u0026amp;configuration%5Bprimary-colour%5D=C80F2E\u0026amp;configuration%5Bsecondary-colour%5D=041E42\u0026amp;filter%5Bdivision%5D=83134\u0026amp;filter%5Btype%5D=regular_season\u0026amp;filter%5Bstatus%5D=scheduled\" target=\"_blank\" rel=\"noopener noreferrer\"\u003eDC Stars JV\u003c/a\u003e", "win_pct": 0.5, "wins": 1}, {"ga": 8, "gd": 9, "gf": 17, "last_game": "vs WJ L 3-4", "last_game_html": "\u003ca href=\"https://gamesheetstats.com/seasons/15412/games/2981123\" target=\"_blank\" rel=\"noopener noreferrer\"\u003evs WJ L 3-4\u003c/a\u003e", "last_game_url": "https://gamesheetstats.com/seasons/15412/games/2981123", "losses": 1, "ot_losses": 0, "ot_wins": 0, "rank": 6, "rank_change": -5, "rating": 0.48684210526315785, "sos": 0.4736842105263157, "t": 0, "team": "Silver Spring JV", "team_html": "\u003ca href=\"https://gamesheetstats.com/seasons/15412/teams/531450/preview?configuration%5Bcompact-view%5D=true\u0026amp;configuration%5Bprimary-colour%5D=C80F2E\u0026amp;configuration%5Bsecondary-colour%5D=041E42\u0026amp;filter%5Bdivision%5D=83134\u0026amp;filter%5Btype%5D=regular_season\u0026amp;filter%5Bstatus%5D=scheduled\" target=\"_blank\" rel=\"noopener noreferrer\"\u003eSilver Spring JV\u003c/a\u003e", "win_pct": 0.5, "wins": 1}, {"ga": 5, "gd": 5, "gf": 10, "last_game": "vs CenMOCO W 8-2", "last_game_html": "\u003ca href=\"https://gamesheetstats.com/seasons/15412/games/2981120\" target=\"_blank\" rel=\"noopener noreferrer\"\u003evs CenMOCO W 8-2\u003c/a\u003e", "last_game_url": "https://gamesheetstats.com/seasons/15412/games/2981120", "losses": 1, "ot_losses": 0, "ot_wins": 0, "rank": 7, "rank_change": 3, "rating": 0.48684210526315785, "sos": 0.4736842105263157, "t": 0, "team": "Upper Montgomery JV", "team_html": "\u003ca href=\"https://gamesheetstats.com/seasons/15412/teams/531439/preview?configuration%5Bcompact-view%5D=true\u0026amp;configuration%5Bprimary-colour%5D=C80F2E\u0026amp;configuration%5Bsecondary-colour%5D=041E42\u0026amp;filter%5Bdivision%5D=83134\u0026amp;filter%5Btype%5D=regular_season\u0026amp;filter%5Bstatus%5D=scheduled\" target=\"_blank\" rel=\"noopener noreferrer\"\u003eUpper Montgomery JV\u003c/a\u003e", "win_pct": 0.5, "wins": 1}, {"ga": 12, "gd": -6, "gf": 6, "last_game": "@ UML L 2-8", "last_game_html": "\u003ca href=\"https://gamesheetstats.com/seasons/15412/games/2981120\" target=\"_blank\" rel=\"noopener noreferrer\"\u003e@ UML L 2-8\u003c/a\u003e", "last_game_url": "https://gamesheetstats.com/seasons/15412/games/2981120", "losses": 1, "ot_losses": 0, "ot_wins": 0, "rank": 8, "rank_change": -3, "rating": 0.38397129186602874, "sos": 0.5179425837320575, "t": 1, "team": "Central MOCO JV", "team_html": "\u003ca href=\"https://gamesheetstats.com/seasons/15412/teams/531437/preview?configuration%5Bcompact-view%5D=true\u0026amp;configuration%5Bprimary-colour%5D=C80F2E\u0026amp;configuration%5Bsecondary-colour%5D=041E42\u0026amp;filter%5Bdivision%5D=83134\u0026amp;filter%5Btype%5D=regular_season\u0026amp;filter%5Bstatus%5D=scheduled\" target=\"_blank\" rel=\"noopener noreferrer\"\u003eCentral MOCO JV\u003c/a\u003e", "win_pct": 0.25, "wins": 0}, {"ga": 15, "gd": -12, "gf": 3, "last_game": "@ Whit L 1-5", "last_game_html": "\u003ca href=\"https://gamesheetstats.com/seasons/15412/games/2981119\" target=\"_blank\" rel=\"noopener noreferrer\"\u003e@ Whit L 1-5\u003c/a\u003e", "last_game_url": "https://gamesheetstats.com/seasons/15412/games/2981119", "losses": 2, "ot_losses": 0, "ot_wins": 0, "rank": 9, "rank_change": -2, "rating": 0.31220095693779903, "sos": 0.6244019138755981, "t": 0, "team": "Bethesda-Chevy Chase JV", "team_html": "\u003ca href=\"https://gamesheetstats.com/seasons/15412/teams/531440/preview?configuration%5Bcompact-view%5D=true\u0026amp;configuration%5Bprimary-colour%5D=C80F2E\u0026amp;configuration%5Bsecondary-colour%5D=041E42\u0026amp;filter%5Bdivision%5D=83134\u0026amp;filter%5Btype%5D=regular_season\u0026amp;filter%5Bstatus%5D=scheduled\" target=\"_blank\" rel=\"noopener noreferrer\"\u003eBethesda-Chevy Chase JV\u003c/a\u003e", "win_pct": 0.0, "wins": 0}, {"ga": 24, "gd": -20, "gf": 4, "last_game": "vs DC L 0-10", "last_game_html": "\u003ca href=\"https://gamesheetstats.com/seasons/15412/games/2981121\" target=\"_blank\" rel=\"noopener noreferrer\"\u003evs DC L 0-10\u003c/a\u003e", "last_game_url": "https://gamesheetstats.com/seasons/15412/games/2981121", "losses": 2, "ot_losses": 0, "ot_wins": 0, "rank": 10, "rank_change": -1, "rating": 0.24760765550239233, "sos": 0.49521531100478466, "t": 0, "team": "Richard Montgomery-Sherwood JV", "team_html": "\u003ca href=\"https://gamesheetstats.com/seasons/15412/teams/531435/preview?configuration%5Bcompact-view%5D=true\u0026amp;configuration%5Bprimary-colour%5D=C80F2E\u0026amp;configuration%5Bsecondary-colour%5D=041E42\u0026amp;filter%5Bdivision%5D=83134\u0026amp;filter%5Btype%5D=regular_season\u0026amp;filter%5Bstatus%5D=scheduled\" target=\"_blank\" rel=\"noopener noreferrer\"\u003eRichard Montgomery-Sherwood JV\u003c/a\u003e", "win_pct": 0.0, "wins": 0}];
-    weeklyData["Final"] = finalData;
-    
-    // Sort weeks, and ensure "Final" is at the end
-    const weeks = ["2026-W39", "2026-W40"];
-    weeks.push("Final");
+    const weeklyData = {"Week 01": [{"ga": 4, "gd": 10, "gf": 14, "last_game": "@ RMS W 14-4", "last_game_html": "\u003ca href=\"https://gamesheetstats.com/seasons/15412/games/2981118\" target=\"_blank\" rel=\"noopener noreferrer\"\u003e@ RMS W 14-4\u003c/a\u003e", "last_game_url": "https://gamesheetstats.com/seasons/15412/games/2981118", "losses": 0, "ot_losses": 0, "ot_wins": 0, "rank": 1, "rank_change": 0, "rating": 0.6250000000000001, "sos": 0.37500000000000044, "t": 0, "team": "Silver Spring JV", "team_html": "\u003ca href=\"mhc_team_reports.html#team-Silver-Spring-JV\"\u003eSilver Spring JV\u003c/a\u003e", "win_pct": 1.0, "wins": 1}, {"ga": 2, "gd": 8, "gf": 10, "last_game": "vs BCC W 10-2", "last_game_html": "\u003ca href=\"https://gamesheetstats.com/seasons/15412/games/2981114\" target=\"_blank\" rel=\"noopener noreferrer\"\u003evs BCC W 10-2\u003c/a\u003e", "last_game_url": "https://gamesheetstats.com/seasons/15412/games/2981114", "losses": 0, "ot_losses": 0, "ot_wins": 0, "rank": 2, "rank_change": 0, "rating": 0.6250000000000001, "sos": 0.37500000000000044, "t": 0, "team": "Walter Johnson JV", "team_html": "\u003ca href=\"mhc_team_reports.html#team-Walter-Johnson-JV\"\u003eWalter Johnson JV\u003c/a\u003e", "win_pct": 1.0, "wins": 1}, {"ga": 0, "gd": 6, "gf": 6, "last_game": "@ DC W 6-0", "last_game_html": "\u003ca href=\"https://gamesheetstats.com/seasons/15412/games/2981116\" target=\"_blank\" rel=\"noopener noreferrer\"\u003e@ DC W 6-0\u003c/a\u003e", "last_game_url": "https://gamesheetstats.com/seasons/15412/games/2981116", "losses": 0, "ot_losses": 0, "ot_wins": 0, "rank": 3, "rank_change": 0, "rating": 0.6250000000000001, "sos": 0.37500000000000044, "t": 0, "team": "Winston Churchill JV", "team_html": "\u003ca href=\"mhc_team_reports.html#team-Winston-Churchill-JV\"\u003eWinston Churchill JV\u003c/a\u003e", "win_pct": 1.0, "wins": 1}, {"ga": 2, "gd": 1, "gf": 3, "last_game": "@ UML W 3-2", "last_game_html": "\u003ca href=\"https://gamesheetstats.com/seasons/15412/games/2981117\" target=\"_blank\" rel=\"noopener noreferrer\"\u003e@ UML W 3-2\u003c/a\u003e", "last_game_url": "https://gamesheetstats.com/seasons/15412/games/2981117", "losses": 0, "ot_losses": 0, "ot_wins": 0, "rank": 4, "rank_change": 0, "rating": 0.625, "sos": 0.375, "t": 0, "team": "Rockville-Magruder JV", "team_html": "\u003ca href=\"mhc_team_reports.html#team-Rockville-Magruder-JV\"\u003eRockville-Magruder JV\u003c/a\u003e", "win_pct": 1.0, "wins": 1}, {"ga": 4, "gd": 0, "gf": 4, "last_game": "vs Whit T 4-4 (OT)", "last_game_html": "\u003ca href=\"https://gamesheetstats.com/seasons/15412/games/2981115\" target=\"_blank\" rel=\"noopener noreferrer\"\u003evs Whit T 4-4 (OT)\u003c/a\u003e", "last_game_url": "https://gamesheetstats.com/seasons/15412/games/2981115", "losses": 0, "ot_losses": 0, "ot_wins": 0, "rank": 5, "rank_change": 0, "rating": 0.5, "sos": 0.5, "t": 1, "team": "Central MOCO JV", "team_html": "\u003ca href=\"mhc_team_reports.html#team-Central-MOCO-JV\"\u003eCentral MOCO JV\u003c/a\u003e", "win_pct": 0.5, "wins": 0}, {"ga": 4, "gd": 0, "gf": 4, "last_game": "@ CenMOCO T 4-4 (OT)", "last_game_html": "\u003ca href=\"https://gamesheetstats.com/seasons/15412/games/2981115\" target=\"_blank\" rel=\"noopener noreferrer\"\u003e@ CenMOCO T 4-4 (OT)\u003c/a\u003e", "last_game_url": "https://gamesheetstats.com/seasons/15412/games/2981115", "losses": 0, "ot_losses": 0, "ot_wins": 0, "rank": 6, "rank_change": 0, "rating": 0.5, "sos": 0.5, "t": 1, "team": "Walt Whitman JV", "team_html": "\u003ca href=\"mhc_team_reports.html#team-Walt-Whitman-JV\"\u003eWalt Whitman JV\u003c/a\u003e", "win_pct": 0.5, "wins": 0}, {"ga": 10, "gd": -8, "gf": 2, "last_game": "@ WJ L 2-10", "last_game_html": "\u003ca href=\"https://gamesheetstats.com/seasons/15412/games/2981114\" target=\"_blank\" rel=\"noopener noreferrer\"\u003e@ WJ L 2-10\u003c/a\u003e", "last_game_url": "https://gamesheetstats.com/seasons/15412/games/2981114", "losses": 1, "ot_losses": 0, "ot_wins": 0, "rank": 7, "rank_change": 0, "rating": 0.375, "sos": 0.625, "t": 0, "team": "Bethesda-Chevy Chase JV", "team_html": "\u003ca href=\"mhc_team_reports.html#team-Bethesda-Chevy-Chase-JV\"\u003eBethesda-Chevy Chase JV\u003c/a\u003e", "win_pct": 0.0, "wins": 0}, {"ga": 6, "gd": -6, "gf": 0, "last_game": "vs Church L 0-6", "last_game_html": "\u003ca href=\"https://gamesheetstats.com/seasons/15412/games/2981116\" target=\"_blank\" rel=\"noopener noreferrer\"\u003evs Church L 0-6\u003c/a\u003e", "last_game_url": "https://gamesheetstats.com/seasons/15412/games/2981116", "losses": 1, "ot_losses": 0, "ot_wins": 0, "rank": 8, "rank_change": 0, "rating": 0.375, "sos": 0.625, "t": 0, "team": "DC Stars JV", "team_html": "\u003ca href=\"mhc_team_reports.html#team-DC-Stars-JV\"\u003eDC Stars JV\u003c/a\u003e", "win_pct": 0.0, "wins": 0}, {"ga": 14, "gd": -10, "gf": 4, "last_game": "vs SS L 4-14", "last_game_html": "\u003ca href=\"https://gamesheetstats.com/seasons/15412/games/2981118\" target=\"_blank\" rel=\"noopener noreferrer\"\u003evs SS L 4-14\u003c/a\u003e", "last_game_url": "https://gamesheetstats.com/seasons/15412/games/2981118", "losses": 1, "ot_losses": 0, "ot_wins": 0, "rank": 9, "rank_change": 0, "rating": 0.375, "sos": 0.625, "t": 0, "team": "Richard Montgomery-Sherwood JV", "team_html": "\u003ca href=\"mhc_team_reports.html#team-Richard-Montgomery-Sherwood-JV\"\u003eRichard Montgomery-Sherwood JV\u003c/a\u003e", "win_pct": 0.0, "wins": 0}, {"ga": 3, "gd": -1, "gf": 2, "last_game": "vs RAM L 2-3", "last_game_html": "\u003ca href=\"https://gamesheetstats.com/seasons/15412/games/2981117\" target=\"_blank\" rel=\"noopener noreferrer\"\u003evs RAM L 2-3\u003c/a\u003e", "last_game_url": "https://gamesheetstats.com/seasons/15412/games/2981117", "losses": 1, "ot_losses": 0, "ot_wins": 0, "rank": 10, "rank_change": 0, "rating": 0.375, "sos": 0.625, "t": 0, "team": "Upper Montgomery JV", "team_html": "\u003ca href=\"mhc_team_reports.html#team-Upper-Montgomery-JV\"\u003eUpper Montgomery JV\u003c/a\u003e", "win_pct": 0.0, "wins": 0}], "Week 02": [{"ga": 1, "gd": 15, "gf": 16, "last_game": "@ RAM W 10-1", "last_game_html": "\u003ca href=\"https://gamesheetstats.com/seasons/15412/games/2981122\" target=\"_blank\" rel=\"noopener noreferrer\"\u003e@ RAM W 10-1\u003c/a\u003e", "last_game_url": "https://gamesheetstats.com/seasons/15412/games/2981122", "losses": 0, "ot_losses": 0, "ot_wins": 0, "rank": 1, "rank_change": 2, "rating": 0.7667464114832535, "sos": 0.533492822966507, "t": 0, "team": "Winston Churchill JV", "team_html": "\u003ca href=\"mhc_team_reports.html#team-Winston-Churchill-JV\"\u003eWinston Churchill JV\u003c/a\u003e", "win_pct": 1.0, "wins": 2}, {"ga": 5, "gd": 9, "gf": 14, "last_game": "@ SS W 4-3", "last_game_html": "\u003ca href=\"https://gamesheetstats.com/seasons/15412/games/2981123\" target=\"_blank\" rel=\"noopener noreferrer\"\u003e@ SS W 4-3\u003c/a\u003e", "last_game_url": "https://gamesheetstats.com/seasons/15412/games/2981123", "losses": 0, "ot_losses": 0, "ot_wins": 0, "rank": 2, "rank_change": 0, "rating": 0.6997607655502391, "sos": 0.3995215311004783, "t": 0, "team": "Walter Johnson JV", "team_html": "\u003ca href=\"mhc_team_reports.html#team-Walter-Johnson-JV\"\u003eWalter Johnson JV\u003c/a\u003e", "win_pct": 1.0, "wins": 2}, {"ga": 12, "gd": -8, "gf": 4, "last_game": "vs Church L 1-10", "last_game_html": "\u003ca href=\"https://gamesheetstats.com/seasons/15412/games/2981122\" target=\"_blank\" rel=\"noopener noreferrer\"\u003evs Church L 1-10\u003c/a\u003e", "last_game_url": "https://gamesheetstats.com/seasons/15412/games/2981122", "losses": 1, "ot_losses": 0, "ot_wins": 0, "rank": 3, "rank_change": 1, "rating": 0.5633971291866029, "sos": 0.6267942583732058, "t": 0, "team": "Rockville-Magruder JV", "team_html": "\u003ca href=\"mhc_team_reports.html#team-Rockville-Magruder-JV\"\u003eRockville-Magruder JV\u003c/a\u003e", "win_pct": 0.5, "wins": 1}, {"ga": 5, "gd": 4, "gf": 9, "last_game": "vs BCC W 5-1", "last_game_html": "\u003ca href=\"https://gamesheetstats.com/seasons/15412/games/2981119\" target=\"_blank\" rel=\"noopener noreferrer\"\u003evs BCC W 5-1\u003c/a\u003e", "last_game_url": "https://gamesheetstats.com/seasons/15412/games/2981119", "losses": 0, "ot_losses": 0, "ot_wins": 0, "rank": 4, "rank_change": 2, "rating": 0.5490430622009569, "sos": 0.3480861244019138, "t": 1, "team": "Walt Whitman JV", "team_html": "\u003ca href=\"mhc_team_reports.html#team-Walt-Whitman-JV\"\u003eWalt Whitman JV\u003c/a\u003e", "win_pct": 0.75, "wins": 1}, {"ga": 6, "gd": 4, "gf": 10, "last_game": "@ RMS W 10-0", "last_game_html": "\u003ca href=\"https://gamesheetstats.com/seasons/15412/games/2981121\" target=\"_blank\" rel=\"noopener noreferrer\"\u003e@ RMS W 10-0\u003c/a\u003e", "last_game_url": "https://gamesheetstats.com/seasons/15412/games/2981121", "losses": 1, "ot_losses": 0, "ot_wins": 0, "rank": 5, "rank_change": 3, "rating": 0.5035885167464115, "sos": 0.507177033492823, "t": 0, "team": "DC Stars JV", "team_html": "\u003ca href=\"mhc_team_reports.html#team-DC-Stars-JV\"\u003eDC Stars JV\u003c/a\u003e", "win_pct": 0.5, "wins": 1}, {"ga": 8, "gd": 9, "gf": 17, "last_game": "vs WJ L 3-4", "last_game_html": "\u003ca href=\"https://gamesheetstats.com/seasons/15412/games/2981123\" target=\"_blank\" rel=\"noopener noreferrer\"\u003evs WJ L 3-4\u003c/a\u003e", "last_game_url": "https://gamesheetstats.com/seasons/15412/games/2981123", "losses": 1, "ot_losses": 0, "ot_wins": 0, "rank": 6, "rank_change": -5, "rating": 0.48684210526315785, "sos": 0.4736842105263157, "t": 0, "team": "Silver Spring JV", "team_html": "\u003ca href=\"mhc_team_reports.html#team-Silver-Spring-JV\"\u003eSilver Spring JV\u003c/a\u003e", "win_pct": 0.5, "wins": 1}, {"ga": 5, "gd": 5, "gf": 10, "last_game": "vs CenMOCO W 8-2", "last_game_html": "\u003ca href=\"https://gamesheetstats.com/seasons/15412/games/2981120\" target=\"_blank\" rel=\"noopener noreferrer\"\u003evs CenMOCO W 8-2\u003c/a\u003e", "last_game_url": "https://gamesheetstats.com/seasons/15412/games/2981120", "losses": 1, "ot_losses": 0, "ot_wins": 0, "rank": 7, "rank_change": 3, "rating": 0.48684210526315785, "sos": 0.4736842105263157, "t": 0, "team": "Upper Montgomery JV", "team_html": "\u003ca href=\"mhc_team_reports.html#team-Upper-Montgomery-JV\"\u003eUpper Montgomery JV\u003c/a\u003e", "win_pct": 0.5, "wins": 1}, {"ga": 12, "gd": -6, "gf": 6, "last_game": "@ UML L 2-8", "last_game_html": "\u003ca href=\"https://gamesheetstats.com/seasons/15412/games/2981120\" target=\"_blank\" rel=\"noopener noreferrer\"\u003e@ UML L 2-8\u003c/a\u003e", "last_game_url": "https://gamesheetstats.com/seasons/15412/games/2981120", "losses": 1, "ot_losses": 0, "ot_wins": 0, "rank": 8, "rank_change": -3, "rating": 0.38397129186602874, "sos": 0.5179425837320575, "t": 1, "team": "Central MOCO JV", "team_html": "\u003ca href=\"mhc_team_reports.html#team-Central-MOCO-JV\"\u003eCentral MOCO JV\u003c/a\u003e", "win_pct": 0.25, "wins": 0}, {"ga": 15, "gd": -12, "gf": 3, "last_game": "@ Whit L 1-5", "last_game_html": "\u003ca href=\"https://gamesheetstats.com/seasons/15412/games/2981119\" target=\"_blank\" rel=\"noopener noreferrer\"\u003e@ Whit L 1-5\u003c/a\u003e", "last_game_url": "https://gamesheetstats.com/seasons/15412/games/2981119", "losses": 2, "ot_losses": 0, "ot_wins": 0, "rank": 9, "rank_change": -2, "rating": 0.31220095693779903, "sos": 0.6244019138755981, "t": 0, "team": "Bethesda-Chevy Chase JV", "team_html": "\u003ca href=\"mhc_team_reports.html#team-Bethesda-Chevy-Chase-JV\"\u003eBethesda-Chevy Chase JV\u003c/a\u003e", "win_pct": 0.0, "wins": 0}, {"ga": 24, "gd": -20, "gf": 4, "last_game": "vs DC L 0-10", "last_game_html": "\u003ca href=\"https://gamesheetstats.com/seasons/15412/games/2981121\" target=\"_blank\" rel=\"noopener noreferrer\"\u003evs DC L 0-10\u003c/a\u003e", "last_game_url": "https://gamesheetstats.com/seasons/15412/games/2981121", "losses": 2, "ot_losses": 0, "ot_wins": 0, "rank": 10, "rank_change": -1, "rating": 0.24760765550239233, "sos": 0.49521531100478466, "t": 0, "team": "Richard Montgomery-Sherwood JV", "team_html": "\u003ca href=\"mhc_team_reports.html#team-Richard-Montgomery-Sherwood-JV\"\u003eRichard Montgomery-Sherwood JV\u003c/a\u003e", "win_pct": 0.0, "wins": 0}], "Week 03": [{"ga": 6, "gd": 18, "gf": 24, "last_game": "vs RAM W 10-1", "last_game_html": "\u003ca href=\"https://gamesheetstats.com/seasons/15412/games/2981126\" target=\"_blank\" rel=\"noopener noreferrer\"\u003evs RAM W 10-1\u003c/a\u003e", "last_game_url": "https://gamesheetstats.com/seasons/15412/games/2981126", "losses": 0, "ot_losses": 0, "ot_wins": 0, "rank": 1, "rank_change": 1, "rating": 0.7478851741513112, "sos": 0.41314195691885197, "t": 0, "team": "Walter Johnson JV", "team_html": "\u003ca href=\"mhc_team_reports.html#team-Walter-Johnson-JV\"\u003eWalter Johnson JV\u003c/a\u003e", "win_pct": 1.0, "wins": 3}, {"ga": 1, "gd": 15, "gf": 16, "last_game": "@ RAM W 10-1", "last_game_html": "\u003ca href=\"https://gamesheetstats.com/seasons/15412/games/2981122\" target=\"_blank\" rel=\"noopener noreferrer\"\u003e@ RAM W 10-1\u003c/a\u003e", "last_game_url": "https://gamesheetstats.com/seasons/15412/games/2981122", "losses": 0, "ot_losses": 0, "ot_wins": 0, "rank": 2, "rank_change": -1, "rating": 0.7281529294935453, "sos": 0.45630585898709053, "t": 0, "team": "Winston Churchill JV", "team_html": "\u003ca href=\"mhc_team_reports.html#team-Winston-Churchill-JV\"\u003eWinston Churchill JV\u003c/a\u003e", "win_pct": 1.0, "wins": 2}, {"ga": 7, "gd": 7, "gf": 14, "last_game": "@ DC W 5-2", "last_game_html": "\u003ca href=\"https://gamesheetstats.com/seasons/15412/games/2981127\" target=\"_blank\" rel=\"noopener noreferrer\"\u003e@ DC W 5-2\u003c/a\u003e", "last_game_url": "https://gamesheetstats.com/seasons/15412/games/2981127", "losses": 0, "ot_losses": 0, "ot_wins": 0, "rank": 3, "rank_change": 1, "rating": 0.6552925815587187, "sos": 0.42548763593119787, "t": 1, "team": "Walt Whitman JV", "team_html": "\u003ca href=\"mhc_team_reports.html#team-Walt-Whitman-JV\"\u003eWalt Whitman JV\u003c/a\u003e", "win_pct": 0.8333333333333334, "wins": 2}, {"ga": 6, "gd": 11, "gf": 17, "last_game": "@ RMS W 7-1", "last_game_html": "\u003ca href=\"https://gamesheetstats.com/seasons/15412/games/2981124\" target=\"_blank\" rel=\"noopener noreferrer\"\u003e@ RMS W 7-1\u003c/a\u003e", "last_game_url": "https://gamesheetstats.com/seasons/15412/games/2981124", "losses": 1, "ot_losses": 0, "ot_wins": 0, "rank": 4, "rank_change": 3, "rating": 0.5369726727720769, "sos": 0.3949544546201282, "t": 0, "team": "Upper Montgomery JV", "team_html": "\u003ca href=\"mhc_team_reports.html#team-Upper-Montgomery-JV\"\u003eUpper Montgomery JV\u003c/a\u003e", "win_pct": 0.6666666666666666, "wins": 2}, {"ga": 12, "gd": -1, "gf": 11, "last_game": "vs SS W 5-0", "last_game_html": "\u003ca href=\"https://gamesheetstats.com/seasons/15412/games/2981125\" target=\"_blank\" rel=\"noopener noreferrer\"\u003evs SS W 5-0\u003c/a\u003e", "last_game_url": "https://gamesheetstats.com/seasons/15412/games/2981125", "losses": 1, "ot_losses": 0, "ot_wins": 0, "rank": 5, "rank_change": 3, "rating": 0.5156589061752914, "sos": 0.526098176958819, "t": 1, "team": "Central MOCO JV", "team_html": "\u003ca href=\"mhc_team_reports.html#team-Central-MOCO-JV\"\u003eCentral MOCO JV\u003c/a\u003e", "win_pct": 0.5, "wins": 1}, {"ga": 22, "gd": -17, "gf": 5, "last_game": "@ WJ L 1-10", "last_game_html": "\u003ca href=\"https://gamesheetstats.com/seasons/15412/games/2981126\" target=\"_blank\" rel=\"noopener noreferrer\"\u003e@ WJ L 1-10\u003c/a\u003e", "last_game_url": "https://gamesheetstats.com/seasons/15412/games/2981126", "losses": 2, "ot_losses": 0, "ot_wins": 0, "rank": 6, "rank_change": -3, "rating": 0.5026021552833868, "sos": 0.671003592138978, "t": 0, "team": "Rockville-Magruder JV", "team_html": "\u003ca href=\"mhc_team_reports.html#team-Rockville-Magruder-JV\"\u003eRockville-Magruder JV\u003c/a\u003e", "win_pct": 0.3333333333333333, "wins": 1}, {"ga": 11, "gd": 1, "gf": 12, "last_game": "vs Whit L 2-5", "last_game_html": "\u003ca href=\"https://gamesheetstats.com/seasons/15412/games/2981127\" target=\"_blank\" rel=\"noopener noreferrer\"\u003evs Whit L 2-5\u003c/a\u003e", "last_game_url": "https://gamesheetstats.com/seasons/15412/games/2981127", "losses": 2, "ot_losses": 0, "ot_wins": 0, "rank": 7, "rank_change": -2, "rating": 0.41000956269079414, "sos": 0.5166826044846569, "t": 0, "team": "DC Stars JV", "team_html": "\u003ca href=\"mhc_team_reports.html#team-DC-Stars-JV\"\u003eDC Stars JV\u003c/a\u003e", "win_pct": 0.3333333333333333, "wins": 1}, {"ga": 13, "gd": 4, "gf": 17, "last_game": "@ CenMOCO L 0-5", "last_game_html": "\u003ca href=\"https://gamesheetstats.com/seasons/15412/games/2981125\" target=\"_blank\" rel=\"noopener noreferrer\"\u003e@ CenMOCO L 0-5\u003c/a\u003e", "last_game_url": "https://gamesheetstats.com/seasons/15412/games/2981125", "losses": 2, "ot_losses": 0, "ot_wins": 0, "rank": 8, "rank_change": -2, "rating": 0.3860292765456619, "sos": 0.47671546090943645, "t": 0, "team": "Silver Spring JV", "team_html": "\u003ca href=\"mhc_team_reports.html#team-Silver-Spring-JV\"\u003eSilver Spring JV\u003c/a\u003e", "win_pct": 0.3333333333333333, "wins": 1}, {"ga": 15, "gd": -12, "gf": 3, "last_game": "@ Whit L 1-5", "last_game_html": "\u003ca href=\"https://gamesheetstats.com/seasons/15412/games/2981119\" target=\"_blank\" rel=\"noopener noreferrer\"\u003e@ Whit L 1-5\u003c/a\u003e", "last_game_url": "https://gamesheetstats.com/seasons/15412/games/2981119", "losses": 2, "ot_losses": 0, "ot_wins": 0, "rank": 9, "rank_change": 0, "rating": 0.3507944389275075, "sos": 0.701588877855015, "t": 0, "team": "Bethesda-Chevy Chase JV", "team_html": "\u003ca href=\"mhc_team_reports.html#team-Bethesda-Chevy-Chase-JV\"\u003eBethesda-Chevy Chase JV\u003c/a\u003e", "win_pct": 0.0, "wins": 0}, {"ga": 31, "gd": -26, "gf": 5, "last_game": "vs UML L 1-7", "last_game_html": "\u003ca href=\"https://gamesheetstats.com/seasons/15412/games/2981124\" target=\"_blank\" rel=\"noopener noreferrer\"\u003evs UML L 1-7\u003c/a\u003e", "last_game_url": "https://gamesheetstats.com/seasons/15412/games/2981124", "losses": 3, "ot_losses": 0, "ot_wins": 0, "rank": 10, "rank_change": 0, "rating": 0.1666023024017066, "sos": 0.44433717066951095, "t": 0, "team": "Richard Montgomery-Sherwood JV", "team_html": "\u003ca href=\"mhc_team_reports.html#team-Richard-Montgomery-Sherwood-JV\"\u003eRichard Montgomery-Sherwood JV\u003c/a\u003e", "win_pct": 0.0, "wins": 0}]};
+
+    // Weeks in order; the last one is the final ranking
+    const weeks = ["Week 01", "Week 02", "Week 03"];
 
     const weekSelector = document.getElementById('weekSelector');
     const prevWeekBtn = document.getElementById('prevWeekBtn');
@@ -1044,8 +1530,10 @@
         }
     }
 
-    // Initialize with the Final Rankings
-    displayWeek("Final");
+    // Start on the latest week, which is the final ranking
+    if (weeks.length) {
+        displayWeek(weeks[weeks.length - 1]);
+    }
 
     // Chart tabs: arrow keys, Home and End move between tabs; charts resize when shown.
     (function () {
@@ -1081,6 +1569,36 @@
                 }
             });
         });
+    })();
+
+    // Charts: on phones the legend moves under the chart so the plot keeps the full width.
+    (function () {
+        const phone = window.matchMedia('(max-width: 700px)');
+        const PHONE_LAYOUT = {
+            'legend.orientation': 'h', 'legend.x': 0, 'legend.xanchor': 'left',
+            'legend.y': -0.25, 'legend.yanchor': 'top', 'margin.r': 15, 'margin.b': 170, height: 560,
+        };
+
+        function fitCharts() {
+            if (!window.Plotly) return;
+            document.querySelectorAll('.plotly-graph-div').forEach((div) => {
+                if (!div.layout) return;
+                const margin = div.layout.margin || {};
+                // Remember the full-size layout set in plotting.py so it can be restored.
+                div.fullSizeLayout = div.fullSizeLayout || {
+                    'legend.orientation': 'v', 'legend.x': 1.01, 'legend.xanchor': 'left',
+                    'legend.y': 0.99, 'legend.yanchor': 'top',
+                    'margin.r': margin.r, 'margin.b': margin.b === undefined ? 80 : margin.b,
+                    height: div.layout.height,
+                };
+                if (Boolean(div.onPhone) === phone.matches) return;
+                div.onPhone = phone.matches;
+                window.Plotly.relayout(div, phone.matches ? PHONE_LAYOUT : div.fullSizeLayout);
+            });
+        }
+
+        window.addEventListener('load', fitCharts);
+        phone.addEventListener('change', fitCharts);
     })();
 </script>
 

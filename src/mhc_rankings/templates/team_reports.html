@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>MHC Team Reports</title>
+    <title>{{ league|e }} Team Reports - {{ date|e }}</title>
     <!-- Plotly -->
     <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
     <style>
@@ -96,6 +96,12 @@
         .back-to-top:hover {
             text-decoration: underline;
         }
+        .gamesheet-link {
+            font-size: 0.9rem;
+            color: var(--primary-color);
+            margin-left: auto;
+            margin-right: 1.25rem;
+        }
         .summary-stats {
             display: flex;
             flex-wrap: wrap;
@@ -150,6 +156,18 @@
         .win { color: #2ca02c; font-weight: bold; }
         .loss { color: #d62728; font-weight: bold; }
         .tie { color: #7f7f7f; font-weight: bold; }
+        tr.current-row td {
+            font-weight: bold;
+            border-top: 2px solid #999;
+        }
+        tr.current-row td:first-child {
+            text-align: right;
+        }
+        .log-note {
+            margin: 0.5rem 0 0;
+            font-size: 0.85rem;
+            color: #555;
+        }
         .plots-row {
             display: grid;
             grid-template-columns: 1fr 1fr;
@@ -167,6 +185,43 @@
         @media (max-width: 900px) {
             .plots-row { grid-template-columns: 1fr; }
         }
+        .table-scroll {
+            overflow-x: auto;
+        }
+
+        /* Phones: the team list becomes a wrapped row of links above the reports; wider screens are unchanged. */
+        @media (max-width: 800px) {
+            body { display: block; }
+            .sidebar {
+                position: static;
+                width: auto;
+                height: auto;
+                display: flex;
+                flex-wrap: wrap;
+                gap: 0 1rem;
+                padding: 0.75rem 1rem;
+            }
+            .sidebar h2 { flex: 1 1 100%; margin-bottom: 0.25rem; }
+            .sidebar a { margin: 0; padding: 0.4rem 0; }
+            .main-content {
+                margin-left: 0;
+                margin-right: 0;
+                padding: 1rem 10px;
+            }
+            .team-section { padding: 0.75rem; }
+            .team-header { flex-wrap: wrap; gap: 0.25rem 0.75rem; }
+            .team-header h2 { flex: 1 1 100%; font-size: 1.3rem; }
+            .gamesheet-link { margin-left: 0; margin-right: 0; }
+            .back-to-top { margin-left: auto; }
+            .summary-stats {
+                display: grid;
+                grid-template-columns: 1fr 1fr;
+                gap: 0.5rem;
+                padding: 0.5rem 0.75rem;
+            }
+            table { font-size: 0.85rem; }
+            th, td { padding: 4px 6px; white-space: nowrap; }
+        }
         
         /* Print Styles */
         @media print {
@@ -180,19 +235,22 @@
 
     <div class="sidebar">
         <h2>Teams</h2>
-        {% for team in team_names %}
-        <a href="#team-{{ team|replace(' ', '-') }}">{{ team }}</a>
+        {% for team_data in teams_data %}
+        <a href="#{{ team_data.anchor|e }}">{{ team_data.name }}</a>
         {% endfor %}
     </div>
 
     <div class="main-content">
-        <h1>MHC Team Reports - {{ date }}</h1>
+        <h1>{{ league|e }} Team Reports - {{ date }}</h1>
         <p>Ranking Method: {{ title_method }}</p>
 
         {% for team_data in teams_data %}
-        <div id="team-{{ team_data.name|replace(' ', '-') }}" class="team-section">
+        <div id="{{ team_data.anchor|e }}" class="team-section">
             <div class="team-header">
                 <h2>{{ team_data.name }}</h2>
+                {% if team_data.gamesheet_url %}
+                <a href="{{ team_data.gamesheet_url|e }}" class="gamesheet-link" target="_blank" rel="noopener noreferrer">Team page on GameSheet</a>
+                {% endif %}
                 <a href="#" class="back-to-top">&#8593; Back to Top</a>
             </div>
 
@@ -229,6 +287,7 @@
             </div>
 
             <h3>Game Log</h3>
+            <div class="table-scroll">
             <table>
                 <thead>
                     <tr>
@@ -237,8 +296,8 @@
                         <th>Result</th>
                         <th>Score</th>
                         <th>GD</th>
-                        <th>New Rating</th>
-                        <th>New Rank</th>
+                        <th>Rating After Game</th>
+                        <th>Rank After Game</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -270,8 +329,17 @@
                         <td>{{ game.rank_post }}</td>
                     </tr>
                     {% endfor %}
+                    {% if team_data.logs %}
+                    <tr class="current-row">
+                        <td colspan="5">Current standing</td>
+                        <td>{{ "%.4f"|format(team_data.rating) }}</td>
+                        <td>{{ team_data.rank }}</td>
+                    </tr>
+                    {% endif %}
                 </tbody>
             </table>
+            </div>
+            <p class="log-note">Each rating and rank is as of that game. A team's rating can also change when other teams play, so the current standing, which matches the rankings page, may differ from the last game.</p>
         </div>
         {% endfor %}
     </div>

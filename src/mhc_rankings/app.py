@@ -10,8 +10,8 @@ from .io import (
     save_weekly_ratings_tsv,
 )
 from .console import print_rankings_table
-from .rankings_math import compute_weekly_ratings, compute_final_rankings, compute_team_game_logs
-from .reporting import generate_html_report, generate_team_reports
+from .rankings_math import WEEK_ZERO, compute_weekly_ratings, compute_final_rankings, compute_team_game_logs
+from .reporting import TEAM_REPORTS_FILE, generate_html_report, generate_team_reports
 from .teams import load_roster
 
 
@@ -66,15 +66,13 @@ def main(argv: list[str] | None = None) -> None:
     print("Computing weekly ratings progress...")
     weekly_records, _ = compute_weekly_ratings(df, abbreviations=abbreviations)
     
-    # Calculate rank_change for final rankings
-    if weekly_records:
-        sorted_weeks = sorted(weekly_records.keys())
-        if len(sorted_weeks) >= 2:
-            prev_week = sorted_weeks[-2]
-            prev_records = weekly_records[prev_week]
-            prev_ranks = {rec.team: idx + 1 for idx, rec in enumerate(prev_records)}
+    # Calculate rank_change for final rankings (Week 00 has no order, so it is never the baseline)
+    game_weeks = sorted(week for week in weekly_records if week != WEEK_ZERO)
+    if game_weeks:
+        if len(game_weeks) >= 2:
+            prev_ranks = {rec.team: idx + 1 for idx, rec in enumerate(weekly_records[game_weeks[-2]])}
         else:
-            prev_ranks = {rec.team: idx + 1 for idx, rec in enumerate(weekly_records[sorted_weeks[0]])}
+            prev_ranks = {rec.team: idx + 1 for idx, rec in enumerate(weekly_records[game_weeks[0]])}
             
         for idx, rec in enumerate(rankings):
             current_rank = idx + 1
@@ -95,7 +93,6 @@ def main(argv: list[str] | None = None) -> None:
     print("Generating HTML report...")
     generate_html_report(
         date_str=latest_date,
-        rankings=rankings,
         details=details,
         teams=teams,
         weekly_records=weekly_records,
@@ -108,13 +105,14 @@ def main(argv: list[str] | None = None) -> None:
     
     print("Computing team game logs...")
     team_logs = compute_team_game_logs(df)
-    team_report_file = output_dir / "mhc_team_reports.html"
+    team_report_file = output_dir / TEAM_REPORTS_FILE
     print("Generating Team Reports...")
     generate_team_reports(
         date_str=latest_date,
         rankings=rankings,
         team_logs=team_logs,
-        output_path=str(team_report_file)
+        output_path=str(team_report_file),
+        roster=roster,
     )
     print(f"Team Reports saved to {team_report_file}")
     

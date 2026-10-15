@@ -130,3 +130,11 @@ def test_canonicalize_renames_games_and_rejects_unknown_teams() -> None:
     assert (renamed.away, renamed.home) == ("DC Stars", "Sherwood")
     with pytest.raises(UnknownTeamError):
         canonicalize([Game("Oct 1, 2026", "Wootton", 2, 1, "Sherwood", "Rink", "1", "")], roster)
+
+
+def test_division_name_comes_from_teams_toml() -> None:
+    """Each division names itself for report titles; a roster without one has a blank name."""
+    assert load_roster(VARSITY).division == "Varsity"
+    assert load_roster(VARSITY_2025).division == "Varsity"
+    assert load_roster(JV).division == "JV"
+    assert Roster([]).division == ""

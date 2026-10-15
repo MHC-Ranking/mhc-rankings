@@ -58,6 +58,14 @@
         a:hover {
             color: var(--accent-color);
         }
+
+        /* Phones: tighter spacing; wider screens are unchanged. */
+        @media (max-width: 700px) {
+            header { padding: 1.25rem 0.75rem; }
+            h1 { font-size: 1.5rem; letter-spacing: 1px; }
+            .container { margin: 1rem auto; padding: 0 10px; }
+            .section { padding: 1rem; }
+        }
     </style>
 </head>
 <body>

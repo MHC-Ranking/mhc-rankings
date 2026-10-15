@@ -194,6 +194,25 @@
             font-weight: bold;
             cursor: pointer;
         }
+
+        /* Phones: the table of contents sits above the text instead of beside it; wider screens are unchanged. */
+        @media (max-width: 800px) {
+            header { padding: 1.25rem 0.75rem; }
+            header h1 { font-size: 1.5rem; letter-spacing: 1px; }
+            .page-wrapper { display: block; }
+            .sidebar {
+                position: static;
+                width: auto;
+                height: auto;
+                max-height: 14rem;
+                padding: 1rem;
+                border-right: none;
+                border-bottom: 1px solid #ddd;
+            }
+            .content { padding: 1rem; margin: 0.75rem; }
+            table { display: block; overflow-x: auto; }
+            th, td { padding: 6px 8px; }
+        }
     </style>
 </head>
 <body>

@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>MHC Rankings</title>
+    <title>{{ league }} Rankings - {{ date }}</title>
     <!-- MathJax for rendering equations -->
     <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     
@@ -80,24 +80,46 @@
             background-color: var(--primary-color);
             color: var(--white);
             font-weight: 600;
+        }
+
+        /* Rankings table: compact one-line rows; scrolls sideways on narrow screens. */
+        .table-scroll {
+            overflow-x: auto;
+        }
+
+        .rankings-table {
+            font-size: 0.9em;
+        }
+
+        .rankings-table th,
+        .rankings-table td {
+            padding: 6px 10px;
+            white-space: nowrap;
+        }
+
+        .rankings-table th {
             position: sticky;
             top: 0;
             cursor: pointer; /* Changed for sortability */
             user-select: none;
         }
 
-        th.sort-asc::after {
+        .rankings-table th.sort-asc::after {
             content: " \25B2"; /* Up Arrow */
             font-size: 0.8em;
         }
 
-        th.sort-desc::after {
+        .rankings-table th.sort-desc::after {
             content: " \25BC"; /* Down Arrow */
             font-size: 0.8em;
         }
 
-        td:nth-child(2) {
+        .rankings-table th:nth-child(3),
+        .rankings-table td:nth-child(3) {
             text-align: left;
+        }
+
+        .rankings-table td:nth-child(3) {
             font-weight: bold;
         }
 
@@ -320,18 +342,69 @@
             padding-bottom: 0.25rem;
         }
 
-        .points-table th {
-            position: static;
-            cursor: default;
-        }
-
-        .points-table td:nth-child(2) {
-            text-align: center;
-            font-weight: normal;
-        }
-
         .points-table td:first-child {
             text-align: left;
+        }
+
+        /* Phones: same page with tighter spacing; wider screens are unchanged. */
+        @media (max-width: 700px) {
+            header {
+                padding: 1.25rem 0.75rem;
+            }
+
+            h1 {
+                font-size: 1.5rem;
+                letter-spacing: 1px;
+            }
+
+            .container {
+                margin: 1rem auto;
+                padding: 0 10px;
+            }
+
+            .section,
+            .method-description {
+                padding: 1rem;
+                margin-bottom: 1rem;
+            }
+
+            .week-controls {
+                flex-wrap: wrap;
+                gap: 0.5rem;
+            }
+
+            .week-controls select {
+                order: -1;
+                flex: 1 1 100%;
+                min-height: 44px;
+            }
+
+            .week-controls .btn {
+                flex: 1;
+                min-height: 44px;
+            }
+
+            .tab-list button {
+                min-height: 44px;
+                padding: 0.5rem 0.75rem;
+            }
+
+            .matrix-table th,
+            .matrix-table td {
+                min-width: 2.2rem;
+                padding: 4px 5px;
+            }
+
+            .points-table {
+                width: 100%;
+                min-width: 0;
+            }
+
+            mjx-container[display="true"] {
+                max-width: 100%;
+                overflow-x: auto;
+                overflow-y: hidden;
+            }
         }
 
         /* Print Styles */
@@ -383,8 +456,11 @@
                 border-bottom: 2px solid var(--primary-color);
             }
 
-            th, td {
+            th, td,
+            .rankings-table th,
+            .rankings-table td {
                 padding: 4px 8px; /* Less vertical space between rows */
+                white-space: normal;
             }
 
             .matrix-table thead th,
@@ -433,7 +509,7 @@
 <body>
 
 <header>
-    <h1>MHC Rankings - {{ date }}</h1>
+    <h1>{{ league }} Rankings - {{ date }}</h1>
     <h3 style="margin-top: 0; color: var(--secondary-color);">{{ title_method }} Method</h3>
 </header>
 
@@ -445,15 +521,15 @@
         <div class="week-controls">
             <button id="prevWeekBtn" class="btn" onclick="changeWeek(-1)">&#9664; Previous</button>
             <select id="weekSelector" onchange="displayWeek(this.value)">
-                {% for week in sorted_weeks %}
-                <option value="{{ week }}">{{ week }}</option>
+                {% for option in week_options %}
+                <option value="{{ option.key }}">{{ option.label }}</option>
                 {% endfor %}
-                <option value="Final">Final Rankings</option>
             </select>
             <button id="nextWeekBtn" class="btn" onclick="changeWeek(1)">Next &#9654;</button>
         </div>
 
-        <table>
+        <div class="table-scroll">
+        <table class="rankings-table">
             <thead>
                 <tr>
                     <th title="Overall Rank">Rank</th>
@@ -477,6 +553,7 @@
                 <!-- Rows injected via JS -->
             </tbody>
         </table>
+        </div>
         {% if schedule_url %}
         <p class="schedule-link"><a href="{{ schedule_url }}" target="_blank" rel="noopener noreferrer">See the upcoming games schedule on GameSheet</a></p>
         {% endif %}
@@ -556,6 +633,12 @@
         <p>What makes it fair is that a win is worth more against a strong team than against a weak one. A team's rating depends on its opponents' ratings, and each opponent's rating depends on theirs. The computer works through all of these links at once and settles on one set of ratings where everything fits together. That is why a team can move up the rankings without playing, if a team it beat keeps winning.</p>
         <p><strong>Strength of schedule (SOS)</strong> is the average rating of the teams a team has played. A higher number means a tougher schedule. A team with a modest record and a high SOS may have faced harder opponents than a team with a better record and a low SOS.</p>
         <p><em>Example:</em> Team A and Team B each finish 1-1. Team A's win was over the league's best team. Team B's win was over the league's weakest team. Team A gets the higher rating, because its win was harder to earn.</p>
+        <h3>Things to Look Out For</h3>
+        <ul>
+            <li>Strength of schedule can be volatile early in the season.</li>
+            <li>Once inter-division play starts, the split in strength of schedule between the upper and lower divisions will become apparent.</li>
+            <li>Since strength of schedule is factored into a team's rating, their rating can change even if they don't play a game.</li>
+        </ul>
         <details>
         <summary>Technical details</summary>
         <p>The Colley Matrix is a bias-free, mathematically robust ranking system originally designed for college football. It uses a system of linear equations to distribute ratings such that every team's rating depends on the ratings of the teams they played.</p>
@@ -616,12 +699,9 @@
 <script>
     // Embed the python dictionary as a JSON string
     const weeklyData = {{ all_weeks_data | tojson | safe }};
-    const finalData = {{ rankings | tojson | safe }};
-    weeklyData["Final"] = finalData;
-    
-    // Sort weeks, and ensure "Final" is at the end
+
+    // Weeks in order; the last one is the final ranking
     const weeks = {{ sorted_weeks | tojson | safe }};
-    weeks.push("Final");
 
     const weekSelector = document.getElementById('weekSelector');
     const prevWeekBtn = document.getElementById('prevWeekBtn');
@@ -743,8 +823,10 @@
         }
     }
 
-    // Initialize with the Final Rankings
-    displayWeek("Final");
+    // Start on the latest week, which is the final ranking
+    if (weeks.length) {
+        displayWeek(weeks[weeks.length - 1]);
+    }
 
     // Chart tabs: arrow keys, Home and End move between tabs; charts resize when shown.
     (function () {
@@ -780,6 +862,36 @@
                 }
             });
         });
+    })();
+
+    // Charts: on phones the legend moves under the chart so the plot keeps the full width.
+    (function () {
+        const phone = window.matchMedia('(max-width: 700px)');
+        const PHONE_LAYOUT = {
+            'legend.orientation': 'h', 'legend.x': 0, 'legend.xanchor': 'left',
+            'legend.y': -0.25, 'legend.yanchor': 'top', 'margin.r': 15, 'margin.b': 170, height: 560,
+        };
+
+        function fitCharts() {
+            if (!window.Plotly) return;
+            document.querySelectorAll('.plotly-graph-div').forEach((div) => {
+                if (!div.layout) return;
+                const margin = div.layout.margin || {};
+                // Remember the full-size layout set in plotting.py so it can be restored.
+                div.fullSizeLayout = div.fullSizeLayout || {
+                    'legend.orientation': 'v', 'legend.x': 1.01, 'legend.xanchor': 'left',
+                    'legend.y': 0.99, 'legend.yanchor': 'top',
+                    'margin.r': margin.r, 'margin.b': margin.b === undefined ? 80 : margin.b,
+                    height: div.layout.height,
+                };
+                if (Boolean(div.onPhone) === phone.matches) return;
+                div.onPhone = phone.matches;
+                window.Plotly.relayout(div, phone.matches ? PHONE_LAYOUT : div.fullSizeLayout);
+            });
+        }
+
+        window.addEventListener('load', fitCharts);
+        phone.addEventListener('change', fitCharts);
     })();
 </script>
 

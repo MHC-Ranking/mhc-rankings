@@ -1,4 +1,6 @@
 # Varsity teams for 2025-26. GameSheet URLs are blank, so names are not linked. The first color draws the team's plot line.
+division = "Varsity"
+
 schedule_url = "https://gamesheetstats.com/seasons/10312/games?configuration[compact-view]=true&configuration[primary-colour]=C80F2E&configuration[secondary-colour]=041E42&filter[division]=83124,57193&filter[type]=regular_season&filter[status]=completed"
 
 # Completed regular-season games, read by `mhc-weekly`.

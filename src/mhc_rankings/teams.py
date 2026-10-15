@@ -37,14 +37,19 @@ class Team:
 class Roster:
     """The teams in one division, with lookup by name or alias."""
 
-    def __init__(self, teams: list[Team], schedule_url: str = "", games_url: str = "") -> None:
+    def __init__(
+        self, teams: list[Team], schedule_url: str = "", games_url: str = "", division: str = ""
+    ) -> None:
         """Index `teams` by name and alias, rejecting duplicate names.
 
-        `schedule_url` is the upcoming-games page and `games_url` the completed-games page the weekly update reads (each blank if none).
+        `schedule_url` is the upcoming-games page and `games_url` the completed-games page the weekly
+        update reads (each blank if none). `division` is the name shown in report titles, such as
+        "Varsity" or "JV" (blank if none).
         """
         self.teams: tuple[Team, ...] = tuple(teams)
         self.schedule_url: str = schedule_url
         self.games_url: str = games_url
+        self.division: str = division
         self._by_name: dict[str, Team] = {}
         for team in self.teams:
             for name in (team.name, *team.aliases):
@@ -112,4 +117,9 @@ def load_roster(path: str | Path) -> Roster:
                 aliases=tuple(entry.get("aliases", ())),
             )
         )
-    return Roster(teams, schedule_url=data.get("schedule_url", ""), games_url=data.get("games_url", ""))
+    return Roster(
+        teams,
+        schedule_url=data.get("schedule_url", ""),
+        games_url=data.get("games_url", ""),
+        division=data.get("division", ""),
+    )

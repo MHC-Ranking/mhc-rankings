@@ -1,3 +1,4 @@
+from datetime import date
 from typing import Any, Dict, List, Mapping, Tuple
 import pandas as pd
 
@@ -5,6 +6,34 @@ from .models import TeamRecord
 from .stats import StatsTracker
 from .engines.base import RankingEngine
 from .engines.colley import ColleyEngine
+
+START_RATING = 0.5
+
+
+def week_label(number: int) -> str:
+    """Return the zero-padded label for game week `number`, such as "Week 03" ("Week 00" is the start)."""
+    return f"Week {number:02d}"
+
+
+WEEK_ZERO = week_label(0)
+
+
+def _week_ends(dates: pd.Series) -> pd.Series:
+    """Return the Sunday that ends the Monday-to-Sunday week of each date."""
+    days = dates.dt.normalize()
+    return days + pd.to_timedelta(6 - days.dt.weekday, unit="D")
+
+
+def game_week_ends(df: pd.DataFrame) -> Dict[str, date]:
+    """
+    Map each game week's label to the Sunday that ends it, in order.
+
+    A game week is a Monday-to-Sunday week with at least one completed game. Week 01 is the first
+    such week and numbering has no gaps. The starting point, Week 00, is not included.
+    """
+    valid_games = df.dropna(subset=["Away Score", "Home Score", "Date"])
+    ends = sorted(_week_ends(valid_games["Date"]).dt.date.unique())
+    return {week_label(number): end for number, end in enumerate(ends, start=1)}
 
 def get_teams(df: pd.DataFrame) -> List[str]:
     """Extracts a sorted list of unique teams from the games dataframe."""
@@ -67,25 +96,31 @@ def compute_weekly_ratings(
     df: pd.DataFrame, abbreviations: Mapping[str, str] | None = None
 ) -> Tuple[Dict[str, List[TeamRecord]], List[str]]:
     """
-    Computes the ratings and SOS iteratively over each week.
+    Computes the ratings and SOS iteratively over each game week.
+
+    Keys are the labels from `game_week_ends` ("Week 01", ...), preceded by "Week 00", where every
+    team starts at a rating and SOS of 0.5. Week 00 has no ranking order, so no rank changes are
+    measured against it. Returns no weeks when there are no completed games.
     """
     valid_games = df.dropna(subset=["Away Score", "Home Score", "Date"]).copy()
     valid_games = valid_games.sort_values("Date")
-    
-    # Determine iso calendar weeks for valid games
-    valid_games["ISO_Year"] = valid_games["Date"].dt.isocalendar().year
-    valid_games["ISO_Week"] = valid_games["Date"].dt.isocalendar().week
-    valid_games["Week_Key"] = valid_games.apply(lambda row: f"{row['ISO_Year']}-W{row['ISO_Week']:02d}", axis=1)
-    
+
+    week_by_end = {end: week for week, end in game_week_ends(df).items()}
+    valid_games["Week_Key"] = _week_ends(valid_games["Date"]).dt.date.map(week_by_end)
+
     teams = get_teams(df)
     engine = get_engine(teams)
     stats = StatsTracker(teams, abbreviations)
-    
+
     weekly_records: Dict[str, List[TeamRecord]] = {}
-    sorted_weeks = sorted(valid_games["Week_Key"].unique())
-    prev_ranks = {}
-    
-    for week in sorted_weeks:
+    if week_by_end:
+        start_ratings, _ = engine.solve()  # no games yet, so every team is at the starting rating
+        weekly_records[WEEK_ZERO] = stats.build_records(start_ratings, {team: START_RATING for team in teams})
+        for idx, rec in enumerate(weekly_records[WEEK_ZERO]):
+            rec.rank = idx + 1
+    prev_ranks: Dict[str, int] = {}
+
+    for week in week_by_end.values():
         week_games = valid_games[valid_games["Week_Key"] == week]
         
         for irow, row in week_games.iterrows():

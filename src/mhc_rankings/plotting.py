@@ -7,6 +7,9 @@ import plotly.graph_objects as go
 from .models import TeamRecord
 
 PLOT_HEIGHT = 623  # 15% shorter than the previous 733 pixels
+FONT_FAMILY = "'Segoe UI', Tahoma, Geneva, Verdana, sans-serif"  # matches the page text
+LEGEND_MARGIN_MAX = 150  # pixels kept beside the chart for the legend, at most
+TEAM_CHART_CONFIG = {"responsive": True, "displaylogo": False}  # resize with the window, e.g. on rotating a phone
 
 _DASHES = ["solid", "dash", "dashdot", "longdash", "longdashdot", "dot"]
 _MARKERS = [
@@ -30,6 +33,7 @@ def get_plotly_html(
     metric: str = "rating",
     colors: Mapping[str, str] | None = None,
     include_plotlyjs: bool = True,
+    abbreviations: Mapping[str, str] | None = None,
 ) -> str:
     """
     Return an interactive line chart of `metric` for every team, one point per week, as an HTML div.
@@ -37,12 +41,16 @@ def get_plotly_html(
     `colors` maps team name to line color; teams without one get a palette color. Lines also differ
     in dash and marker so teams with similar colors stay distinguishable. The Plotly script is
     loaded from the CDN only when `include_plotlyjs` is true, so a page with several charts loads it once.
+    `abbreviations` maps team name to the short name shown in the legend (hovering still shows the full
+    name), which lets the legend take less room. The legend lists the leading team first: the highest
+    rating, or rank 1 for the "rank" metric.
     """
     sorted_weeks = sorted(weekly_records.keys())
     if not sorted_weeks:
         return "<p>No data available for plotting.</p>"
 
     colors = colors or {}
+    labels = {team: (abbreviations or {}).get(team, team) for team in teams}
     all_vals = [getattr(rec, metric) for week_data in weekly_records.values() for rec in week_data]
     min_y = min(all_vals) if all_vals else 0
     max_y = max(all_vals) if all_vals else 1
@@ -57,8 +65,10 @@ def get_plotly_html(
 
     final_week = sorted_weeks[-1]
     final_data = {rec.team: getattr(rec, metric) for rec in weekly_records[final_week]}
-    sorted_teams = sorted(teams, key=lambda team: final_data.get(team, 0.0), reverse=True)
+    # A higher rating leads, but a lower rank number does.
+    sorted_teams = sorted(teams, key=lambda team: final_data.get(team, 0.0), reverse=metric != "rank")
     alphabetical_teams = sorted(teams)
+    value_format = "%{y}" if metric == "rank" else "%{y:.4f}"
 
     fig = go.Figure()
 
@@ -72,13 +82,15 @@ def get_plotly_html(
             x=sorted_weeks,
             y=values,
             mode="lines+markers",
-            name=team,
+            name=labels[team],
+            meta=team,
+            hovertemplate=f"%{{meta}}: {value_format}<extra></extra>",
             line=dict(
                 width=2,
                 color=colors.get(team, _FALLBACK_COLORS[team_idx % len(_FALLBACK_COLORS)]),
                 dash=_DASHES[team_idx % len(_DASHES)],
             ),
-            marker=dict(symbol=_MARKERS[team_idx % len(_MARKERS)], size=8),
+            marker=dict(symbol=_MARKERS[team_idx % len(_MARKERS)], size=7),
         ))
 
     # Dropdown menus for filtering teams
@@ -96,6 +108,7 @@ def get_plotly_html(
         )
 
     fig.update_layout(
+        font=dict(family=FONT_FAMILY),
         xaxis_title="Week",
         yaxis=dict(title=ylabel, range=y_range, dtick=dtick),
         legend_title="Teams",
@@ -108,6 +121,8 @@ def get_plotly_html(
             xanchor="left",
             y=1.15,
             yanchor="top",
+            bgcolor="#f4f6f8",
+            bordercolor="#a3aaaf",
             buttons=dropdown_buttons,
         )],
         legend=dict(
@@ -119,7 +134,7 @@ def get_plotly_html(
             itemdoubleclick="toggle",
         ),
         xaxis=dict(type="category"),  # Weeks are labels, not numbers
-        margin=dict(r=150, t=100),  # Room for the legend and dropdown
+        margin=dict(r=min(LEGEND_MARGIN_MAX, 60 + 7 * max(map(len, labels.values()))), t=100),
         height=PLOT_HEIGHT,
     )
 
@@ -171,7 +186,7 @@ def get_team_gd_plot_html(team_logs: List[Dict[str, Any]], team_name: str) -> st
         margin=dict(l=50, r=30, t=45, b=40),
         xaxis=dict(type="category"),
     )
-    return fig.to_html(full_html=False, include_plotlyjs=False)
+    return fig.to_html(full_html=False, include_plotlyjs=False, config=TEAM_CHART_CONFIG)
 
 
 def get_team_rating_sos_plot_html(team_logs: List[Dict[str, Any]], team_name: str) -> str:
@@ -210,4 +225,4 @@ def get_team_rating_sos_plot_html(team_logs: List[Dict[str, Any]], team_name: st
         xaxis=dict(type="category"),
         legend=dict(orientation="h", yanchor="bottom", y=1.02, xanchor="right", x=1),
     )
-    return fig.to_html(full_html=False, include_plotlyjs=False)
+    return fig.to_html(full_html=False, include_plotlyjs=False, config=TEAM_CHART_CONFIG)

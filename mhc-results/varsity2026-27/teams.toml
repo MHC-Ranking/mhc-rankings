@@ -1,5 +1,7 @@
 # Varsity teams for 2026-27. Colors are #rrggbb shades chosen to tell teams apart; the first color draws the team's plot line.
 
+division = "Varsity"
+
 schedule_url = "https://gamesheetstats.com/seasons/15412/games?configuration%5Bcompact-view%5D=true&configuration%5Bprimary-colour%5D=C80F2E&configuration%5Bsecondary-colour%5D=041E42&filter%5Bdivision%5D=83124&filter%5Btype%5D=regular_season&filter%5Bstatus%5D=scheduled"
 
 # Completed regular-season games, read by `mhc-weekly`.
