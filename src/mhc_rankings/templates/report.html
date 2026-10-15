@@ -868,8 +868,8 @@
     (function () {
         const phone = window.matchMedia('(max-width: 700px)');
         const PHONE_LAYOUT = {
-            'legend.orientation': 'h', 'legend.x': 0, 'legend.xanchor': 'left',
-            'legend.y': -0.25, 'legend.yanchor': 'top', 'margin.r': 15, 'margin.b': 170, height: 560,
+            'legend.orientation': 'h', 'legend.x': 0, 'legend.xanchor': 'left', 'legend.yref': 'container',
+            'legend.y': 0, 'legend.yanchor': 'bottom', 'margin.r': 15, 'margin.b': 220, height: 600,
         };
 
         function fitCharts() {
@@ -879,7 +879,7 @@
                 const margin = div.layout.margin || {};
                 // Remember the full-size layout set in plotting.py so it can be restored.
                 div.fullSizeLayout = div.fullSizeLayout || {
-                    'legend.orientation': 'v', 'legend.x': 1.01, 'legend.xanchor': 'left',
+                    'legend.orientation': 'v', 'legend.x': 1.01, 'legend.xanchor': 'left', 'legend.yref': 'paper',
                     'legend.y': 0.99, 'legend.yanchor': 'top',
                     'margin.r': margin.r, 'margin.b': margin.b === undefined ? 80 : margin.b,
                     height: div.layout.height,

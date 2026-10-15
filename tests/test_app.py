@@ -4,6 +4,7 @@ import re
 from pathlib import Path
 
 import pytest
+from plotly.offline import get_plotlyjs_version
 
 from mhc_rankings.app import main
 
@@ -301,4 +302,7 @@ def test_cli_pages_have_phone_layouts_and_the_rankings_charts_shrink_their_legen
     assert "PHONE_LAYOUT" in report
     assert '"name":"TA"' in report and '"name":"Team A"' not in report
     assert "@media (max-width: 800px)" in teams_page
+    assert 'id="teamToggle"' in teams_page and 'id="teamLinks"' in teams_page
+    assert f"https://cdn.plot.ly/plotly-{get_plotlyjs_version()}.min.js" in teams_page
+    assert "plotly-latest" not in teams_page
     assert '<div class="table-scroll">\n            <table>' in teams_page

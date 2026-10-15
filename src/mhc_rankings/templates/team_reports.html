@@ -4,8 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{{ league|e }} Team Reports - {{ date|e }}</title>
-    <!-- Plotly -->
-    <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+    <!-- Plotly, the same version plotly.py wrote the charts for -->
+    <script src="https://cdn.plot.ly/plotly-{{ plotly_version|e }}.min.js"></script>
     <style>
         :root {
             --primary-color: #0f204b;
@@ -189,26 +189,44 @@
             overflow-x: auto;
         }
 
-        /* Phones: the team list becomes a wrapped row of links above the reports; wider screens are unchanged. */
+        /* Phones: the team list collapses under a Teams bar that stays at the top; wider screens are unchanged. */
         @media (max-width: 800px) {
             body { display: block; }
             .sidebar {
-                position: static;
+                position: sticky;
+                top: 0;
+                z-index: 10;
                 width: auto;
                 height: auto;
+                max-height: 100vh;
+                padding: 0 1rem;
+            }
+            .sidebar h2 {
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                margin: 0;
+                padding: 0.75rem 0;
+                border-bottom: none;
+                cursor: pointer;
+            }
+            .sidebar h2::after { content: "\25BE"; }
+            .sidebar.open h2 { border-bottom: 2px solid var(--accent-color); }
+            .sidebar.open h2::after { content: "\25B4"; }
+            .team-links { display: none; }
+            .sidebar.open .team-links {
                 display: flex;
                 flex-wrap: wrap;
                 gap: 0 1rem;
-                padding: 0.75rem 1rem;
+                padding-bottom: 0.5rem;
             }
-            .sidebar h2 { flex: 1 1 100%; margin-bottom: 0.25rem; }
-            .sidebar a { margin: 0; padding: 0.4rem 0; }
+            .sidebar a { margin: 0; padding: 0.5rem 0; }
             .main-content {
                 margin-left: 0;
                 margin-right: 0;
                 padding: 1rem 10px;
             }
-            .team-section { padding: 0.75rem; }
+            .team-section { padding: 0.75rem; scroll-margin-top: 3.5rem; }
             .team-header { flex-wrap: wrap; gap: 0.25rem 0.75rem; }
             .team-header h2 { flex: 1 1 100%; font-size: 1.3rem; }
             .gamesheet-link { margin-left: 0; margin-right: 0; }
@@ -233,11 +251,13 @@
 </head>
 <body>
 
-    <div class="sidebar">
-        <h2>Teams</h2>
+    <div class="sidebar" id="sidebar">
+        <h2 id="teamToggle" role="button" tabindex="0" aria-expanded="false" aria-controls="teamLinks">Teams</h2>
+        <div class="team-links" id="teamLinks">
         {% for team_data in teams_data %}
         <a href="#{{ team_data.anchor|e }}">{{ team_data.name }}</a>
         {% endfor %}
+        </div>
     </div>
 
     <div class="main-content">
@@ -343,6 +363,36 @@
         </div>
         {% endfor %}
     </div>
+
+    <script>
+        // On phones the Teams bar opens and closes the team list; on wide screens the list is always shown.
+        (function () {
+            const sidebar = document.getElementById('sidebar');
+            const toggle = document.getElementById('teamToggle');
+            function setOpen(open) {
+                sidebar.classList.toggle('open', open);
+                toggle.setAttribute('aria-expanded', String(open));
+            }
+            toggle.addEventListener('click', () => setOpen(!sidebar.classList.contains('open')));
+            toggle.addEventListener('keydown', (event) => {
+                if (event.key === 'Enter' || event.key === ' ') {
+                    event.preventDefault();
+                    setOpen(!sidebar.classList.contains('open'));
+                }
+            });
+            sidebar.querySelectorAll('a').forEach((link) => link.addEventListener('click', () => setOpen(false)));
+        })();
+
+        // Refit the charts once the phone has settled on its final width, and after rotating.
+        (function () {
+            function refit() {
+                if (!window.Plotly) return;
+                document.querySelectorAll('.plotly-graph-div').forEach((div) => window.Plotly.Plots.resize(div));
+            }
+            window.addEventListener('load', refit);
+            window.addEventListener('orientationchange', refit);
+        })();
+    </script>
 
 </body>
 </html>

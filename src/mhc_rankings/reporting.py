@@ -7,6 +7,7 @@ from typing import Any, Dict, List, Tuple
 from urllib.parse import quote
 
 from jinja2 import Environment, FileSystemLoader
+from plotly.offline import get_plotlyjs_version
 
 from .models import TeamRecord
 from .plotting import get_plotly_html, get_team_gd_plot_html, get_team_rating_sos_plot_html
@@ -198,7 +199,8 @@ def generate_team_reports(
         league=league_name(roster),
         team_names=team_names,
         teams_data=teams_data,
-        title_method=title_method
+        title_method=title_method,
+        plotly_version=get_plotlyjs_version(),
     )
     
     with open(output_path, 'w', encoding='utf-8') as f:
