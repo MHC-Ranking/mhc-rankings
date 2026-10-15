@@ -9,7 +9,8 @@ from .models import TeamRecord
 PLOT_HEIGHT = 623  # 15% shorter than the previous 733 pixels
 FONT_FAMILY = "'Segoe UI', Tahoma, Geneva, Verdana, sans-serif"  # matches the page text
 LEGEND_MARGIN_MAX = 150  # pixels kept beside the chart for the legend, at most
-TEAM_CHART_CONFIG = {"responsive": True, "displaylogo": False}  # resize with the window, e.g. on rotating a phone
+# Resize with the window; no toolbar, scroll zoom or double-click reset. Hovering still works.
+TEAM_CHART_CONFIG = {"responsive": True, "displayModeBar": False, "scrollZoom": False, "doubleClick": False}
 
 _DASHES = ["solid", "dash", "dashdot", "longdash", "longdashdot", "dot"]
 _MARKERS = [
@@ -184,7 +185,9 @@ def get_team_gd_plot_html(team_logs: List[Dict[str, Any]], team_name: str) -> st
         template="plotly_white",
         height=280,
         margin=dict(l=50, r=30, t=45, b=40),
-        xaxis=dict(type="category"),
+        dragmode=False,
+        xaxis=dict(type="category", fixedrange=True),
+        yaxis=dict(fixedrange=True),
     )
     return fig.to_html(full_html=False, include_plotlyjs=False, config=TEAM_CHART_CONFIG)
 
@@ -222,7 +225,9 @@ def get_team_rating_sos_plot_html(team_logs: List[Dict[str, Any]], team_name: st
         template="plotly_white",
         height=280,
         margin=dict(l=50, r=30, t=45, b=40),
-        xaxis=dict(type="category"),
-        legend=dict(orientation="h", yanchor="bottom", y=1.02, xanchor="right", x=1),
+        dragmode=False,
+        xaxis=dict(type="category", fixedrange=True),
+        yaxis=dict(fixedrange=True),
+        legend=dict(orientation="h", yanchor="bottom", y=1.02, xanchor="right", x=1, itemclick=False, itemdoubleclick=False),
     )
     return fig.to_html(full_html=False, include_plotlyjs=False, config=TEAM_CHART_CONFIG)

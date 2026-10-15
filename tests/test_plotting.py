@@ -94,3 +94,12 @@ def test_team_charts_resize_with_the_window() -> None:
     """Team report charts are responsive so they refit when a phone is rotated."""
     assert '"responsive": true' in get_team_gd_plot_html(LOGS, "Alpha")
     assert '"responsive": true' in get_team_rating_sos_plot_html(LOGS, "Alpha")
+
+
+def test_team_charts_cannot_be_zoomed_or_panned() -> None:
+    """Team report charts have no toolbar and fixed axes, but still show hover details."""
+    for html in (get_team_gd_plot_html(LOGS, "Alpha"), get_team_rating_sos_plot_html(LOGS, "Alpha")):
+        assert '"displayModeBar": false' in html
+        assert '"scrollZoom": false' in html and '"doubleClick": false' in html
+        assert '"dragmode":false' in html
+        assert html.count('"fixedrange":true') == 2
