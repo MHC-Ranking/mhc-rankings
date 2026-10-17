@@ -306,3 +306,66 @@ def test_cli_pages_have_phone_layouts_and_the_rankings_charts_shrink_their_legen
     assert f"https://cdn.plot.ly/plotly-{get_plotlyjs_version()}.min.js" in teams_page
     assert "plotly-latest" not in teams_page
     assert '<div class="table-scroll">\n            <table>' in teams_page
+
+
+def test_cli_ranks_roster_teams_that_have_not_played(tmp_path: Path) -> None:
+    """A team in teams.toml with no games still appears in the rankings, team reports and raw files."""
+    games = tmp_path / "games.tsv"
+    games.write_text(GAMES, encoding="utf-8")
+    (tmp_path / "teams.toml").write_text(
+        TEAMS + '[[team]]\nname = "Team D"\nabbreviation = "TD"\nurl = ""\ncolors = ["Red"]\n', encoding="utf-8"
+    )
+    out = tmp_path / "out"
+
+    main(["--input", str(games), "--output-dir", str(out)])
+
+    assert "\tTeam D\t0.5000\t0.5000\t" in (out / "rankings_output.tsv").read_text(encoding="utf-8")
+    assert 'id="team-Team-D"' in (out / "mhc_team_reports.html").read_text(encoding="utf-8")
+    assert '"team":"Team D"' in (out / "mhc_rankings_report.html").read_text(encoding="utf-8").replace(": ", ":")
+
+
+def test_cli_resolves_aliases_to_canonical_team_names(tmp_path: Path) -> None:
+    games = tmp_path / "games.tsv"
+    games.write_text(GAMES.replace("Team A", "Alpha"), encoding="utf-8")
+    (tmp_path / "teams.toml").write_text(
+        TEAMS.replace('name = "Team A"', 'name = "Team A"\naliases = ["Alpha"]'), encoding="utf-8"
+    )
+    out = tmp_path / "out"
+
+    main(["--input", str(games), "--output-dir", str(out)])
+
+    rankings = (out / "rankings_output.tsv").read_text(encoding="utf-8")
+    assert "\tTeam A\t" in rankings and "Alpha" not in rankings
+
+
+def test_cli_rejects_games_with_a_team_that_is_not_in_the_roster(tmp_path: Path, capsys: pytest.CaptureFixture[str]) -> None:
+    games = tmp_path / "games.tsv"
+    games.write_text(GAMES.replace("Team C", "Team X"), encoding="utf-8")
+    (tmp_path / "teams.toml").write_text(TEAMS, encoding="utf-8")
+
+    with pytest.raises(SystemExit) as exc:
+        main(["--input", str(games), "--output-dir", str(tmp_path / "out")])
+
+    assert exc.value.code == 1
+    assert "Team X" in capsys.readouterr().err
+
+
+def test_cli_without_games_ranks_every_roster_team_at_the_starting_rating(tmp_path: Path) -> None:
+    """Before the first game the rankings page lists every roster team at 0.5 under a start-of-season week."""
+    games = tmp_path / "games.tsv"
+    games.write_text(GAMES.splitlines()[0] + "\n", encoding="utf-8")
+    (tmp_path / "teams.toml").write_text(TEAMS, encoding="utf-8")
+    out = tmp_path / "out"
+
+    main(["--input", str(games), "--output-dir", str(out)])
+
+    assert "Week 00 - Start of season" in (out / "mhc_rankings_report.html").read_text(encoding="utf-8")
+    assert (out / "rankings_output.tsv").read_text(encoding="utf-8").count("\t0.5000\t0.5000\t") == 3
+
+
+def test_cli_without_games_or_roster_is_an_error(tmp_path: Path) -> None:
+    games = tmp_path / "games.tsv"
+    games.write_text(GAMES.splitlines()[0] + "\n", encoding="utf-8")
+
+    with pytest.raises(SystemExit):
+        main(["--input", str(games), "--output-dir", str(tmp_path / "out")])

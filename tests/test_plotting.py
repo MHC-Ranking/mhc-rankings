@@ -103,3 +103,10 @@ def test_team_charts_cannot_be_zoomed_or_panned() -> None:
         assert '"scrollZoom": false' in html and '"doubleClick": false' in html
         assert '"dragmode":false' in html
         assert html.count('"fixedrange":true') == 2
+
+
+def test_legend_follows_the_final_ranked_order_even_when_ratings_tie() -> None:
+    """Teams with the same rating are listed in the order the final week ranked them."""
+    records = [TeamRecord(team=team, rating=0.5, sos=0.5, rank=n) for n, team in enumerate(["Zed", "Amy"], start=1)]
+    html = get_plotly_html({"Week 01": records}, ["Amy", "Zed"], "T", "Rating", "rating")
+    assert html.index('"name":"Zed"') < html.index('"name":"Amy"')

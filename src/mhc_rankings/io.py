@@ -3,34 +3,38 @@ from pathlib import Path
 from typing import Any, Dict, List, Tuple
 
 import pandas as pd
+
 from .models import TeamRecord
 
 
 def load_games_data(file_path: str | Path) -> pd.DataFrame:
     """
     Loads game results from a TSV file into a pandas DataFrame.
-    
+
     Args:
         file_path: Path to the TSV file.
-        
+
     Returns:
         A pandas DataFrame containing the parsed game results.
     """
     df = pd.read_csv(file_path, sep="\t")
-    
+
     # Ensure Date column is parsed as datetime
     if "Date" in df.columns:
         df["Date"] = pd.to_datetime(df["Date"])
-        
+
     # Parse scores
     def parse_score(score_str: str) -> pd.Series:
         parts = score_str.split("-")
         if len(parts) == 2:
             return pd.Series([int(parts[0]), int(parts[1])])
         return pd.Series([None, None])
-        
-    df[["Away Score", "Home Score"]] = df["Score"].apply(parse_score)
-    
+
+    if df.empty:
+        df["Away Score"] = df["Home Score"] = pd.Series(dtype="float64")
+    else:
+        df[["Away Score", "Home Score"]] = df["Score"].apply(parse_score)
+
     df = df.sort_values("Date").reset_index(drop=True)
     return df
 
@@ -38,16 +42,16 @@ def load_games_data(file_path: str | Path) -> pd.DataFrame:
 def get_latest_game_date(df: pd.DataFrame) -> str:
     """
     Finds the date of the most recent game in the dataset.
-    
+
     Args:
         df: DataFrame containing game results.
-        
+
     Returns:
         A formatted date string, e.g., 'May 30, 2026'.
     """
     if "Date" not in df.columns or df["Date"].isnull().all():
         return "Unknown Date"
-    
+
     latest_date = df["Date"].max()
     return latest_date.strftime("%b %d, %Y")
 

@@ -2,15 +2,21 @@ from typing import Dict, List, Mapping
 
 from .models import TeamRecord
 
+
+def ranking_key(rating: float, gd: int, ga: int, team: str) -> tuple[float, int, int, str]:
+    """Sort key for the standings: rating (to its 4 displayed decimals), then goal differential, then fewer goals against, then name."""
+    return (-round(rating, 4), -gd, ga, team)
+
+
 class StatsTracker:
     """Tracks base statistics (W, L, T, GF, GA, Last Game) for a set of teams."""
-    
+
     def __init__(self, teams: List[str], abbreviations: Mapping[str, str] | None = None) -> None:
         """Start empty stats for `teams`; `abbreviations` maps team name to the short name shown in Last Game."""
         self.teams = teams
         self.abbreviations: Mapping[str, str] = abbreviations or {}
         self.stats = {team: {"W": 0, "OTW": 0, "L": 0, "OTL": 0, "T": 0, "GF": 0, "GA": 0, "LastGame": "", "LastGameUrl": ""} for team in teams}
-        
+
     def add_game(
         self, away: str, home: str, away_score: int, home_score: int, is_overtime: bool = False, game_url: str = ""
     ) -> None:
@@ -21,12 +27,12 @@ class StatsTracker:
         self.stats[away]["GA"] += home_score
         self.stats[home]["GF"] += home_score
         self.stats[home]["GA"] += away_score
-        
+
         away_abbrev = self.abbreviations.get(away, away)
         home_abbrev = self.abbreviations.get(home, home)
-        
+
         ot_str = " (OT)" if is_overtime else ""
-        
+
         if away_score > home_score:
             if is_overtime:
                 self.stats[away]["OTW"] += 1
@@ -70,7 +76,6 @@ class StatsTracker:
                 last_game=st["LastGame"],
                 last_game_url=st["LastGameUrl"],
             ))
-            
-        # Sort by rating, highest first
-        records.sort(key=lambda x: x.rating, reverse=True)
+
+        records.sort(key=lambda r: ranking_key(r.rating, r.gd, r.ga, r.team))
         return records

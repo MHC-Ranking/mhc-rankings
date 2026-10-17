@@ -65,9 +65,9 @@ def get_plotly_html(
         dtick = None
 
     final_week = sorted_weeks[-1]
-    final_data = {rec.team: getattr(rec, metric) for rec in weekly_records[final_week]}
-    # A higher rating leads, but a lower rank number does.
-    sorted_teams = sorted(teams, key=lambda team: final_data.get(team, 0.0), reverse=metric != "rank")
+    # The final week's records are already in ranked order, which also sets the legend order.
+    final_order = {rec.team: position for position, rec in enumerate(weekly_records[final_week])}
+    sorted_teams = sorted(teams, key=lambda team: final_order.get(team, len(final_order)))
     alphabetical_teams = sorted(teams)
     value_format = "%{y}" if metric == "rank" else "%{y:.4f}"
 

@@ -2,6 +2,7 @@ import argparse
 import sys
 from pathlib import Path
 
+from .console import print_rankings_table
 from .io import (
     get_latest_game_date,
     load_games_data,
@@ -9,63 +10,76 @@ from .io import (
     save_rankings_tsv,
     save_weekly_ratings_tsv,
 )
-from .console import print_rankings_table
-from .rankings_math import WEEK_ZERO, compute_weekly_ratings, compute_final_rankings, compute_team_game_logs
+from .rankings_math import (
+    WEEK_ZERO,
+    compute_final_rankings,
+    compute_team_game_logs,
+    compute_weekly_ratings,
+)
 from .reporting import TEAM_REPORTS_FILE, generate_html_report, generate_team_reports
-from .teams import load_roster
+from .teams import UnknownTeamError, load_roster
 
 
 def main(argv: list[str] | None = None) -> None:
     """Rank the teams in a games TSV and write the reports to `--output-dir`."""
     parser = argparse.ArgumentParser(description="MHC Hockey Colley Matrix Rankings Generator")
     parser.add_argument(
-        "--input", 
-        type=str, 
-        required=True, 
+        "--input",
+        type=str,
+        required=True,
         help="Path to the games TSV file; teams.toml is read from the same folder when present."
     )
     parser.add_argument(
-        "--output-dir", 
-        type=str, 
-        default=".", 
+        "--output-dir",
+        type=str,
+        default=".",
         help="Directory to save the generated report and data files."
     )
     parser.add_argument(
-        "--skip-raw", 
-        action="store_true", 
+        "--skip-raw",
+        action="store_true",
         help="Skip saving the raw TSV files."
     )
-    
+
     args = parser.parse_args(argv)
-    
+
     input_path = Path(args.input)
     if not input_path.exists():
         print(f"Error: Input file '{input_path}' does not exist.", file=sys.stderr)
         sys.exit(1)
-        
+
     output_dir = Path(args.output_dir)
     output_dir.mkdir(parents=True, exist_ok=True)
-    
+
     print(f"Loading data from {input_path}...")
     df = load_games_data(input_path)
-    
-    if df.empty:
-        print("Error: No data found in the input file.", file=sys.stderr)
-        sys.exit(1)
-        
-    latest_date = get_latest_game_date(df)
-    print(f"Latest game date identified as: {latest_date}")
-    
+
     teams_file = input_path.parent / "teams.toml"
     roster = load_roster(teams_file) if teams_file.exists() else None
     abbreviations = roster.abbreviations if roster else None
-    
+    roster_teams = [team.name for team in roster.teams] if roster else []
+
+    if df.empty and not roster:
+        print("Error: No data found in the input file.", file=sys.stderr)
+        sys.exit(1)
+
+    if roster:
+        try:
+            for column in ("Away Team", "Home Team"):
+                df[column] = df[column].map(lambda name: roster.resolve(name).name, na_action="ignore")
+        except UnknownTeamError as exc:
+            print(f"Error: {exc}", file=sys.stderr)
+            sys.exit(1)
+
+    latest_date = get_latest_game_date(df)
+    print(f"Latest game date identified as: {latest_date}")
+
     print("Computing Colley matrix/ratings and rankings...")
-    rankings, details, teams = compute_final_rankings(df, abbreviations=abbreviations)
-    
+    rankings, details, teams = compute_final_rankings(df, abbreviations=abbreviations, extra_teams=roster_teams)
+
     print("Computing weekly ratings progress...")
-    weekly_records, _ = compute_weekly_ratings(df, abbreviations=abbreviations)
-    
+    weekly_records, _ = compute_weekly_ratings(df, abbreviations=abbreviations, extra_teams=roster_teams)
+
     # Calculate rank_change for final rankings (Week 00 has no order, so it is never the baseline)
     game_weeks = sorted(week for week in weekly_records if week != WEEK_ZERO)
     if game_weeks:
@@ -73,22 +87,22 @@ def main(argv: list[str] | None = None) -> None:
             prev_ranks = {rec.team: idx + 1 for idx, rec in enumerate(weekly_records[game_weeks[-2]])}
         else:
             prev_ranks = {rec.team: idx + 1 for idx, rec in enumerate(weekly_records[game_weeks[0]])}
-            
+
         for idx, rec in enumerate(rankings):
             current_rank = idx + 1
             rec.rank_change = prev_ranks.get(rec.team, current_rank) - current_rank
-    
+
     if not args.skip_raw:
         rankings_file = output_dir / "rankings_output.tsv"
         weekly_file = output_dir / "weekly_ratings_output.tsv"
-        
+
         print("Saving raw data files...")
         save_rankings_tsv(rankings, rankings_file)
         save_weekly_ratings_tsv(weekly_records, teams, weekly_file)
-            
+
         matrix_file = output_dir / "colley_matrix_output.tsv"
         save_colley_matrix_tsv(details, teams, matrix_file)
-        
+
     report_file = output_dir / "mhc_rankings_report.html"
     print("Generating HTML report...")
     generate_html_report(
@@ -100,11 +114,11 @@ def main(argv: list[str] | None = None) -> None:
         df=df,
         roster=roster
     )
-    
+
     print(f"Done! Report saved to {report_file}")
-    
+
     print("Computing team game logs...")
-    team_logs = compute_team_game_logs(df)
+    team_logs = compute_team_game_logs(df, extra_teams=roster_teams)
     team_report_file = output_dir / TEAM_REPORTS_FILE
     print("Generating Team Reports...")
     generate_team_reports(
@@ -115,7 +129,7 @@ def main(argv: list[str] | None = None) -> None:
         roster=roster,
     )
     print(f"Team Reports saved to {team_report_file}")
-    
+
     print_rankings_table(rankings)
 
 

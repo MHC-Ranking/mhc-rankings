@@ -1,20 +1,23 @@
+import re
 from dataclasses import asdict
 from datetime import date
 from html import escape
 from pathlib import Path
-import re
 from typing import Any, Dict, List, Tuple
 from urllib.parse import quote
 
+import pandas as pd
 from jinja2 import Environment, FileSystemLoader
 from plotly.offline import get_plotlyjs_version
 
 from .models import TeamRecord
-from .plotting import get_plotly_html, get_team_gd_plot_html, get_team_rating_sos_plot_html
+from .plotting import (
+    get_plotly_html,
+    get_team_gd_plot_html,
+    get_team_rating_sos_plot_html,
+)
 from .rankings_math import WEEK_ZERO, game_week_ends
 from .teams import Roster
-
-import pandas as pd
 
 # Assuming this file is at src/mhc_rankings/reporting.py
 # and the template is at src/mhc_rankings/templates/report.html
@@ -97,14 +100,15 @@ def generate_html_report(
     template = env.get_template("report.html")
 
     game_weeks = {week: records for week, records in weekly_records.items() if week != WEEK_ZERO}
+    table_weeks = game_weeks or weekly_records  # before any game, the table shows the Week 00 start
     all_weeks_data = {
-        week: [_with_html_cells(r) for r in records] for week, records in game_weeks.items()
+        week: [_with_html_cells(r) for r in records] for week, records in table_weeks.items()
     }
     sorted_weeks = sorted(all_weeks_data.keys())
     week_options = [
         {"key": week, "label": week_option_label(week, week_end)}
         for week, week_end in game_week_ends(df).items()
-    ]
+    ] or [{"key": week, "label": f"{week} - Start of season"} for week in sorted_weeks]
 
     title_method = "Colley"
 
@@ -131,7 +135,7 @@ def generate_html_report(
     games_data = display_df.to_dict(orient="records")
 
     matrix_labels = [abbreviations.get(team, team) for team in teams]
-        
+
     html_content = template.render(
         date=date_str,
         league=league_name(roster),
@@ -148,7 +152,7 @@ def generate_html_report(
         games_data=games_data,
         schedule_url=safe_http_url(roster.schedule_url) if roster else ""
     )
-    
+
     with open(output_path, "w", encoding="utf-8") as f:
         f.write(html_content)
 
@@ -162,18 +166,18 @@ def generate_team_reports(
     """Generates the HTML team reports; `roster` adds each team's GameSheet page link and the division name."""
     env = Environment(loader=FileSystemLoader(TEMPLATE_DIR))
     template = env.get_template("team_reports.html")
-    
+
     team_names = sorted(team_logs.keys())
-    
+
     teams_data = []
     for tname in team_names:
         record = next((r for r in rankings if r.team == tname), None)
         logs = team_logs[tname]
         team = roster.find(tname) if roster else None
-        
+
         plot_html = get_team_gd_plot_html(logs, tname)
         rating_sos_plot_html = get_team_rating_sos_plot_html(logs, tname)
-        
+
         team_dict = {
             "name": tname,
             "anchor": team_anchor(tname),
@@ -191,9 +195,9 @@ def generate_team_reports(
             "rating_sos_plot_html": rating_sos_plot_html
         }
         teams_data.append(team_dict)
-        
+
     title_method = "Colley Matrix"
-    
+
     html_out = template.render(
         date=date_str,
         league=league_name(roster),
@@ -202,6 +206,6 @@ def generate_team_reports(
         title_method=title_method,
         plotly_version=get_plotlyjs_version(),
     )
-    
+
     with open(output_path, 'w', encoding='utf-8') as f:
         f.write(html_out)
