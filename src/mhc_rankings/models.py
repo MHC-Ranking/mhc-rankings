@@ -1,5 +1,6 @@
 from dataclasses import dataclass, field
 
+
 @dataclass
 class TeamRecord:
     team: str
@@ -16,11 +17,13 @@ class TeamRecord:
     rank_change: int = 0
     last_game: str = ""
     last_game_url: str = ""
+    gp: int = field(init=False)
     win_pct: float = field(init=False)
     gd: int = field(init=False)
 
     def __post_init__(self):
         total = self.wins + self.ot_wins + self.losses + self.ot_losses + self.t
+        self.gp = total
         # OTW = 0.667 win, OTL = 0.333 win, T = 0.5 win
         self.win_pct = (self.wins + (0.667 * self.ot_wins) + (0.333 * self.ot_losses) + (0.5 * self.t)) / total if total > 0 else 0.0
         self.gd = self.gf - self.ga

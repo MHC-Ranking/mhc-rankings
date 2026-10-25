@@ -1,14 +1,16 @@
-import pytest
-import pandas as pd
 import numpy as np
+import pandas as pd
+import pytest
+
 from mhc_rankings.io import (
-    load_games_data, 
-    get_latest_game_date, 
-    save_rankings_tsv, 
-    save_colley_matrix_tsv, 
-    save_weekly_ratings_tsv
+    get_latest_game_date,
+    load_games_data,
+    save_colley_matrix_tsv,
+    save_rankings_tsv,
+    save_weekly_ratings_tsv,
 )
 from mhc_rankings.models import TeamRecord
+
 
 def test_load_games_data(tmp_path):
     tsv_content = (
@@ -18,7 +20,7 @@ def test_load_games_data(tmp_path):
     )
     p = tmp_path / "games.tsv"
     p.write_text(tsv_content)
-    
+
     df = load_games_data(p)
     assert len(df) == 2
     assert pd.api.types.is_datetime64_any_dtype(df["Date"])
@@ -28,7 +30,7 @@ def test_load_games_data(tmp_path):
 def test_get_latest_game_date():
     df = pd.DataFrame({"Date": pd.to_datetime(["2025-10-01", "2026-02-15", "2026-01-10"])})
     assert get_latest_game_date(df) == "Feb 15, 2026"
-    
+
     df_empty = pd.DataFrame({"Date": []})
     assert get_latest_game_date(df_empty) == "Unknown Date"
 
@@ -36,21 +38,27 @@ def test_save_rankings_tsv(tmp_path):
     rec = TeamRecord(team="Team A", rating=0.85, sos=0.6, wins=2, ot_wins=1, t=0, ot_losses=0, losses=1, gf=10, ga=5)
     p = tmp_path / "rankings.tsv"
     save_rankings_tsv([rec], p)
-    
+
     content = p.read_text()
-    assert "Rank\tTeam\tRating\tSOS\tRaw Win%\tW\tOTW\tT\tOTL\tL\tGF\tGA\tGD" in content
+    assert "Rank\tTeam\tRating\tSOS\tRaw Win%\tGP\tW\tOTW\tT\tOTL\tL\tGF\tGA\tGD" in content
     assert "Team A\t0.8500\t0.6000" in content
-    
+    assert "Team A\t0.8500\t0.6000\t0.667\t4\t2\t1\t0\t0\t1\t10\t5\t5" in content
+
+def test_team_record_games_played_counts_every_result():
+    rec = TeamRecord(team="Team A", wins=2, ot_wins=1, t=1, ot_losses=1, losses=3)
+    assert rec.gp == 8
+    assert TeamRecord(team="Team B").gp == 0
+
 def test_save_colley_matrix_tsv(tmp_path):
     C = np.array([[3, -1], [-1, 3]])
     teams = ["Team A", "Team B"]
     p = tmp_path / "matrix.tsv"
     save_colley_matrix_tsv(C, teams, p)
-    
+
     content = p.read_text()
     assert "Team\tTeam A\tTeam B" in content
     assert "Team A\t3\t-1" in content
-    
+
 def test_save_weekly_ratings_tsv(tmp_path):
     rec1 = TeamRecord(team="Team A", rating=0.6)
     rec2 = TeamRecord(team="Team B", rating=0.4)
@@ -58,7 +66,7 @@ def test_save_weekly_ratings_tsv(tmp_path):
     teams = ["Team A", "Team B"]
     p = tmp_path / "weekly.tsv"
     save_weekly_ratings_tsv(records, teams, p)
-    
+
     content = p.read_text()
     assert "Week\tTeam A\tTeam B" in content
     assert "2026-W01\t0.6000\t0.4000" in content

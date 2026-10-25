@@ -113,12 +113,12 @@ Re-exports `main` from `app` (`__all__ = ["main"]`).
 | 86 | `_color_to_hex(color, team)` | Hex or named color -> `#rrggbb`; raises `ValueError`. |
 | 96 | `load_roster(path)` | Parse `teams.toml` into a `Roster`; raises `ValueError` for missing name/abbreviation/colors. |
 
-## `models.py` (26 lines)
+## `models.py` (27 lines)
 
 | Line | Item | Description |
 | --- | --- | --- |
-| 4 | `class TeamRecord` (dataclass) | `team`, `rating`, `sos`, `wins`, `ot_wins`, `losses`, `ot_losses`, `t`, `gf`, `ga`, `rank`, `rank_change`, `last_game`, `last_game_url`; derived `win_pct`, `gd`. |
-| 22 | `TeamRecord.__post_init__()` | Computes `win_pct` (OTW = 0.667, OTL = 0.333, T = 0.5 of a win) and `gd`. |
+| 4 | `class TeamRecord` (dataclass) | `team`, `rating`, `sos`, `wins`, `ot_wins`, `losses`, `ot_losses`, `t`, `gf`, `ga`, `rank`, `rank_change`, `last_game`, `last_game_url`; derived `gp`, `win_pct`, `gd`. |
+| 23 | `TeamRecord.__post_init__()` | Computes `gp` (games played), `win_pct` (OTW = 0.667, OTL = 0.333, T = 0.5 of a win) and `gd`. |
 
 ## `stats.py` (81 lines)
 

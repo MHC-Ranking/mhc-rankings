@@ -1,12 +1,12 @@
-Rank	Team	Rating	SOS	Raw Win%	W	OTW	T	OTL	L	GF	GA	GD
-1	Winston Churchill	0.6842	0.3684	1.000	2	0	0	0	0	12	1	11
-2	Walter Johnson	0.6842	0.3684	1.000	2	0	0	0	0	11	3	8
-3	Walt Whitman	0.6622	0.4865	1.000	1	0	0	0	0	6	3	3
-4	Central MOCO	0.6494	0.2987	1.000	2	0	0	0	0	13	3	10
-5	Upper Montgomery	0.6045	0.3135	1.000	1	0	0	0	0	3	1	2
-6	Bethesda-Chevy Chase	0.4865	0.4731	0.500	1	0	0	0	1	6	6	0
-7	Sherwood	0.3947	0.6842	0.000	0	0	0	0	1	2	4	-2
-8	Silver Spring	0.3947	0.6842	0.000	0	0	0	0	1	1	7	-6
-9	Rockville-Magruder	0.3421	0.6842	0.000	0	0	0	0	2	1	12	-11
-10	Richard Montgomery	0.3135	0.6269	0.000	0	0	0	0	2	1	11	-10
-11	DC Stars	0.2840	0.5679	0.000	0	0	0	0	2	3	8	-5
+Rank	Team	Rating	SOS	Raw Win%	GP	W	OTW	T	OTL	L	GF	GA	GD
+1	Winston Churchill	0.6842	0.3684	1.000	2	2	0	0	0	0	12	1	11
+2	Walter Johnson	0.6842	0.3684	1.000	2	2	0	0	0	0	11	3	8
+3	Walt Whitman	0.6622	0.4865	1.000	1	1	0	0	0	0	6	3	3
+4	Central MOCO	0.6494	0.2987	1.000	2	2	0	0	0	0	13	3	10
+5	Upper Montgomery	0.6045	0.3135	1.000	1	1	0	0	0	0	3	1	2
+6	Bethesda-Chevy Chase	0.4865	0.4731	0.500	2	1	0	0	0	1	6	6	0
+7	Sherwood	0.3947	0.6842	0.000	1	0	0	0	0	1	2	4	-2
+8	Silver Spring	0.3947	0.6842	0.000	1	0	0	0	0	1	1	7	-6
+9	Rockville-Magruder	0.3421	0.6842	0.000	2	0	0	0	0	2	1	12	-11
+10	Richard Montgomery	0.3135	0.6269	0.000	2	0	0	0	0	2	1	11	-10
+11	DC Stars	0.2840	0.5679	0.000	2	0	0	0	0	2	3	8	-5
