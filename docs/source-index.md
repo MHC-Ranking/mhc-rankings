@@ -63,17 +63,18 @@ Re-exports `main` from `app` (`__all__ = ["main"]`).
 | --- | --- | --- |
 | 23 | `main(argv=None) -> None` | CLI `--input` (games TSV, required), `--output-dir` (default `.`), `--skip-raw`. Loads data and roster; with a roster, maps game team names (aliases) to canonical names, exits 1 on a team not in the roster, and ranks every roster team even with no games. Computes final and weekly rankings, sets `rank_change` from the previous game week, writes raw TSVs (unless `--skip-raw`), `mhc_rankings_report.html`, `mhc_team_reports.html`, and prints the table. Exits 1 on missing input, or an empty games file when there is no roster. |
 
-## `weekly.py` (131 lines) - one-command weekly update
+## `weekly.py` (162 lines) - one-command weekly update
 
 | Line | Item | Description |
 | --- | --- | --- |
 | 23 | `TEMPLATE_DIR` | Path to `templates/`. |
 | 24 | `BACKUP_PREFIX` | `"~backup-"`, prefix for the games-file backup. |
-| 27 | `load_recorded_games(games_file)` | Existing games keyed by Game ID; `{}` if the file is missing. |
-| 35 | `check_games(games, games_file)` | Validates a scrape (no duplicate IDs, no negative scores or self-play, nothing recorded is missing or changed). Returns count of new games; raises `ValueError`. |
-| 73 | `back_up_games_file(games_file)` | Copies the file to `~backup-<name>`; returns path or `None`. |
-| 85 | `write_index_page(output_dir, title, latest_date, game_count)` | Renders `templates/index.html` to `index.html`; returns path. |
-| 94 | `main(argv=None) -> int` | CLI `games` TSV, `--source`, `--output-dir`, `--title`. Reads `teams.toml` beside the TSV, scrapes, canonicalizes, checks, backs up, writes TSV, calls `app.main`, writes index. Returns 0, or 1 (nothing changed) on error. |
+| 34 | `load_recorded_games(games_file)` | Existing games keyed by Game ID; `{}` if the file is missing. |
+| 42 | `_changed_games(games, recorded)` | Finds scraped games whose date, teams, score, location or overtime differs from the recorded row. |
+| 54 | `check_games(games, games_file, allow_changed=False)` | Validates a scrape (no duplicate IDs, invalid scores or self-play, or missing recorded games); changed results raise `ValueError` unless explicitly allowed. Returns count of new games. |
+| 86 | `back_up_games_file(games_file)` | Copies the file to `~backup-<name>`; returns path or `None`. |
+| 98 | `write_index_page(output_dir, title, latest_date, game_count)` | Renders `templates/index.html` to `index.html`; returns path. |
+| 107 | `main(argv=None) -> int` | CLI `games` TSV, `--source`, `--output-dir`, `--title`. Reads `teams.toml`, scrapes and validates; shows recorded/scraped details and asks before updating changed results. On acceptance backs up, writes TSV, calls `app.main`, and writes index. Returns 0 on success or 1 on error/decline. |
 
 ## `scraper.py` (227 lines) - GameSheet scraping
 

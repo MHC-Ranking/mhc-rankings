@@ -116,17 +116,42 @@ def test_rerun_backs_up_previous_file_beside_it(division: Path, capsys: pytest.C
     assert "~backup-games.tsv" in out and "(0 new)" in out
 
 
-def test_changed_recorded_game_is_refused(division: Path, capsys: pytest.CaptureFixture[str]) -> None:
-    """If the site now shows a different score for a recorded game, nothing is overwritten."""
+def test_changed_recorded_game_can_be_declined(
+    division: Path, monkeypatch: pytest.MonkeyPatch, capsys: pytest.CaptureFixture[str]
+) -> None:
+    """Declining a changed recorded result leaves the games file and backup untouched."""
     assert main([str(division), "--source", str(PAGE)]) == 0
     edited = division.read_text(encoding="utf-8").replace("\t3-1\t", "\t9-1\t")
     division.write_text(edited, encoding="utf-8")
+    monkeypatch.setattr("builtins.input", lambda _: "n")
 
     assert main([str(division), "--source", str(PAGE)]) == 1
 
     assert division.read_text(encoding="utf-8") == edited
     assert not (division.parent / "~backup-games.tsv").exists()
-    assert "changes 1 game" in capsys.readouterr().err
+    output = capsys.readouterr()
+    assert "Recorded: Oct 2, 2026 | Team A 9-1 Team B" in output.out
+    assert "Scraped:  Oct 2, 2026 | Team A 3-1 Team B" in output.out
+    assert "Nothing was changed" in output.err
+
+
+def test_changed_recorded_game_can_be_accepted(
+    division: Path, monkeypatch: pytest.MonkeyPatch, capsys: pytest.CaptureFixture[str]
+) -> None:
+    """Accepting a changed recorded result backs up the old file and writes the scrape."""
+    assert main([str(division), "--source", str(PAGE)]) == 0
+    original = division.read_text(encoding="utf-8")
+    division.write_text(original.replace("\t3-1\t", "\t9-1\t"), encoding="utf-8")
+    edited = division.read_text(encoding="utf-8")
+    prompts = []
+    monkeypatch.setattr("builtins.input", lambda prompt: prompts.append(prompt) or "yes")
+
+    assert main([str(division), "--source", str(PAGE)]) == 0
+
+    assert (division.parent / "~backup-games.tsv").read_text(encoding="utf-8") == edited
+    assert division.read_text(encoding="utf-8") == original
+    assert prompts == ["Update the recorded results with the scraped results? [y/N] "]
+    assert "Recorded: Oct 2, 2026 | Team A 9-1 Team B" in capsys.readouterr().out
 
 
 def _game(game_id: str, away: str = "Team A", home: str = "Team B", away_score: int = 1, home_score: int = 0) -> Game:

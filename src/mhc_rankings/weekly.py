@@ -17,7 +17,14 @@ from jinja2 import Environment, FileSystemLoader
 
 from . import app
 from .io import get_latest_game_date, load_games_data
-from .scraper import Game, ScrapeBlockedError, canonicalize, load_games, season_id_from_url, write_tsv
+from .scraper import (
+    Game,
+    ScrapeBlockedError,
+    canonicalize,
+    load_games,
+    season_id_from_url,
+    write_tsv,
+)
 from .teams import UnknownTeamError, load_roster
 
 TEMPLATE_DIR = Path(__file__).parent / "templates"
@@ -32,12 +39,25 @@ def load_recorded_games(games_file: Path) -> dict[str, dict[str, str]]:
         return {row["Game ID"]: row for row in csv.DictReader(f, delimiter="\t")}
 
 
-def check_games(games: list[Game], games_file: Path) -> int:
+def _changed_games(games: list[Game], recorded: dict[str, dict[str, str]]) -> list[tuple[Game, dict[str, str]]]:
+    """Return scraped games whose details differ from their recorded rows."""
+    columns = ("Date", "Away Team", "Score", "Home Team", "Location", "Overtime")
+    changed = []
+    for game in games:
+        previous = recorded.get(game.game_id)
+        current = [game.date, game.away, f"{game.away_score}-{game.home_score}", game.home, game.location, game.overtime]
+        if previous and current != [previous[column] for column in columns]:
+            changed.append((game, previous))
+    return sorted(changed, key=lambda pair: pair[0].game_id)
+
+
+def check_games(games: list[Game], games_file: Path, allow_changed: bool = False) -> int:
     """Validate the scraped `games` against `games_file` and return how many are new.
 
     Raises:
         ValueError: If a game ID repeats, a score is negative, a team plays itself, or a
-            game already recorded in `games_file` is missing or has different details.
+            game already recorded in `games_file` is missing or has different details when
+            `allow_changed` is false.
     """
     ids = [g.game_id for g in games]
     repeated = sorted({i for i in ids if ids.count(i) > 1})
@@ -54,18 +74,11 @@ def check_games(games: list[Game], games_file: Path) -> int:
             f"The scrape is missing {len(missing)} game(s) already recorded in {games_file} "
             f"(e.g. {missing[0]}). Nothing was changed; delete the file to rebuild it from the site."
         )
-    columns = ("Date", "Away Team", "Score", "Home Team", "Location", "Overtime")
-    changed = sorted(
-        g.game_id
-        for g in games
-        if g.game_id in recorded
-        and [g.date, g.away, f"{g.away_score}-{g.home_score}", g.home, g.location, g.overtime]
-        != [recorded[g.game_id][c] for c in columns]
-    )
-    if changed:
+    changed = _changed_games(games, recorded)
+    if changed and not allow_changed:
         raise ValueError(
             f"The scrape changes {len(changed)} game(s) already recorded in {games_file} "
-            f"(e.g. {changed[0]}). Nothing was changed; review the differences before updating."
+            f"(e.g. {changed[0][0].game_id}). Nothing was changed; review the differences before updating."
         )
     return len(set(ids) - set(recorded))
 
@@ -109,7 +122,25 @@ def main(argv: list[str] | None = None) -> int:
         if not source:
             raise ValueError(f"No source given and {teams_file} has no games_url.")
         games = canonicalize(load_games(source, season_id_from_url(source)), roster)
-        new_count = check_games(games, args.games)
+        new_count = check_games(games, args.games, allow_changed=True)
+        changed = _changed_games(games, load_recorded_games(args.games))
+        if changed:
+            print("The scrape has different details for these recorded games:")
+            for game, previous in changed:
+                print(
+                    f"{game.game_id}\n"
+                    f"  Recorded: {previous['Date']} | {previous['Away Team']} {previous['Score']} "
+                    f"{previous['Home Team']} | {previous['Location']} | OT: {previous['Overtime'] or 'No'}\n"
+                    f"  Scraped:  {game.date} | {game.away} {game.away_score}-{game.home_score} "
+                    f"{game.home} | {game.location} | OT: {game.overtime or 'No'}"
+                )
+            try:
+                answer = input("Update the recorded results with the scraped results? [y/N] ").strip().lower()
+            except (EOFError, OSError):
+                answer = ""
+            if answer not in {"y", "yes"}:
+                print("Update declined. Nothing was changed.", file=sys.stderr)
+                return 1
     except (ScrapeBlockedError, UnknownTeamError, ValueError, urllib.error.URLError) as exc:
         print(f"error: {exc}\nNothing was changed.", file=sys.stderr)
         return 1
