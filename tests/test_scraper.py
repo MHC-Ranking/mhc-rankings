@@ -11,13 +11,17 @@ from mhc_rankings import scraper
 from mhc_rankings.io import load_games_data
 from mhc_rankings.scraper import (
     ScrapeBlockedError,
+    canonicalize_scheduled_games,
     fetch_game_dicts,
     load_games,
+    load_scheduled_games,
     main,
     parse_games,
     season_id_from_url,
+    scheduled_games_from_dicts,
     write_tsv,
 )
+from mhc_rankings.teams import Roster, Team
 
 
 def _game(game_id: int, number: str, date: str, away: tuple[str, int], home: tuple[str, int], **extra: Any) -> dict[str, Any]:
@@ -68,6 +72,36 @@ def test_parse_games_adds_game_urls_from_season_id() -> None:
         "https://gamesheetstats.com/seasons/15412/games/1",
         "https://gamesheetstats.com/seasons/15412/games/2",
     ]
+
+
+def test_scheduled_games_filter_dedupe_sort_and_link() -> None:
+    """Scheduled records are kept once, sorted by date, and linked when the season is known."""
+    raw = [
+        _game(2, "G2", "Oct 9, 2026", ("A", 0), ("B", 0), status="scheduled"),
+        _game(1, "G1", "Oct 2, 2026", ("C", 0), ("D", 0), status="scheduled"),
+        _game(1, "G1", "Oct 2, 2026", ("C", 0), ("D", 0), status="scheduled"),
+        _game(3, "G3", "Oct 16, 2026", ("E", 2), ("F", 1)),
+    ]
+
+    games = scheduled_games_from_dicts(raw, "15412")
+
+    assert [(game.date, game.game_id) for game in games] == [("Oct 2, 2026", "G1"), ("Oct 9, 2026", "G2")]
+    assert games[0].game_url == "https://gamesheetstats.com/seasons/15412/games/1"
+
+
+def test_load_scheduled_games_from_url_and_canonicalize(monkeypatch: pytest.MonkeyPatch) -> None:
+    """Schedule URLs reuse the paged API and canonicalize aliases through the roster."""
+    games = [_game(1, "G1", "Oct 9, 2026", ("Alias A", 0), ("Team B", 0), status="scheduled")]
+    _api(monkeypatch, games, page_size=100)
+    roster = Roster([
+        Team("Team A", "A", "", ("#111111",), aliases=("Alias A",)),
+        Team("Team B", "B", "", ("#222222",)),
+    ])
+
+    loaded = load_scheduled_games(URL)
+    canonical = canonicalize_scheduled_games(loaded, roster)
+
+    assert [(game.away, game.home) for game in canonical] == [("Team A", "Team B")]
 
 
 def test_season_id_is_read_from_source_url() -> None:

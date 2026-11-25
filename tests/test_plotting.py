@@ -1,6 +1,8 @@
 """Tests for the Plotly charts."""
 
 from mhc_rankings.models import TeamRecord
+from mhc_rankings.looking_ahead import TeamLookingAhead
+from mhc_rankings.models import TeamRecord
 from mhc_rankings.plotting import (
     LEGEND_MARGIN_MAX,
     PLOT_HEIGHT,
@@ -46,9 +48,43 @@ def test_chart_with_no_weeks_says_so() -> None:
 def test_team_charts_and_empty_logs() -> None:
     """Team charts render for games and show a message for none."""
     assert "Goal Differential" in get_team_gd_plot_html(LOGS, "Alpha")
-    assert "Rating and SOS" in get_team_rating_sos_plot_html(LOGS, "Alpha")
+    assert "Rating and Strength of Schedule" in get_team_rating_sos_plot_html(LOGS, "Alpha")
     assert "No data" in get_team_gd_plot_html([], "Alpha")
     assert "No data" in get_team_rating_sos_plot_html([], "Alpha")
+
+
+def test_team_rating_sos_chart_uses_a_fixed_scale_without_projected_ranges() -> None:
+    html = get_team_rating_sos_plot_html(LOGS, "Alpha")
+
+    assert "Rating and Strength of Schedule" in html
+    assert '"range":[0,1]' in html
+    assert '"fill":"tonexty"' not in html
+    assert "projected" not in html
+
+
+def test_weekly_charts_shade_each_teams_look_ahead_range() -> None:
+    outlooks = {
+        "Alpha": TeamLookingAhead(
+            rating_range=(0.4, 0.7),
+            rank_range=(1, 2),
+            sos_range=(0.3, 0.6),
+            projection_date="2026-10-18",
+        ),
+        "Beta": TeamLookingAhead(
+            rating_range=(0.3, 0.6),
+            rank_range=(1, 2),
+            sos_range=(0.4, 0.7),
+            projection_date="2026-10-18",
+        ),
+    }
+
+    for metric in ("rating", "rank", "sos"):
+        html = get_plotly_html(WEEKLY, ["Alpha", "Beta"], "t", metric, metric, outlooks=outlooks)
+        assert html.count('"fill":"tonexty"') == 2
+        assert "Next Week (2026-10-18)" in html
+        assert '"categoryarray":["2026-10-02","2026-10-09","Next Week (2026-10-18)"]' in html
+        assert '"traceorder":"normal"' in html
+        assert _legend_order(html, ["Alpha", "Beta"]) == ["Beta", "Alpha"]  # Beta leads the final week
 
 
 def _legend_order(html: str, names: list[str]) -> list[str]:

@@ -5,6 +5,7 @@ from typing import Any, Dict, List, Mapping
 import plotly.graph_objects as go
 
 from .models import TeamRecord
+from .looking_ahead import TeamLookingAhead
 
 PLOT_HEIGHT = 623  # 15% shorter than the previous 733 pixels
 FONT_FAMILY = "'Segoe UI', Tahoma, Geneva, Verdana, sans-serif"  # matches the page text
@@ -35,6 +36,7 @@ def get_plotly_html(
     colors: Mapping[str, str] | None = None,
     include_plotlyjs: bool = True,
     abbreviations: Mapping[str, str] | None = None,
+    outlooks: Mapping[str, TeamLookingAhead] | None = None,
 ) -> str:
     """
     Return an interactive line chart of `metric` for every team, one point per week, as an HTML div.
@@ -52,7 +54,14 @@ def get_plotly_html(
 
     colors = colors or {}
     labels = {team: (abbreviations or {}).get(team, team) for team in teams}
+    range_attribute = {"rating": "rating_range", "rank": "rank_range", "sos": "sos_range"}.get(metric)
+    forecast_bounds = {
+        team: getattr(outlook, range_attribute)
+        for team, outlook in (outlooks or {}).items()
+        if range_attribute is not None and outlook.projection_date and getattr(outlook, range_attribute) is not None
+    }
     all_vals = [getattr(rec, metric) for week_data in weekly_records.values() for rec in week_data]
+    all_vals.extend(value for bounds in forecast_bounds.values() for value in bounds)
     min_y = min(all_vals) if all_vals else 0
     max_y = max(all_vals) if all_vals else 1
     y_padding = (max_y - min_y) * 0.05 if max_y > min_y else 0.1
@@ -72,6 +81,57 @@ def get_plotly_html(
     value_format = "%{y}" if metric == "rank" else "%{y:.4f}"
 
     fig = go.Figure()
+
+    projection_dates = {
+        outlook.projection_date
+        for outlook in (outlooks or {}).values()
+        if range_attribute is not None and outlook.projection_date and getattr(outlook, range_attribute) is not None
+    }
+    projected_label = None
+    if projection_dates and final_week in weekly_records:
+        projected_label = f"Next Week ({sorted(projection_dates)[0]})"
+        final_values = {rec.team: getattr(rec, metric) for rec in weekly_records[final_week]}
+        trace_teams = []
+        for team in sorted_teams:
+            bounds = forecast_bounds.get(team)
+            baseline = final_values.get(team)
+            if bounds is None or baseline is None:
+                continue
+            color = colors.get(team, _FALLBACK_COLORS[alphabetical_teams.index(team) % len(_FALLBACK_COLORS)])
+            if (
+                len(color) != 7
+                or not color.startswith("#")
+                or any(character not in "0123456789abcdefABCDEF" for character in color[1:])
+            ):
+                color = _FALLBACK_COLORS[alphabetical_teams.index(team) % len(_FALLBACK_COLORS)]
+            red, green, blue = (int(color[index:index + 2], 16) for index in (1, 3, 5))
+            fill_color = f"rgba({red},{green},{blue},0.22)"
+            x_range = [final_week, projected_label]
+            low, high = bounds
+            fig.add_trace(go.Scatter(
+                x=x_range,
+                y=[baseline, high],
+                mode="lines",
+                line=dict(color=color, width=1),
+                hoverinfo="skip",
+                showlegend=False,
+                legendgroup=team,
+            ))
+            trace_teams.append(team)
+            fig.add_trace(go.Scatter(
+                x=x_range,
+                y=[baseline, low],
+                mode="lines",
+                line=dict(color=color, width=1),
+                fill="tonexty",
+                fillcolor=fill_color,
+                hoverinfo="skip",
+                showlegend=False,
+                legendgroup=team,
+            ))
+            trace_teams.append(team)
+    else:
+        trace_teams = []
 
     for team in sorted_teams:
         team_idx = alphabetical_teams.index(team)
@@ -93,19 +153,20 @@ def get_plotly_html(
             ),
             marker=dict(symbol=_MARKERS[team_idx % len(_MARKERS)], size=7),
         ))
+        trace_teams.append(team)
 
     # Dropdown menus for filtering teams
     top_6_teams = sorted_teams[:6]
     bottom_6_teams = sorted_teams[6:]
 
     dropdown_buttons = [
-        dict(label="All Teams", method="update", args=[{"visible": [True] * len(sorted_teams)}]),
-        dict(label="Top 6 Teams", method="update", args=[{"visible": [team in top_6_teams for team in sorted_teams]}]),
-        dict(label="Bottom 6 Teams", method="update", args=[{"visible": [team in bottom_6_teams for team in sorted_teams]}]),
+        dict(label="All Teams", method="update", args=[{"visible": [True] * len(trace_teams)}]),
+        dict(label="Top 6 Teams", method="update", args=[{"visible": [team in top_6_teams for team in trace_teams]}]),
+        dict(label="Bottom 6 Teams", method="update", args=[{"visible": [team in bottom_6_teams for team in trace_teams]}]),
     ]
     for target_team in sorted_teams:
         dropdown_buttons.append(
-            dict(label=target_team, method="update", args=[{"visible": [team == target_team for team in sorted_teams]}])
+            dict(label=target_team, method="update", args=[{"visible": [team == target_team for team in trace_teams]}])
         )
 
     fig.update_layout(
@@ -131,10 +192,15 @@ def get_plotly_html(
             y=0.99,
             xanchor="left",
             x=1.01,
+            traceorder="normal",  # Plotly otherwise reverses the legend when filled range traces exist
             itemclick="toggleothers",  # Clicking a legend item isolates it
             itemdoubleclick="toggle",
         ),
-        xaxis=dict(type="category"),  # Weeks are labels, not numbers
+        xaxis=dict(
+            type="category",
+            categoryorder="array",
+            categoryarray=sorted_weeks + ([projected_label] if projected_label else []),
+        ),  # Weeks are labels, not numbers
         margin=dict(r=min(LEGEND_MARGIN_MAX, 60 + 7 * max(map(len, labels.values()))), t=100),
         height=PLOT_HEIGHT,
     )
@@ -218,8 +284,9 @@ def get_team_rating_sos_plot_html(team_logs: List[Dict[str, Any]], team_name: st
         line=dict(color="#ff7f0e", width=2, dash="dash"),
         marker=dict(symbol="square", size=8),
     ))
+
     fig.update_layout(
-        title="Rating and SOS over Time",
+        title="Rating and Strength of Schedule",
         xaxis_title="Date",
         yaxis_title="Value",
         template="plotly_white",
@@ -227,7 +294,7 @@ def get_team_rating_sos_plot_html(team_logs: List[Dict[str, Any]], team_name: st
         margin=dict(l=50, r=30, t=45, b=40),
         dragmode=False,
         xaxis=dict(type="category", fixedrange=True),
-        yaxis=dict(fixedrange=True),
+        yaxis=dict(range=[0, 1], fixedrange=True),
         legend=dict(orientation="h", yanchor="bottom", y=1.02, xanchor="right", x=1, itemclick=False, itemdoubleclick=False),
     )
     return fig.to_html(full_html=False, include_plotlyjs=False, config=TEAM_CHART_CONFIG)

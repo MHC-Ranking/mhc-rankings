@@ -7,6 +7,7 @@ import pytest
 from plotly.offline import get_plotlyjs_version
 
 from mhc_rankings.app import main
+from mhc_rankings.scraper import ScheduledGame
 
 GAMES = (
     "Date\tAway Team\tScore\tHome Team\tLocation\tGame ID\tOvertime\n"
@@ -32,6 +33,8 @@ def test_cli_writes_reports_and_uses_abbreviations(tmp_path: Path) -> None:
     assert "Colley" in report
     assert "@ TA W 4-0" in report  # Team C's last game, with the opponent abbreviated
     assert (out / "mhc_team_reports.html").exists()
+    assert (out / "mhc_look_ahead_report.html").exists()
+    assert 'href="mhc_look_ahead_report.html"' in report
 
 
 def test_cli_report_explains_colley_in_plain_language_first(tmp_path: Path) -> None:
@@ -138,7 +141,7 @@ def test_cli_reports_missing_input_file(tmp_path: Path) -> None:
     assert excinfo.value.code == 1
 
 
-def test_cli_links_games_teams_and_schedule(tmp_path: Path) -> None:
+def test_cli_links_games_teams_and_schedule(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
     """Game URLs, team URLs and the schedule link from the inputs appear in the report."""
     games = tmp_path / "games.tsv"
     games.write_text(
@@ -153,6 +156,7 @@ def test_cli_links_games_teams_and_schedule(tmp_path: Path) -> None:
         + TEAMS.replace('url = ""', 'url = "https://example.com/team"'),
         encoding="utf-8",
     )
+    monkeypatch.setattr("mhc_rankings.app.load_scheduled_games", lambda source: [])
     out = tmp_path / "out"
 
     main(["--input", str(games), "--output-dir", str(out), "--skip-raw"])
@@ -161,6 +165,52 @@ def test_cli_links_games_teams_and_schedule(tmp_path: Path) -> None:
     assert 'href="https://example.com/schedule"' in report
     assert "https://example.com/games/1" in report
     assert "https://example.com/team" in (out / "mhc_team_reports.html").read_text(encoding="utf-8")
+
+
+def test_cli_look_ahead_page_shades_schedule_ranges(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+    """A loaded next-week game produces the standalone table and shaded rating, rank, and SOS ranges."""
+    games = tmp_path / "games.tsv"
+    games.write_text(GAMES, encoding="utf-8")
+    (tmp_path / "teams.toml").write_text(
+        'schedule_url = "https://example.com/schedule"\n\n' + TEAMS,
+        encoding="utf-8",
+    )
+    scheduled = [ScheduledGame("Oct 23, 2026", "Team A", "Team B", "Rink 1", "MHC - 4")]
+    monkeypatch.setattr("mhc_rankings.app.load_scheduled_games", lambda _source: scheduled)
+    out = tmp_path / "out"
+
+    main(["--input", str(games), "--output-dir", str(out), "--skip-raw"])
+
+    report = (out / "mhc_look_ahead_report.html").read_text(encoding="utf-8")
+    assert "<h2>Current Standings and Look Ahead</h2>" in report
+    assert "Next Week (2026-10-25)" in report
+    assert report.count('"fill":"tonexty"') == 9
+
+
+def test_cli_continues_when_schedule_loading_fails(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch, capsys: pytest.CaptureFixture[str]
+) -> None:
+    """A schedule outage warns and leaves the existing report generation path available."""
+    games = tmp_path / "games.tsv"
+    games.write_text(GAMES, encoding="utf-8")
+    (tmp_path / "teams.toml").write_text(
+        'schedule_url = "https://example.com/schedule"\n\n' + TEAMS,
+        encoding="utf-8",
+    )
+
+    def fail_schedule_load(_source: str) -> list:
+        raise RuntimeError("schedule unavailable")
+
+    monkeypatch.setattr("mhc_rankings.app.load_scheduled_games", fail_schedule_load)
+    out = tmp_path / "out"
+    main(["--input", str(games), "--output-dir", str(out), "--skip-raw"])
+
+    captured = capsys.readouterr()
+    assert "Warning: Could not load the upcoming schedule: schedule unavailable" in captured.err
+    assert (out / "mhc_rankings_report.html").exists()
+    team_report = (out / "mhc_team_reports.html").read_text(encoding="utf-8")
+    assert "Looking Ahead" in team_report
+    assert 'class="future-game"' not in team_report
 
 
 def test_cli_selector_lists_game_weeks_with_sunday_dates_and_no_final_option(tmp_path: Path) -> None:

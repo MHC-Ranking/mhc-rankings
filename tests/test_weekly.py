@@ -39,8 +39,12 @@ def test_weekly_scrapes_ranks_and_writes_index(division: Path) -> None:
     index = (out / "index.html").read_text(encoding="utf-8")
     assert "Test Rankings" in index
     assert "3 completed games through Oct 16, 2026" in index
-    assert 'href="mhc_rankings_report.html"' in index and 'href="mhc_team_reports.html"' in index
-    assert (out / "mhc_rankings_report.html").exists() and (out / "mhc_team_reports.html").exists()
+    assert 'href="mhc_rankings_report.html"' in index
+    assert 'href="mhc_look_ahead_report.html"' in index
+    assert 'href="mhc_team_reports.html"' in index
+    assert (out / "mhc_rankings_report.html").exists()
+    assert (out / "mhc_look_ahead_report.html").exists()
+    assert (out / "mhc_team_reports.html").exists()
 
 
 def test_weekly_uses_games_url_from_teams_toml(division: Path) -> None:

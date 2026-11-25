@@ -3,13 +3,14 @@ from dataclasses import asdict
 from datetime import date
 from html import escape
 from pathlib import Path
-from typing import Any, Dict, List, Tuple
+from typing import Any, Dict, List, Mapping, Tuple
 from urllib.parse import quote
 
 import pandas as pd
 from jinja2 import Environment, FileSystemLoader
 from plotly.offline import get_plotlyjs_version
 
+from .looking_ahead import TeamLookingAhead
 from .models import TeamRecord
 from .plotting import (
     get_plotly_html,
@@ -23,6 +24,7 @@ from .teams import Roster
 # and the template is at src/mhc_rankings/templates/report.html
 TEMPLATE_DIR = Path(__file__).parent / "templates"
 TEAM_REPORTS_FILE = "mhc_team_reports.html"
+LOOKING_AHEAD_FILE = "mhc_look_ahead_report.html"
 _HEX_RE = re.compile(r"#[0-9a-fA-F]{6}")
 
 
@@ -162,6 +164,8 @@ def generate_team_reports(
     team_logs: dict,
     output_path: str,
     roster: Roster | None = None,
+    looking_ahead: Mapping[str, TeamLookingAhead] | None = None,
+    future_logs: Mapping[str, list[dict[str, object]]] | None = None,
 ) -> None:
     """Generates the HTML team reports; `roster` adds each team's GameSheet page link and the division name."""
     env = Environment(loader=FileSystemLoader(TEMPLATE_DIR))
@@ -174,6 +178,8 @@ def generate_team_reports(
         record = next((r for r in rankings if r.team == tname), None)
         logs = team_logs[tname]
         team = roster.find(tname) if roster else None
+        outlook = looking_ahead.get(tname) if looking_ahead else None
+        team_future_logs = future_logs.get(tname, []) if future_logs else []
 
         plot_html = get_team_gd_plot_html(logs, tname)
         rating_sos_plot_html = get_team_rating_sos_plot_html(logs, tname)
@@ -191,6 +197,12 @@ def generate_team_reports(
             "gf": record.gf if record else 0,
             "ga": record.ga if record else 0,
             "logs": logs,
+            "future_logs": team_future_logs,
+            "next_opponent": team_future_logs[0]["opponent"] if team_future_logs else None,
+            "looking_ahead_rating_range": _format_range(outlook.rating_range) if outlook else "-",
+            "looking_ahead_rank_range": _format_range(outlook.rank_range, 0) if outlook else "-",
+            "sosf": f"{outlook.sosf:.4f}" if outlook and outlook.sosf is not None else "-",
+            "sosp": f"{outlook.sosp:.4f}" if outlook and outlook.sosp is not None else "-",
             "plot_html": plot_html,
             "rating_sos_plot_html": rating_sos_plot_html
         }
@@ -209,3 +221,65 @@ def generate_team_reports(
 
     with open(output_path, 'w', encoding='utf-8') as f:
         f.write(html_out)
+
+
+def generate_looking_ahead_report(
+    date_str: str,
+    rankings: list[TeamRecord],
+    weekly_records: Dict[str, List[TeamRecord]],
+    teams: List[str],
+    looking_ahead: Mapping[str, TeamLookingAhead],
+    output_path: str | Path,
+    roster: Roster | None = None,
+) -> None:
+    """Write a standings and weekly-chart report with next-week projection ranges."""
+    env = Environment(loader=FileSystemLoader(TEMPLATE_DIR), autoescape=True)
+    template = env.get_template("looking_ahead.html")
+    line_colors = plot_line_colors(teams, roster)
+    abbreviations = roster.abbreviations if roster else {}
+
+    charts = {
+        "rating_plot_data": get_plotly_html(
+            weekly_records, teams, "Ratings with Look Ahead", "Rating", "rating",
+            line_colors, abbreviations=abbreviations, outlooks=looking_ahead,
+        ),
+        "rank_plot_data": get_plotly_html(
+            weekly_records, teams, "Rankings Progress with Look Ahead", "Rank", "rank",
+            line_colors, include_plotlyjs=False, abbreviations=abbreviations, outlooks=looking_ahead,
+        ),
+        "sos_plot_data": get_plotly_html(
+            weekly_records, teams, "Strength of Schedule with Look Ahead", "SOS", "sos",
+            line_colors, include_plotlyjs=False, abbreviations=abbreviations, outlooks=looking_ahead,
+        ),
+    }
+
+    rows = []
+    for record in rankings:
+        outlook = looking_ahead.get(record.team)
+        rows.append({
+            "rank": record.rank,
+            "team_html": team_cell_html(record.team),
+            "gp": record.gp,
+            "rating": f"{record.rating:.4f}",
+            "sos": f"{record.sos:.4f}",
+            "rating_range": _format_range(outlook.rating_range) if outlook else "-",
+            "sos_range": _format_range(outlook.sos_range) if outlook else "-",
+            "rank_range": _format_range(outlook.rank_range, 0) if outlook else "-",
+            "sosf": f"{outlook.sosf:.4f}" if outlook and outlook.sosf is not None else "-",
+            "sosp": f"{outlook.sosp:.4f}" if outlook and outlook.sosp is not None else "-",
+        })
+
+    html = template.render(
+        league=league_name(roster),
+        date=date_str,
+        rows=rows,
+        **charts,
+    )
+    Path(output_path).write_text(html, encoding="utf-8")
+
+
+def _format_range(bounds: tuple[float, float] | tuple[int, int] | None, precision: int = 4) -> str:
+    """Format a projected lower/upper bound pair, or a dash when unavailable."""
+    if bounds is None:
+        return "-"
+    return f"{bounds[0]:.{precision}f} - {bounds[1]:.{precision}f}"

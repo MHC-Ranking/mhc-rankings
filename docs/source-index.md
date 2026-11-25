@@ -27,6 +27,7 @@ games TSV (+ teams.toml beside it)
    -> rankings_math.compute_final_rankings   (engines.ColleyEngine + stats.StatsTracker -> list[TeamRecord])
    -> rankings_math.compute_weekly_ratings   (same, snapshot per game week -> dict[week label, list[TeamRecord]])
    -> rankings_math.compute_team_game_logs   (per-team game-by-game rating/rank)
+    -> scraper.load_scheduled_games -> looking_ahead.compute_looking_ahead / build_future_game_logs
    -> io.save_*_tsv                          (rankings, weekly ratings, Colley matrix)
    -> reporting.generate_html_report         (plotting.get_plotly_html + templates/report.html)
    -> reporting.generate_team_reports        (plotting.get_team_*_plot_html + templates/team_reports.html)
@@ -35,7 +36,8 @@ games TSV (+ teams.toml beside it)
 ```
 
 Module dependency summary (arrow = imports): `app` -> `io`, `console`, `rankings_math`, `reporting`, `teams`;
-`weekly` -> `app`, `io`, `scraper`, `teams`; `reporting` -> `plotting`, `rankings_math`, `models`, `teams`;
+`app` -> `looking_ahead`, `scraper`; `looking_ahead` -> `rankings_math`, `scraper`, `stats`, `models`;
+`weekly` -> `app`, `io`, `scraper`, `teams`; `reporting` -> `plotting`, `rankings_math`, `models`, `teams`, `looking_ahead`;
 `rankings_math` -> `stats`, `engines`, `models`; `stats`/`io`/`console`/`plotting` -> `models`;
 `scraper` -> `teams`; `mkdoc` is standalone.
 
@@ -57,11 +59,11 @@ Conventions worth knowing:
 
 Re-exports `main` from `app` (`__all__ = ["main"]`).
 
-## `app.py` (137 lines) - ranking CLI
+## `app.py` (171 lines) - ranking CLI
 
 | Line | Item | Description |
 | --- | --- | --- |
-| 23 | `main(argv=None) -> None` | CLI `--input` (games TSV, required), `--output-dir` (default `.`), `--skip-raw`. Loads data and roster; with a roster, maps game team names (aliases) to canonical names, exits 1 on a team not in the roster, and ranks every roster team even with no games. Computes final and weekly rankings, sets `rank_change` from the previous game week, writes raw TSVs (unless `--skip-raw`), `mhc_rankings_report.html`, `mhc_team_reports.html`, and prints the table. Exits 1 on missing input, or an empty games file when there is no roster. |
+| 31 | `main(argv=None) -> None` | CLI `--input` (games TSV, required), `--output-dir` (default `.`), `--skip-raw`. Loads data and roster; canonicalizes game team names and ranks all roster teams. Loads/canonicalizes scheduled games when `schedule_url` exists; schedule errors warn and do not block report generation. Computes current and projected values, writes raw TSVs unless skipped, all three HTML reports, and prints the table. |
 
 ## `weekly.py` (162 lines) - one-command weekly update
 
@@ -76,7 +78,7 @@ Re-exports `main` from `app` (`__all__ = ["main"]`).
 | 98 | `write_index_page(output_dir, title, latest_date, game_count)` | Renders `templates/index.html` to `index.html`; returns path. |
 | 107 | `main(argv=None) -> int` | CLI `games` TSV, `--source`, `--output-dir`, `--title`. Reads `teams.toml`, scrapes and validates; shows recorded/scraped details and asks before updating changed results. On acceptance backs up, writes TSV, calls `app.main`, and writes index. Returns 0 on success or 1 on error/decline. |
 
-## `scraper.py` (227 lines) - GameSheet scraping
+## `scraper.py` (270 lines) - GameSheet scraping
 
 | Line | Item | Description |
 | --- | --- | --- |
@@ -84,19 +86,24 @@ Re-exports `main` from `app` (`__all__ = ["main"]`).
 | 39 | `class ScrapeBlockedError(RuntimeError)` | Site served a bot challenge instead of results. |
 | 44 | `class Game` (frozen dataclass) | One completed game: `date`, `away`, `away_score`, `home_score`, `home`, `location`, `game_id`, `overtime`, `game_url`. |
 | 57 | `Game.as_row()` | Row of strings matching `TSV_HEADER`. |
+| 64 | `class ScheduledGame` (frozen dataclass) | Scheduled game details without a result: `date`, `away`, `home`, `location`, `game_id`, optional `game_url`. |
 | 63 | `_embedded_text(html)` | Joins Next.js flight-data chunks embedded in the page. |
-| 68 | `_game_dicts(text)` | Game objects from every `"games":[...]` array in the payload. |
-| 78 | `_overtime_marker(team)` | `"OT"` if the team has goals in non-regulation periods. |
-| 83 | `_tie_marker(game)` | `"OT"` if final scores are equal. |
-| 88 | `season_id_from_url(source)` | Season id from `/seasons/<id>/`, or `""`. |
-| 94 | `games_from_dicts(raw, season_id="")` | Final games only, de-duplicated, oldest first, with game URLs. |
-| 117 | `parse_games(html, season_id="")` | Games from saved page HTML; raises `ScrapeBlockedError` or `ValueError` (no data). |
-| 133 | `_get_json(url)` | HTTP GET JSON; 403/429/503 or non-JSON -> `ScrapeBlockedError`. |
-| 151 | `fetch_game_dicts(source)` | Pages through the site JSON API honoring `filter[division]` / `filter[type]` of the URL. |
-| 172 | `load_games(source, season_id="")` | URL (all pages) or saved HTML file -> `list[Game]`. |
-| 187 | `canonicalize(games, roster)` | Replace team names with canonical roster names; raises `UnknownTeamError`. |
-| 196 | `write_tsv(games, output)` | Write games TSV with `TSV_HEADER`. |
-| 205 | `main(argv=None) -> int` | CLI `source output [--teams] [--season-id]`. |
+| 75 | `_embedded_text(html)` | Joins Next.js flight-data chunks embedded in the page. |
+| 80 | `_game_dicts(text)` | Game objects from every `"games":[...]` array in the payload. |
+| 90 | `_overtime_marker(team)` | `"OT"` if the team has goals in non-regulation periods. |
+| 95 | `_tie_marker(game)` | `"OT"` if final scores are equal. |
+| 100 | `season_id_from_url(source)` | Season id from `/seasons/<id>/`, or `""`. |
+| 106 | `games_from_dicts(raw, season_id="")` | Final games only, de-duplicated, oldest first, with game URLs. |
+| 129 | `scheduled_games_from_dicts(raw, season_id="")` | Scheduled API records only, de-duplicated and sorted by date; adds GameSheet links when a season id is known. |
+| 146 | `parse_games(html, season_id="")` | Games from saved page HTML; raises `ScrapeBlockedError` or `ValueError` (no data). |
+| 162 | `_get_json(url)` | HTTP GET JSON; 403/429/503 or non-JSON -> `ScrapeBlockedError`. |
+| 180 | `fetch_game_dicts(source)` | Pages through the site JSON API honoring `filter[division]` / `filter[type]` of the URL. |
+| 201 | `load_games(source, season_id="")` | URL (all pages) or saved HTML file -> `list[Game]`. |
+| 216 | `load_scheduled_games(source, season_id="")` | Loads scheduled games from the paginated GameSheet API; an empty source returns `[]`. |
+| 225 | `canonicalize(games, roster)` | Replace team names with canonical roster names; raises `UnknownTeamError`. |
+| 234 | `canonicalize_scheduled_games(games, roster)` | Replace scheduled-game team names with canonical roster names. |
+| 239 | `write_tsv(games, output)` | Write games TSV with `TSV_HEADER`. |
+| 248 | `main(argv=None) -> int` | CLI `source output [--teams] [--season-id]`. |
 
 ## `teams.py` (124 lines) - roster
 
@@ -171,32 +178,45 @@ Re-exports `main` from `app` (`__all__ = ["main"]`).
 | 97 | `compute_weekly_ratings(df, abbreviations=None, extra_teams=())` | `({week label: records}, teams)`: Week 00 start plus a snapshot after each game week, with `rank` and `rank_change`. With no completed games, `{}` unless `extra_teams` are given (then Week 00 only). |
 | 156 | `compute_team_game_logs(df, extra_teams=())` | `{team: [dict per game]}` (empty list for unplayed `extra_teams`) with `date`, `opponent`, `is_home`, `team_score`, `opp_score`, `gd`, `ot`, `rating_post`, `sos_post`, `rank_post` (ranked with `ranking_key` using goals to date). |
 
-## `reporting.py` (208 lines) - HTML report generation
+## `looking_ahead.py` (180 lines) - schedule-derived team metrics and projections
 
 | Line | Item | Description |
 | --- | --- | --- |
-| 21 | `TEMPLATE_DIR` | Path to `templates/`. |
-| 22 | `TEAM_REPORTS_FILE` | `"mhc_team_reports.html"`. |
-| 26 | `safe_http_url(url)` | URL if http(s), else `""`. |
-| 31 | `link_html(text, url)` | Escaped text, as a new-tab link when the URL is safe. |
-| 40 | `league_name(roster)` | `"MHC <division>"` or `"MHC"`. |
-| 45 | `team_anchor(name)` | `"team-<Name-With-Dashes>"` section id. |
-| 50 | `team_cell_html(name)` | Link cell to the team's section in the team reports. |
-| 55 | `plot_line_colors(teams, roster)` | Team -> first hex color for chart lines. |
-| 67 | `_with_html_cells(record)` | Record dict plus `team_html` and `last_game_html`. |
-| 75 | `week_option_label(week, week_end)` | `"Week 03 - Oct 25, 2026"`. |
-| 80 | `generate_html_report(date_str, details, teams, weekly_records, output_path, df, roster=None)` | Renders `report.html` (week selector table, three charts, Colley matrix, games list); before any game the table shows Week 00 labelled "Start of season". Template vars: `date`, `league`, `details`, `teams`, `matrix_labels`, `plot_data`, `rank_plot_data`, `sos_plot_data`, `all_weeks_data`, `sorted_weeks`, `week_options`, `title_method`, `games_data`, `schedule_url`. |
-| 156 | `generate_team_reports(date_str, rankings, team_logs, output_path, roster=None)` | Renders `team_reports.html` with a section per team (record, game log, two charts). Template vars: `date`, `league`, `team_names`, `teams_data`, `title_method`, `plotly_version`. Note: this environment does not enable autoescape. |
+| 18 | `class TeamLookingAhead` (frozen dataclass) | SOSF/SOSP and optional next-week rating, SOS, rank ranges and projection date. |
+| 37 | `_remaining_games(df, scheduled_games)` | Deduplicates future games and removes games already present in the results. |
+| 51 | `_next_week(games, played)` | Selects the next scheduled Monday-Sunday week and its Sunday projection date. |
+| 71 | `compute_looking_ahead(df, scheduled_games, current_rankings, extra_teams=())` | Computes future-opponent SOSF, season SOSP, and exact outcome-enumerated rating/SOS/rank ranges using the shared ranking engine and tie-break key. |
+| 150 | `build_future_game_logs(df, scheduled_games, teams)` | Builds per-team scheduled log rows with known date/opponent/home-away and placeholders for unknown results. |
 
-## `plotting.py` (233 lines) - Plotly charts (return HTML div strings)
+## `reporting.py` (285 lines) - HTML report generation
 
 | Line | Item | Description |
 | --- | --- | --- |
-| 9-13 | Constants | `PLOT_HEIGHT`, `FONT_FAMILY`, `LEGEND_MARGIN_MAX`, `TEAM_CHART_CONFIG`. |
-| 15-21 | `_DASHES`, `_MARKERS`, `_FALLBACK_COLORS` | Style cycles so similar-colored teams stay distinct. |
-| 29 | `get_plotly_html(weekly_records, teams, title, ylabel, metric="rating", colors=None, include_plotlyjs=True, abbreviations=None)` | Multi-team weekly line chart for `rating`, `rank` (inverted axis) or `sos`; legend ordered by the final week's ranking; dropdown for All / Top 6 / Bottom 6 / single team. Loads plotly.js from CDN only if `include_plotlyjs`. |
-| 161 | `get_team_gd_plot_html(team_logs, team_name)` | Per-game goal-differential bar chart (green/red/grey). |
-| 195 | `get_team_rating_sos_plot_html(team_logs, team_name)` | Per-game rating and SOS line chart. |
+| 25 | `TEMPLATE_DIR` | Path to `templates/`. |
+| 26 | `TEAM_REPORTS_FILE` | `"mhc_team_reports.html"`. |
+| 27 | `LOOKING_AHEAD_FILE` | `"mhc_look_ahead_report.html"`. |
+| 31 | `safe_http_url(url)` | URL if http(s), else `""`. |
+| 36 | `link_html(text, url)` | Escaped text, as a new-tab link when the URL is safe. |
+| 45 | `league_name(roster)` | `"MHC <division>"` or `"MHC"`. |
+| 50 | `team_anchor(name)` | `"team-<Name-With-Dashes>"` section id. |
+| 55 | `team_cell_html(name)` | Link cell to the team's section in the team reports. |
+| 60 | `plot_line_colors(teams, roster)` | Team -> first hex color for chart lines. |
+| 72 | `_with_html_cells(record)` | Record dict plus `team_html` and `last_game_html`. |
+| 80 | `week_option_label(week, week_end)` | `"Week 03 - Oct 25, 2026"`. |
+| 85 | `generate_html_report(date_str, details, teams, weekly_records, output_path, df, roster=None)` | Renders `report.html` (week selector table, three charts, Colley matrix, games list); before any game the table shows Week 00 labelled "Start of season". Template vars: `date`, `league`, `details`, `teams`, `matrix_labels`, `plot_data`, `rank_plot_data`, `sos_plot_data`, `all_weeks_data`, `sorted_weeks`, `week_options`, `title_method`, `games_data`, `schedule_url`. |
+| 161 | `generate_team_reports(date_str, rankings, team_logs, output_path, roster=None, looking_ahead=None, future_logs=None)` | Renders current standings, actual and future game rows, a Looking Ahead bar (titled above, placed after the game log) with optional next-opponent title, and goal-differential/rating-SOS charts. |
+| 226 | `generate_looking_ahead_report(date_str, rankings, weekly_records, teams, looking_ahead, output_path, roster=None)` | Renders current standings and schedule-derived next-week ranges before the three weekly rating, rank, and SOS charts with shaded outlook bands. |
+| 281 | `_format_range(bounds, precision=4)` | Formats optional numeric range bounds or returns `-`. |
+
+## `plotting.py` (300 lines) - Plotly charts (return HTML div strings)
+
+| Line | Item | Description |
+| --- | --- | --- |
+| 10-14 | Constants | `PLOT_HEIGHT`, `FONT_FAMILY`, `LEGEND_MARGIN_MAX`, `TEAM_CHART_CONFIG`. |
+| 16-22 | `_DASHES`, `_MARKERS`, `_FALLBACK_COLORS` | Style cycles so similar-colored teams stay distinct. |
+| 30 | `get_plotly_html(weekly_records, teams, title, ylabel, metric="rating", colors=None, include_plotlyjs=True, abbreviations=None, outlooks=None)` | Multi-team weekly line chart for `rating`, `rank` (inverted axis) or `sos`; optional per-team look-ahead ranges are shaded between the last actual point and the next-week category. Legend ordered by the final week's ranking (pinned to `traceorder="normal"` so range fills do not reverse it); dropdown filters each team and its range together. |
+| 227 | `get_team_gd_plot_html(team_logs, team_name)` | Per-game goal-differential bar chart (green/red/grey). |
+| 261 | `get_team_rating_sos_plot_html(team_logs, team_name)` | Actual rating/SOS history on a fixed 0-1 scale; no projected ranges. |
 
 ## `io.py` (93 lines) - TSV read/write
 
@@ -227,16 +247,17 @@ Re-exports `main` from `app` (`__all__ = ["main"]`).
 
 | File | Lines | Used by | Content |
 | --- | --- | --- | --- |
-| `report.html` | 899 | `reporting.generate_html_report` | Rankings page: week selector, rankings table, charts, matrix, games, explanation of Colley. |
-| `team_reports.html` | 398 | `reporting.generate_team_reports` | One section per team. |
-| `index.html` | 85 | `weekly.write_index_page` | Landing page linking the two reports (`title`, `latest_date`, `game_count`). |
+| `report.html` | 957 | `reporting.generate_html_report` | Rankings page: week selector, rankings table, charts, matrix, games, explanation of Colley, and a Look Ahead report link. |
+| `team_reports.html` | 472 | `reporting.generate_team_reports` | One section per team with the "Current Ranking" stats bar, a closing Looking Ahead bar, actual and future game rows, and charts. |
+| `looking_ahead.html` | 316 | `reporting.generate_looking_ahead_report` | Look Ahead report: sortable current standings with GP, next-week rating/rank ranges, grouped SOS columns, and three shaded weekly charts. |
+| `index.html` | 86 | `weekly.write_index_page` | Landing page linking the rankings, Look Ahead and team reports (`title`, `latest_date`, `game_count`). |
 | `doc.html` | 298 | `mkdoc.convert_markdown_to_html` | Document page with TOC sidebar and MathJax (`title`, `toc`, `html_content`). |
 
 ## Outside `src/`
 
 | Path | Description |
 | --- | --- |
-| `tests/test_<module>.py` | One pytest file per module (`app`, `engines`, `io`, `mkdoc`, `plotting`, `rankings_math`, `reporting`, `scraper`, `stats`, `teams`, `weekly`); `tests/fixtures/games_page.html` is a saved GameSheet page. |
+| `tests/test_<module>.py` | One pytest file per module (`app`, `engines`, `io`, `looking_ahead`, `mkdoc`, `plotting`, `rankings_math`, `reporting`, `scraper`, `stats`, `teams`, `weekly`); `tests/fixtures/games_page.html` is a saved GameSheet page. |
 | `generate_all.sh` | Reruns `mhc-rankings` (via `uv run`) for each division's games TSV. |
 | `colley_matrix.py` | Legacy standalone script (uses matplotlib, not a project dependency); not part of the package. |
 | `docs/algorithms.md` -> `docs/algorithms.html` | Algorithm write-up, built with `mkdoc`. |

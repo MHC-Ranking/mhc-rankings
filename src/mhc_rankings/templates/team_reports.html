@@ -112,6 +112,44 @@
             margin-bottom: 0.75rem;
             border-left: 5px solid var(--accent-color);
         }
+        .looking-ahead-stats {
+            background-color: #e4f2ee;
+            border-left-color: #2a8062;
+            padding-top: 0.35rem;
+            padding-bottom: 0.35rem;
+            margin-bottom: 0;
+        }
+        .looking-ahead-stats .stat-value,
+        .looking-ahead-stats .stat-label,
+        .looking-ahead-heading {
+            color: #467c6b;
+        }
+        .current-ranking-heading,
+        .looking-ahead-heading {
+            margin: 0 0 0.35rem !important;
+            font-size: 1rem !important;
+        }
+        .looking-ahead-heading {
+            margin-top: 1rem !important;
+        }
+        .current-ranking-heading {
+            color: var(--primary-color);
+        }
+        .looking-ahead-stats .stat-value {
+            font-size: 1.1rem;
+        }
+        .looking-ahead-stats .stat-label {
+            font-size: 0.7rem;
+        }
+        .stat-label abbr {
+            cursor: help;
+            text-decoration: underline dotted;
+            text-underline-offset: 2px;
+        }
+        .stat-label abbr:focus-visible {
+            outline: 2px solid currentColor;
+            outline-offset: 2px;
+        }
         .stat-box {
             flex: 1;
             min-width: 100px;
@@ -274,7 +312,8 @@
                 <a href="#" class="back-to-top">&#8593; Back to Top</a>
             </div>
 
-            <div class="summary-stats">
+            <h3 class="current-ranking-heading" id="{{ team_data.anchor }}-current-ranking">Current Ranking</h3>
+            <div class="summary-stats" aria-labelledby="{{ team_data.anchor }}-current-ranking">
                 <div class="stat-box">
                     <div class="stat-value">{{ team_data.rank }}</div>
                     <div class="stat-label">Current Rank</div>
@@ -349,17 +388,52 @@
                         <td>{{ game.rank_post }}</td>
                     </tr>
                     {% endfor %}
-                    {% if team_data.logs %}
+                    {% if team_data.logs or team_data.future_logs %}
                     <tr class="current-row">
                         <td colspan="5">Current standing</td>
                         <td>{{ "%.4f"|format(team_data.rating) }}</td>
                         <td>{{ team_data.rank }}</td>
                     </tr>
                     {% endif %}
+                    {% for game in team_data.future_logs %}
+                    <tr class="future-game">
+                        <td>{{ game.date }}</td>
+                        <td class="opponent-col">{{ "@ " if not game.is_home else "vs " }}{{ game.opponent|e }}</td>
+                        <td>-</td>
+                        <td>-</td>
+                        <td>-</td>
+                        <td>-</td>
+                        <td>-</td>
+                    </tr>
+                    {% endfor %}
                 </tbody>
             </table>
             </div>
             <p class="log-note">Each rating and rank is as of that game. A team's rating can also change when other teams play, so the current standing, which matches the rankings page, may differ from the last game.</p>
+
+            <h3 class="looking-ahead-heading" id="{{ team_data.anchor }}-looking-ahead">Looking Ahead{% if team_data.next_opponent %} - After the next game against {{ team_data.next_opponent|e }}{% endif %}</h3>
+            <div class="summary-stats looking-ahead-stats" aria-labelledby="{{ team_data.anchor }}-looking-ahead">
+                <div class="stat-box">
+                    <div class="stat-value">{{ "%.4f"|format(team_data.sos) }}</div>
+                    <div class="stat-label">SOS<br>Current</div>
+                </div>
+                <div class="stat-box">
+                    <div class="stat-value">{{ team_data.sosf }}</div>
+                    <div class="stat-label"><abbr tabindex="0" title="Average rating of the opponents in all future scheduled regular-season games.">SOS<br>Future Games</abbr></div>
+                </div>
+                <div class="stat-box">
+                    <div class="stat-value">{{ team_data.sosp }}</div>
+                    <div class="stat-label"><abbr tabindex="0" title="Average current rating of opponents across the team's played and future scheduled regular-season games.">SOS<br>Projected</abbr></div>
+                </div>
+                <div class="stat-box">
+                    <div class="stat-value">{{ team_data.looking_ahead_rating_range }}</div>
+                    <div class="stat-label">Next Week Rating</div>
+                </div>
+                <div class="stat-box">
+                    <div class="stat-value">{{ team_data.looking_ahead_rank_range }}</div>
+                    <div class="stat-label">Next Week Ranking</div>
+                </div>
+            </div>
         </div>
         {% endfor %}
     </div>

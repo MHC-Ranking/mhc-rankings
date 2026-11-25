@@ -3,9 +3,11 @@
 from datetime import date
 from pathlib import Path
 
+from mhc_rankings.looking_ahead import TeamLookingAhead
 from mhc_rankings.models import TeamRecord
 from mhc_rankings.reporting import (
     _with_html_cells,
+    generate_looking_ahead_report,
     generate_team_reports,
     link_html,
     plot_line_colors,
@@ -71,6 +73,112 @@ def test_team_reports_link_to_gamesheet_when_a_team_has_a_url(tmp_path: Path) ->
     assert html.count("Team page on GameSheet</a>") == 1
     assert 'href="https://example.com/team?a=1&amp;b=2"' in html
     assert 'id="team-Sherwood"' in html and 'href="#team-Sherwood"' in html
+
+
+def test_team_report_repeats_looking_ahead_values_after_the_game_log(tmp_path: Path) -> None:
+    """The closing bar repeats header projection values and future games use placeholders."""
+    outlook = {
+        "Sherwood": TeamLookingAhead(
+            sosf=0.42,
+            sosp=0.56,
+            rating_range=(0.44, 0.61),
+            rank_range=(2, 4),
+        )
+    }
+    future_logs = {
+        "Sherwood": [{
+            "date": "2026-10-16", "opponent": "Other", "is_home": True,
+            "team_score": "-", "opp_score": "-", "gd": "-", "ot": False,
+            "rating_post": "-", "rank_post": "-",
+        }]
+    }
+    out = tmp_path / "team_reports.html"
+    generate_team_reports(
+        "Oct 9, 2026",
+        [TeamRecord(team="Sherwood", rating=0.6, sos=0.35, rank=1)],
+        {"Sherwood": []},
+        str(out),
+        looking_ahead=outlook,
+        future_logs=future_logs,
+    )
+
+    html = out.read_text(encoding="utf-8")
+    header = html[html.index('class="current-ranking-heading"') : html.index('<div class="plots-row">')]
+    assert ">Current Ranking</h3>" in header
+    assert header.index("Current Ranking") < header.index('class="summary-stats"')
+    looking_ahead = html[html.index('class="summary-stats looking-ahead-stats"') :]
+    assert "Next Week Rating" not in header and "SOSF" not in header
+    assert "0.4400 - 0.6100" in looking_ahead
+    assert "2 - 4" in looking_ahead
+    assert "0.4200" in looking_ahead and "0.5600" in looking_ahead
+    labels = ["SOS<br>Current", "SOS<br>Future Games", "SOS<br>Projected", "Next Week Rating", "Next Week Ranking"]
+    assert [looking_ahead.index(label) for label in labels] == sorted(looking_ahead.index(label) for label in labels)
+    assert "0.3500" in header and "0.3500" in looking_ahead
+    assert ".stat-value {\n            font-size: 1.3rem;" in html
+    assert ".looking-ahead-stats .stat-value {\n            font-size: 1.1rem;" in html
+    assert "color: #467c6b;" in html
+    assert html.count('class="summary-stats looking-ahead-stats"') == 1
+    assert "Looking Ahead - After the next game against Other" in html
+    assert html.index("Looking Ahead - After") < html.index('class="summary-stats looking-ahead-stats"')
+    assert "looking-ahead-heading" not in looking_ahead
+    assert html.index('class="future-game"') < html.index('class="log-note"') < html.index('class="looking-ahead-heading"')
+    assert "Average rating of the opponents in all future scheduled regular-season games." in html
+    future_row = html[html.index('class="future-game"') : html.index("</tr>", html.index('class="future-game"'))]
+    assert future_row.count("<td>-</td>") == 5
+
+
+def test_looking_ahead_report_starts_with_current_standings_and_shows_all_ranges(tmp_path: Path) -> None:
+    rankings = [
+        TeamRecord(team="Alpha", rating=0.7, sos=0.52, rank=1),
+        TeamRecord(team="Beta", rating=0.3, sos=0.48, rank=2),
+    ]
+    weekly_records = {
+        "Week 01": [
+            TeamRecord(team="Alpha", rating=0.6, sos=0.5, rank=1),
+            TeamRecord(team="Beta", rating=0.4, sos=0.5, rank=2),
+        ],
+        "Week 02": [
+            TeamRecord(team="Alpha", rating=0.7, sos=0.52, rank=1),
+            TeamRecord(team="Beta", rating=0.3, sos=0.48, rank=2),
+        ],
+    }
+    outlooks = {
+        "Alpha": TeamLookingAhead(
+            sosf=0.4, sosp=0.46, rating_range=(0.62, 0.76), sos_range=(0.48, 0.56),
+            rank_range=(1, 2), projection_date="2026-10-18",
+        ),
+        "Beta": TeamLookingAhead(
+            sosf=0.6, sosp=0.54, rating_range=(0.24, 0.38), sos_range=(0.44, 0.52),
+            rank_range=(1, 2), projection_date="2026-10-18",
+        ),
+    }
+    out = tmp_path / "look_ahead.html"
+
+    generate_looking_ahead_report(
+        "Oct 16, 2026", rankings, weekly_records, ["Alpha", "Beta"], outlooks, out,
+    )
+
+    html = out.read_text(encoding="utf-8")
+    assert html.index("<h2>Current Standings and Look Ahead</h2>") < html.index("<h2>Ratings</h2>")
+    columns = [
+        ">Rank</th>", ">Team</th>", ">GP</th>", ">Rating</th>", ">Next Week Rating</th>", ">Next Week Rank</th>",
+        ">Current SOS</th>", ">SOSF</th>", ">SOSP</th>",
+    ]
+    assert [html.index(column) for column in columns] == sorted(html.index(column) for column in columns)
+    assert "Next Week SOS" not in html
+    assert "Current Colley rating. Click to sort." in html
+    assert "Strength of Schedule, Future:" in html
+    assert 'data-sort-type="range"' in html
+    assert 'aria-sort="none"' in html and "sortLookAheadTable" in html
+    assert "Array.from(lookAheadTable.tHead.rows[0].cells)" in html
+    assert "addEventListener('keydown'" in html
+    assert ".look-ahead-table td.look-ahead-value" in html
+    assert "0.7000" in html and "0.5200" in html
+    assert "0.6200 - 0.7600" in html
+    assert "1 - 2" in html and "0.4000" in html and "0.4600" in html
+    assert "<h2>Rankings Progress</h2>" in html
+    assert "<h2>Strength of Schedule</h2>" in html
+    assert html.count('"fill":"tonexty"') == 6
 
 
 def test_record_cells_link_last_game_and_team() -> None:

@@ -16,7 +16,15 @@ from .rankings_math import (
     compute_team_game_logs,
     compute_weekly_ratings,
 )
-from .reporting import TEAM_REPORTS_FILE, generate_html_report, generate_team_reports
+from .looking_ahead import build_future_game_logs, compute_looking_ahead
+from .reporting import (
+    LOOKING_AHEAD_FILE,
+    TEAM_REPORTS_FILE,
+    generate_html_report,
+    generate_looking_ahead_report,
+    generate_team_reports,
+)
+from .scraper import canonicalize_scheduled_games, load_scheduled_games
 from .teams import UnknownTeamError, load_roster
 
 
@@ -71,6 +79,15 @@ def main(argv: list[str] | None = None) -> None:
             print(f"Error: {exc}", file=sys.stderr)
             sys.exit(1)
 
+    scheduled_games = []
+    if roster and roster.schedule_url:
+        try:
+            scheduled_games = canonicalize_scheduled_games(
+                load_scheduled_games(roster.schedule_url), roster
+            )
+        except (OSError, RuntimeError, ValueError, KeyError, TypeError) as exc:
+            print(f"Warning: Could not load the upcoming schedule: {exc}", file=sys.stderr)
+
     latest_date = get_latest_game_date(df)
     print(f"Latest game date identified as: {latest_date}")
 
@@ -119,6 +136,21 @@ def main(argv: list[str] | None = None) -> None:
 
     print("Computing team game logs...")
     team_logs = compute_team_game_logs(df, extra_teams=roster_teams)
+    looking_ahead = compute_looking_ahead(df, scheduled_games, rankings, extra_teams=roster_teams)
+    future_logs = build_future_game_logs(df, scheduled_games, teams)
+    looking_ahead_file = output_dir / LOOKING_AHEAD_FILE
+    print("Generating Look Ahead Report...")
+    generate_looking_ahead_report(
+        date_str=latest_date,
+        rankings=rankings,
+        weekly_records=weekly_records,
+        teams=teams,
+        looking_ahead=looking_ahead,
+        output_path=looking_ahead_file,
+        roster=roster,
+    )
+    print(f"Look Ahead Report saved to {looking_ahead_file}")
+
     team_report_file = output_dir / TEAM_REPORTS_FILE
     print("Generating Team Reports...")
     generate_team_reports(
@@ -127,6 +159,8 @@ def main(argv: list[str] | None = None) -> None:
         team_logs=team_logs,
         output_path=str(team_report_file),
         roster=roster,
+        looking_ahead=looking_ahead,
+        future_logs=future_logs,
     )
     print(f"Team Reports saved to {team_report_file}")
 

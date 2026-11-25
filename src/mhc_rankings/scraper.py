@@ -60,6 +60,18 @@ class Game:
         return [self.date, self.away, score, self.home, self.location, self.game_id, self.overtime, self.game_url]
 
 
+@dataclass(frozen=True)
+class ScheduledGame:
+    """One scheduled game with no result yet."""
+
+    date: str
+    away: str
+    home: str
+    location: str
+    game_id: str
+    game_url: str = ""
+
+
 def _embedded_text(html: str) -> str:
     """Join the Next.js flight-data string chunks embedded in the page."""
     return "".join(json.loads(f'"{chunk}"') for chunk in _PUSH_RE.findall(html))
@@ -112,6 +124,23 @@ def games_from_dicts(raw: list[dict[str, Any]], season_id: str = "") -> list[Gam
         for g in final.values()
     ]
     return sorted(games, key=lambda g: datetime.strptime(g.date, DATE_FORMAT))
+
+
+def scheduled_games_from_dicts(raw: list[dict[str, Any]], season_id: str = "") -> list[ScheduledGame]:
+    """Return scheduled games from API records, de-duplicated and oldest first."""
+    scheduled = {g["gameId"]: g for g in raw if g.get("status") == "scheduled"}
+    games = [
+        ScheduledGame(
+            date=g["date"],
+            away=g["visitor"]["title"],
+            home=g["home"]["title"],
+            location=g.get("location", ""),
+            game_id=g["number"],
+            game_url=GAME_URL.format(season_id=season_id, game_id=g["gameId"]) if season_id else "",
+        )
+        for g in scheduled.values()
+    ]
+    return sorted(games, key=lambda game: datetime.strptime(game.date, DATE_FORMAT))
 
 
 def parse_games(html: str, season_id: str = "") -> list[Game]:
@@ -184,12 +213,26 @@ def load_games(source: str, season_id: str = "") -> list[Game]:
     return games
 
 
+def load_scheduled_games(source: str, season_id: str = "") -> list[ScheduledGame]:
+    """Return scheduled games from a GameSheet games-page URL, or an empty list when no URL is configured."""
+    if not source:
+        return []
+    if not source.startswith(("http://", "https://")):
+        raise ValueError("A GameSheet schedule URL is required to load scheduled games.")
+    return scheduled_games_from_dicts(fetch_game_dicts(source), season_id or season_id_from_url(source))
+
+
 def canonicalize(games: list[Game], roster: Roster) -> list[Game]:
     """Return `games` with team names replaced by the roster's canonical names.
 
     Raises:
         UnknownTeamError: If a game names a team that is not in the roster.
     """
+    return [replace(g, away=roster.resolve(g.away).name, home=roster.resolve(g.home).name) for g in games]
+
+
+def canonicalize_scheduled_games(games: list[ScheduledGame], roster: Roster) -> list[ScheduledGame]:
+    """Return scheduled games with team names replaced by canonical roster names."""
     return [replace(g, away=roster.resolve(g.away).name, home=roster.resolve(g.home).name) for g in games]
 
 

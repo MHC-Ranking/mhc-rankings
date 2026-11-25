@@ -1,0 +1,437 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MHC Varsity Look Ahead - Nov 20, 2026</title>
+    <style>
+        :root {
+            --primary-color: #0f204b;
+            --secondary-color: #a3aaaf;
+            --accent-color: #d11241;
+            --bg-color: #f4f6f8;
+            --text-color: #333;
+            --white: #ffffff;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            line-height: 1.6;
+            margin: 0;
+        }
+
+        header {
+            background-color: var(--primary-color);
+            color: var(--white);
+            padding: 2rem 1rem;
+            text-align: center;
+            border-bottom: 5px solid var(--accent-color);
+        }
+
+        h1 {
+            margin: 0;
+            font-size: 2rem;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+
+        header a {
+            color: var(--white);
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 2rem auto;
+            padding: 0 20px;
+        }
+
+        .section {
+            background-color: var(--white);
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+        }
+
+        h2 {
+            color: var(--primary-color);
+            border-bottom: 2px solid var(--secondary-color);
+            padding-bottom: 0.5rem;
+            margin-top: 0;
+        }
+
+        .table-scroll {
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.9rem;
+        }
+
+        th,
+        td {
+            padding: 0.65rem 0.75rem;
+            text-align: center;
+            white-space: nowrap;
+            border-bottom: 1px solid #ddd;
+        }
+
+        th {
+            background-color: var(--primary-color);
+            color: var(--white);
+            position: sticky;
+            top: 0;
+            cursor: pointer;
+            user-select: none;
+        }
+
+        th:focus-visible {
+            outline: 3px solid #d11241;
+            outline-offset: -3px;
+        }
+
+        th.sort-asc::after {
+            content: " \25B2";
+            font-size: 0.8em;
+        }
+
+        th.sort-desc::after {
+            content: " \25BC";
+            font-size: 0.8em;
+        }
+
+        .look-ahead-table {
+            font-size: 0.9em;
+        }
+
+        .look-ahead-table th,
+        .look-ahead-table td {
+            padding: 6px 10px;
+            white-space: nowrap;
+        }
+
+        .look-ahead-table td:nth-child(2) {
+            text-align: left;
+            font-weight: bold;
+        }
+
+        .look-ahead-table tbody tr:nth-of-type(even) {
+            background-color: #f9f9f9;
+        }
+
+        .look-ahead-table tbody tr:hover td {
+            background-color: #f1f1f1;
+        }
+
+        .look-ahead-table td.look-ahead-value {
+            background-color: #e4f2ee;
+            color: #467c6b;
+            font-weight: 600;
+        }
+
+        .look-ahead-table tbody tr:nth-of-type(even) td.look-ahead-value {
+            background-color: #dceee7;
+        }
+
+        .look-ahead-table tbody tr:hover td.look-ahead-value {
+            background-color: #cfe6dc;
+        }
+
+        td:nth-child(2) {
+            text-align: left;
+        }
+
+        a {
+            color: var(--primary-color);
+        }
+
+        .note {
+            font-size: 0.9rem;
+            color: #555;
+        }
+
+        @media (max-width: 700px) {
+            header {
+                padding: 1.25rem 0.75rem;
+            }
+
+            h1 {
+                font-size: 1.5rem;
+                letter-spacing: 1px;
+            }
+
+            .container {
+                margin: 1rem auto;
+                padding: 0 10px;
+            }
+
+            .section {
+                padding: 1rem;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <header>
+        <h1>MHC Varsity Look Ahead - Nov 20, 2026</h1>
+        <p><a href="mhc_rankings_report.html">Rankings</a> | <a href="mhc_team_reports.html">Team reports</a></p>
+    </header>
+    <main class="container">
+        <section class="section">
+            <h2>Current Standings and Look Ahead</h2>
+            <div class="table-scroll">
+                <table class="look-ahead-table">
+                    <thead>
+                        <tr>
+                            <th scope="col" tabindex="0" data-sort-type="number" title="Current rank. Click to sort."
+                                aria-sort="none">Rank</th>
+                            <th scope="col" tabindex="0" data-sort-type="text" title="Team name. Click to sort."
+                                aria-sort="none">Team</th>
+                            <th scope="col" tabindex="0" data-sort-type="number"
+                                title="Games played so far this season. Click to sort." aria-sort="none">GP</th>
+                            <th scope="col" tabindex="0" data-sort-type="number"
+                                title="Current Colley rating. Click to sort." aria-sort="none">Rating</th>
+                            <th scope="col" tabindex="0" data-sort-type="range"
+                                title="Minimum to maximum next-week rating across regulation win/loss outcomes; sorting uses the lower bound."
+                                aria-sort="none" class="look-ahead-column">Next Week Rating</th>
+                            <th scope="col" tabindex="0" data-sort-type="range"
+                                title="Minimum to maximum next-week rank across outcomes, with current goal differential and goals against held fixed; sorting uses the best possible rank."
+                                aria-sort="none" class="look-ahead-column">Next Week Rank</th>
+                            <th scope="col" tabindex="0" data-sort-type="number"
+                                title="Current strength of schedule: average current rating of opponents. Click to sort."
+                                aria-sort="none">Current SOS</th>
+                            <th scope="col" tabindex="0" data-sort-type="number"
+                                title="Strength of Schedule, Future: average current rating of opponents in all remaining scheduled games. Click to sort."
+                                aria-sort="none" class="look-ahead-column">SOSF</th>
+                            <th scope="col" tabindex="0" data-sort-type="number"
+                                title="Strength of Schedule, Projected: average current opponent rating across played and remaining scheduled games. Click to sort."
+                                aria-sort="none" class="look-ahead-column">SOSP</th>
+                        </tr>
+                    </thead>
+                    <tbody id="lookAheadBody">
+                        
+                        <tr>
+                            <td>1</td>
+                            <td><a href="mhc_team_reports.html#team-Central-MOCO">Central MOCO</a></td>
+                            <td>6</td>
+                            <td>0.7910</td>
+                            <td class="look-ahead-value">0.7689 - 0.8022</td>
+                            <td class="look-ahead-value">1 - 2</td>
+                            <td>0.4436</td>
+                            <td class="look-ahead-value">0.5927</td>
+                            <td class="look-ahead-value">0.5032</td>
+                        </tr>
+                        
+                        <tr>
+                            <td>2</td>
+                            <td><a href="mhc_team_reports.html#team-Winston-Churchill">Winston Churchill</a></td>
+                            <td>5</td>
+                            <td>0.7746</td>
+                            <td class="look-ahead-value">0.6697 - 0.8068</td>
+                            <td class="look-ahead-value">1 - 3</td>
+                            <td>0.4511</td>
+                            <td class="look-ahead-value">0.5463</td>
+                            <td class="look-ahead-value">0.4987</td>
+                        </tr>
+                        
+                        <tr>
+                            <td>3</td>
+                            <td><a href="mhc_team_reports.html#team-Walter-Johnson">Walter Johnson</a></td>
+                            <td>5</td>
+                            <td>0.6674</td>
+                            <td class="look-ahead-value">0.6005 - 0.7281</td>
+                            <td class="look-ahead-value">2 - 4</td>
+                            <td>0.5677</td>
+                            <td class="look-ahead-value">0.5941</td>
+                            <td class="look-ahead-value">0.5809</td>
+                        </tr>
+                        
+                        <tr>
+                            <td>4</td>
+                            <td><a href="mhc_team_reports.html#team-Silver-Spring">Silver Spring</a></td>
+                            <td>5</td>
+                            <td>0.5876</td>
+                            <td class="look-ahead-value">0.5309 - 0.6674</td>
+                            <td class="look-ahead-value">3 - 5</td>
+                            <td>0.5226</td>
+                            <td class="look-ahead-value">0.6516</td>
+                            <td class="look-ahead-value">0.5871</td>
+                        </tr>
+                        
+                        <tr>
+                            <td>5</td>
+                            <td><a href="mhc_team_reports.html#team-Walt-Whitman">Walt Whitman</a></td>
+                            <td>5</td>
+                            <td>0.5393</td>
+                            <td class="look-ahead-value">0.4481 - 0.5905</td>
+                            <td class="look-ahead-value">4 - 7</td>
+                            <td>0.4550</td>
+                            <td class="look-ahead-value">0.4122</td>
+                            <td class="look-ahead-value">0.4336</td>
+                        </tr>
+                        
+                        <tr>
+                            <td>6</td>
+                            <td><a href="mhc_team_reports.html#team-DC-Stars">DC Stars</a></td>
+                            <td>6</td>
+                            <td>0.4858</td>
+                            <td class="look-ahead-value">0.4049 - 0.5276</td>
+                            <td class="look-ahead-value">5 - 9</td>
+                            <td>0.4811</td>
+                            <td class="look-ahead-value">0.3569</td>
+                            <td class="look-ahead-value">0.4314</td>
+                        </tr>
+                        
+                        <tr>
+                            <td>7</td>
+                            <td><a href="mhc_team_reports.html#team-Bethesda-Chevy-Chase">Bethesda-Chevy Chase</a></td>
+                            <td>5</td>
+                            <td>0.4731</td>
+                            <td class="look-ahead-value">0.3744 - 0.5018</td>
+                            <td class="look-ahead-value">5 - 9</td>
+                            <td>0.4624</td>
+                            <td class="look-ahead-value">0.4093</td>
+                            <td class="look-ahead-value">0.4359</td>
+                        </tr>
+                        
+                        <tr>
+                            <td>8</td>
+                            <td><a href="mhc_team_reports.html#team-Rockville-Magruder">Rockville-Magruder</a></td>
+                            <td>5</td>
+                            <td>0.3443</td>
+                            <td class="look-ahead-value">0.3330 - 0.4489</td>
+                            <td class="look-ahead-value">6 - 10</td>
+                            <td>0.5820</td>
+                            <td class="look-ahead-value">0.5881</td>
+                            <td class="look-ahead-value">0.5850</td>
+                        </tr>
+                        
+                        <tr>
+                            <td>9</td>
+                            <td><a href="mhc_team_reports.html#team-Sherwood">Sherwood</a></td>
+                            <td>5</td>
+                            <td>0.3411</td>
+                            <td class="look-ahead-value">0.3015 - 0.4359</td>
+                            <td class="look-ahead-value">6 - 10</td>
+                            <td>0.5109</td>
+                            <td class="look-ahead-value">0.5201</td>
+                            <td class="look-ahead-value">0.5155</td>
+                        </tr>
+                        
+                        <tr>
+                            <td>10</td>
+                            <td><a href="mhc_team_reports.html#team-Upper-Montgomery">Upper Montgomery</a></td>
+                            <td>5</td>
+                            <td>0.3150</td>
+                            <td class="look-ahead-value">0.2604 - 0.3893</td>
+                            <td class="look-ahead-value">8 - 10</td>
+                            <td>0.5411</td>
+                            <td class="look-ahead-value">0.4040</td>
+                            <td class="look-ahead-value">0.4725</td>
+                        </tr>
+                        
+                        <tr>
+                            <td>11</td>
+                            <td><a href="mhc_team_reports.html#team-Richard-Montgomery">Richard Montgomery</a></td>
+                            <td>6</td>
+                            <td>0.1807</td>
+                            <td class="look-ahead-value">0.1551 - 0.2540</td>
+                            <td class="look-ahead-value">11 - 11</td>
+                            <td>0.4909</td>
+                            <td class="look-ahead-value">0.4038</td>
+                            <td class="look-ahead-value">0.4561</td>
+                        </tr>
+                        
+                    </tbody>
+                </table>
+            </div>
+            <p class="note">Look-ahead ranges show the minimum and maximum across regulation win/loss outcomes for
+                next week's scheduled games. They are possibilities, not probabilities; current goal differential and
+                goals against remain fixed when projecting rank.</p>
+        </section>
+
+        <section class="section">
+            <h2>Ratings</h2>
+            <div><div>                        <script>window.PlotlyConfig = {MathJaxConfig: 'local'};</script>
+        <script charset="utf-8" src="https://cdn.plot.ly/plotly-3.5.0.min.js" integrity="sha256-fHbNLP+GlIXN+efbQec78UkemUz3NJp7UmfGxC1tNxs=" crossorigin="anonymous"></script>                <div id="4dc72005-5d61-4dc0-acb3-7e8621803cb0" class="plotly-graph-div" style="height:623px; width:100%;"></div>            <script>                window.PLOTLYENV=window.PLOTLYENV || {};                                if (document.getElementById("4dc72005-5d61-4dc0-acb3-7e8621803cb0")) {                    Plotly.newPlot(                        "4dc72005-5d61-4dc0-acb3-7e8621803cb0",                        [{"hoverinfo":"skip","legendgroup":"Central MOCO","line":{"color":"#2a52be","width":1},"mode":"lines","showlegend":false,"x":["Week 06","Next Week (2026-12-06)"],"y":[0.7910454338936848,0.802185260214131],"type":"scatter"},{"fill":"tonexty","fillcolor":"rgba(42,82,190,0.22)","hoverinfo":"skip","legendgroup":"Central MOCO","line":{"color":"#2a52be","width":1},"mode":"lines","showlegend":false,"x":["Week 06","Next Week (2026-12-06)"],"y":[0.7910454338936848,0.7689197775605414],"type":"scatter"},{"hoverinfo":"skip","legendgroup":"Winston Churchill","line":{"color":"#1f5fbf","width":1},"mode":"lines","showlegend":false,"x":["Week 06","Next Week (2026-12-06)"],"y":[0.7746268390401058,0.8067706579034845],"type":"scatter"},{"fill":"tonexty","fillcolor":"rgba(31,95,191,0.22)","hoverinfo":"skip","legendgroup":"Winston Churchill","line":{"color":"#1f5fbf","width":1},"mode":"lines","showlegend":false,"x":["Week 06","Next Week (2026-12-06)"],"y":[0.7746268390401058,0.6697237793212871],"type":"scatter"},{"hoverinfo":"skip","legendgroup":"Walter Johnson","line":{"color":"#111111","width":1},"mode":"lines","showlegend":false,"x":["Week 06","Next Week (2026-12-06)"],"y":[0.6673766469786462,0.7281400069195568],"type":"scatter"},{"fill":"tonexty","fillcolor":"rgba(17,17,17,0.22)","hoverinfo":"skip","legendgroup":"Walter Johnson","line":{"color":"#111111","width":1},"mode":"lines","showlegend":false,"x":["Week 06","Next Week (2026-12-06)"],"y":[0.6673766469786462,0.6005316454950882],"type":"scatter"},{"hoverinfo":"skip","legendgroup":"Silver Spring","line":{"color":"#7a0f1f","width":1},"mode":"lines","showlegend":false,"x":["Week 06","Next Week (2026-12-06)"],"y":[0.5876019990913222,0.6673604850666063],"type":"scatter"},{"fill":"tonexty","fillcolor":"rgba(122,15,31,0.22)","hoverinfo":"skip","legendgroup":"Silver Spring","line":{"color":"#7a0f1f","width":1},"mode":"lines","showlegend":false,"x":["Week 06","Next Week (2026-12-06)"],"y":[0.5876019990913222,0.5308530364479356],"type":"scatter"},{"hoverinfo":"skip","legendgroup":"Walt Whitman","line":{"color":"#02a7e2","width":1},"mode":"lines","showlegend":false,"x":["Week 06","Next Week (2026-12-06)"],"y":[0.5392833340217258,0.5904627817423868],"type":"scatter"},{"fill":"tonexty","fillcolor":"rgba(2,167,226,0.22)","hoverinfo":"skip","legendgroup":"Walt Whitman","line":{"color":"#02a7e2","width":1},"mode":"lines","showlegend":false,"x":["Week 06","Next Week (2026-12-06)"],"y":[0.5392833340217258,0.4480783638333451],"type":"scatter"},{"hoverinfo":"skip","legendgroup":"DC Stars","line":{"color":"#ff6b6b","width":1},"mode":"lines","showlegend":false,"x":["Week 06","Next Week (2026-12-06)"],"y":[0.4858482507950932,0.5276284180032502],"type":"scatter"},{"fill":"tonexty","fillcolor":"rgba(255,107,107,0.22)","hoverinfo":"skip","legendgroup":"DC Stars","line":{"color":"#ff6b6b","width":1},"mode":"lines","showlegend":false,"x":["Week 06","Next Week (2026-12-06)"],"y":[0.4858482507950932,0.4048953107703902],"type":"scatter"},{"hoverinfo":"skip","legendgroup":"Bethesda-Chevy Chase","line":{"color":"#001f5b","width":1},"mode":"lines","showlegend":false,"x":["Week 06","Next Week (2026-12-06)"],"y":[0.4731290322580645,0.5018290932952312],"type":"scatter"},{"fill":"tonexty","fillcolor":"rgba(0,31,91,0.22)","hoverinfo":"skip","legendgroup":"Bethesda-Chevy Chase","line":{"color":"#001f5b","width":1},"mode":"lines","showlegend":false,"x":["Week 06","Next Week (2026-12-06)"],"y":[0.4731290322580645,0.37443364513740046],"type":"scatter"},{"hoverinfo":"skip","legendgroup":"Rockville-Magruder","line":{"color":"#c80f2e","width":1},"mode":"lines","showlegend":false,"x":["Week 06","Next Week (2026-12-06)"],"y":[0.34428138449465123,0.44894448355721606],"type":"scatter"},{"fill":"tonexty","fillcolor":"rgba(200,15,46,0.22)","hoverinfo":"skip","legendgroup":"Rockville-Magruder","line":{"color":"#c80f2e","width":1},"mode":"lines","showlegend":false,"x":["Week 06","Next Week (2026-12-06)"],"y":[0.34428138449465123,0.33302906035868335],"type":"scatter"},{"hoverinfo":"skip","legendgroup":"Sherwood","line":{"color":"#5b4fcf","width":1},"mode":"lines","showlegend":false,"x":["Week 06","Next Week (2026-12-06)"],"y":[0.3410808723307588,0.435855298313929],"type":"scatter"},{"fill":"tonexty","fillcolor":"rgba(91,79,207,0.22)","hoverinfo":"skip","legendgroup":"Sherwood","line":{"color":"#5b4fcf","width":1},"mode":"lines","showlegend":false,"x":["Week 06","Next Week (2026-12-06)"],"y":[0.3410808723307588,0.3015178590588044],"type":"scatter"},{"hoverinfo":"skip","legendgroup":"Upper Montgomery","line":{"color":"#f2c200","width":1},"mode":"lines","showlegend":false,"x":["Week 06","Next Week (2026-12-06)"],"y":[0.31504697038536206,0.3893373878694061],"type":"scatter"},{"fill":"tonexty","fillcolor":"rgba(242,194,0,0.22)","hoverinfo":"skip","legendgroup":"Upper Montgomery","line":{"color":"#f2c200","width":1},"mode":"lines","showlegend":false,"x":["Week 06","Next Week (2026-12-06)"],"y":[0.31504697038536206,0.26041269079504803],"type":"scatter"},{"hoverinfo":"skip","legendgroup":"Richard Montgomery","line":{"color":"#c77700","width":1},"mode":"lines","showlegend":false,"x":["Week 06","Next Week (2026-12-06)"],"y":[0.18067923671058614,0.2540152617819543],"type":"scatter"},{"fill":"tonexty","fillcolor":"rgba(199,119,0,0.22)","hoverinfo":"skip","legendgroup":"Richard Montgomery","line":{"color":"#c77700","width":1},"mode":"lines","showlegend":false,"x":["Week 06","Next Week (2026-12-06)"],"y":[0.18067923671058614,0.15507569655432296],"type":"scatter"},{"hovertemplate":"%{meta}: %{y:.4f}\u003cextra\u003e\u003c\u002fextra\u003e","line":{"color":"#2a52be","dash":"dash","width":2},"marker":{"size":7,"symbol":"square"},"meta":"Central MOCO","mode":"lines+markers","name":"CenMOCO","x":["Week 00","Week 01","Week 02","Week 03","Week 04","Week 05","Week 06"],"y":[0.5,0.625,0.6493589743589744,0.7321428571428572,0.8075980392156864,0.8139625687549109,0.7910454338936848],"type":"scatter"},{"hovertemplate":"%{meta}: %{y:.4f}\u003cextra\u003e\u003c\u002fextra\u003e","line":{"color":"#1f5fbf","dash":"longdashdot","width":2},"marker":{"size":7,"symbol":"hexagon2"},"meta":"Winston Churchill","mode":"lines+markers","name":"Church","x":["Week 00","Week 01","Week 02","Week 03","Week 04","Week 05","Week 06"],"y":[0.5,0.5,0.6842105263157895,0.6987295825771325,0.6572,0.6888999214229589,0.7746268390401058],"type":"scatter"},{"hovertemplate":"%{meta}: %{y:.4f}\u003cextra\u003e\u003c\u002fextra\u003e","line":{"color":"#111111","dash":"longdash","width":2},"marker":{"size":7,"symbol":"hexagon"},"meta":"Walter Johnson","mode":"lines+markers","name":"WJ","x":["Week 00","Week 01","Week 02","Week 03","Week 04","Week 05","Week 06"],"y":[0.5,0.6250000000000001,0.6842105263157894,0.7168784029038113,0.7238,0.7136928590137391,0.6673766469786462],"type":"scatter"},{"hovertemplate":"%{meta}: %{y:.4f}\u003cextra\u003e\u003c\u002fextra\u003e","line":{"color":"#7a0f1f","dash":"solid","width":2},"marker":{"size":7,"symbol":"triangle-right"},"meta":"Silver Spring","mode":"lines+markers","name":"SS","x":["Week 00","Week 01","Week 02","Week 03","Week 04","Week 05","Week 06"],"y":[0.5,0.5,0.3947368421052631,0.35390199637023595,0.4476285714285714,0.5053981951091745,0.5876019990913222],"type":"scatter"},{"hovertemplate":"%{meta}: %{y:.4f}\u003cextra\u003e\u003c\u002fextra\u003e","line":{"color":"#02a7e2","dash":"dashdot","width":2},"marker":{"size":7,"symbol":"star"},"meta":"Walt Whitman","mode":"lines+markers","name":"Whit","x":["Week 00","Week 01","Week 02","Week 03","Week 04","Week 05","Week 06"],"y":[0.5,0.6250000000000001,0.6621794871794872,0.6840062111801244,0.6115196078431373,0.5187153844322213,0.5392833340217258],"type":"scatter"},{"hovertemplate":"%{meta}: %{y:.4f}\u003cextra\u003e\u003c\u002fextra\u003e","line":{"color":"#ff6b6b","dash":"dashdot","width":2},"marker":{"size":7,"symbol":"triangle-up"},"meta":"DC Stars","mode":"lines+markers","name":"DC","x":["Week 00","Week 01","Week 02","Week 03","Week 04","Week 05","Week 06"],"y":[0.5,0.375,0.28397435897435896,0.4246894409937888,0.48406862745098045,0.5577765792794722,0.4858482507950932],"type":"scatter"},{"hovertemplate":"%{meta}: %{y:.4f}\u003cextra\u003e\u003c\u002fextra\u003e","line":{"color":"#001f5b","dash":"solid","width":2},"marker":{"size":7,"symbol":"circle"},"meta":"Bethesda-Chevy Chase","mode":"lines+markers","name":"BCC","x":["Week 00","Week 01","Week 02","Week 03","Week 04","Week 05","Week 06"],"y":[0.5,0.375,0.4865384615384615,0.46816770186335405,0.5416666666666666,0.4952765792794723,0.4731290322580645],"type":"scatter"},{"hovertemplate":"%{meta}: %{y:.4f}\u003cextra\u003e\u003c\u002fextra\u003e","line":{"color":"#c80f2e","dash":"longdashdot","width":2},"marker":{"size":7,"symbol":"triangle-down"},"meta":"Rockville-Magruder","mode":"lines+markers","name":"RAM","x":["Week 00","Week 01","Week 02","Week 03","Week 04","Week 05","Week 06"],"y":[0.5,0.375,0.3421052631578947,0.44101633393829404,0.35714285714285715,0.36254105225203165,0.34428138449465123],"type":"scatter"},{"hovertemplate":"%{meta}: %{y:.4f}\u003cextra\u003e\u003c\u002fextra\u003e","line":{"color":"#5b4fcf","dash":"dot","width":2},"marker":{"size":7,"symbol":"triangle-left"},"meta":"Sherwood","mode":"lines+markers","name":"Sher","x":["Week 00","Week 01","Week 02","Week 03","Week 04","Week 05","Week 06"],"y":[0.5,0.5,0.3947368421052631,0.2894736842105263,0.31422857142857147,0.2672553379663174,0.3410808723307588],"type":"scatter"},{"hovertemplate":"%{meta}: %{y:.4f}\u003cextra\u003e\u003c\u002fextra\u003e","line":{"color":"#f2c200","dash":"dash","width":2},"marker":{"size":7,"symbol":"pentagon"},"meta":"Upper Montgomery","mode":"lines+markers","name":"UML","x":["Week 00","Week 01","Week 02","Week 03","Week 04","Week 05","Week 06"],"y":[0.5,0.6250000000000001,0.6044871794871796,0.42313664596273287,0.3468137254901961,0.33120494321022925,0.31504697038536206],"type":"scatter"},{"hovertemplate":"%{meta}: %{y:.4f}\u003cextra\u003e\u003c\u002fextra\u003e","line":{"color":"#c77700","dash":"longdash","width":2},"marker":{"size":7,"symbol":"diamond"},"meta":"Richard Montgomery","mode":"lines+markers","name":"RM","x":["Week 00","Week 01","Week 02","Week 03","Week 04","Week 05","Week 06"],"y":[0.5,0.375,0.3134615384615385,0.26785714285714296,0.20833333333333331,0.24527657927947227,0.18067923671058614],"type":"scatter"}],                        {"template":{"data":{"barpolar":[{"marker":{"line":{"color":"white","width":0.5},"pattern":{"fillmode":"overlay","size":10,"solidity":0.2}},"type":"barpolar"}],"bar":[{"error_x":{"color":"#2a3f5f"},"error_y":{"color":"#2a3f5f"},"marker":{"line":{"color":"white","width":0.5},"pattern":{"fillmode":"overlay","size":10,"solidity":0.2}},"type":"bar"}],"carpet":[{"aaxis":{"endlinecolor":"#2a3f5f","gridcolor":"#C8D4E3","linecolor":"#C8D4E3","minorgridcolor":"#C8D4E3","startlinecolor":"#2a3f5f"},"baxis":{"endlinecolor":"#2a3f5f","gridcolor":"#C8D4E3","linecolor":"#C8D4E3","minorgridcolor":"#C8D4E3","startlinecolor":"#2a3f5f"},"type":"carpet"}],"choropleth":[{"colorbar":{"outlinewidth":0,"ticks":""},"type":"choropleth"}],"contourcarpet":[{"colorbar":{"outlinewidth":0,"ticks":""},"type":"contourcarpet"}],"contour":[{"colorbar":{"outlinewidth":0,"ticks":""},"colorscale":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]],"type":"contour"}],"heatmap":[{"colorbar":{"outlinewidth":0,"ticks":""},"colorscale":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]],"type":"heatmap"}],"histogram2dcontour":[{"colorbar":{"outlinewidth":0,"ticks":""},"colorscale":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]],"type":"histogram2dcontour"}],"histogram2d":[{"colorbar":{"outlinewidth":0,"ticks":""},"colorscale":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]],"type":"histogram2d"}],"histogram":[{"marker":{"pattern":{"fillmode":"overlay","size":10,"solidity":0.2}},"type":"histogram"}],"mesh3d":[{"colorbar":{"outlinewidth":0,"ticks":""},"type":"mesh3d"}],"parcoords":[{"line":{"colorbar":{"outlinewidth":0,"ticks":""}},"type":"parcoords"}],"pie":[{"automargin":true,"type":"pie"}],"scatter3d":[{"line":{"colorbar":{"outlinewidth":0,"ticks":""}},"marker":{"colorbar":{"outlinewidth":0,"ticks":""}},"type":"scatter3d"}],"scattercarpet":[{"marker":{"colorbar":{"outlinewidth":0,"ticks":""}},"type":"scattercarpet"}],"scattergeo":[{"marker":{"colorbar":{"outlinewidth":0,"ticks":""}},"type":"scattergeo"}],"scattergl":[{"marker":{"colorbar":{"outlinewidth":0,"ticks":""}},"type":"scattergl"}],"scattermapbox":[{"marker":{"colorbar":{"outlinewidth":0,"ticks":""}},"type":"scattermapbox"}],"scattermap":[{"marker":{"colorbar":{"outlinewidth":0,"ticks":""}},"type":"scattermap"}],"scatterpolargl":[{"marker":{"colorbar":{"outlinewidth":0,"ticks":""}},"type":"scatterpolargl"}],"scatterpolar":[{"marker":{"colorbar":{"outlinewidth":0,"ticks":""}},"type":"scatterpolar"}],"scatter":[{"fillpattern":{"fillmode":"overlay","size":10,"solidity":0.2},"type":"scatter"}],"scatterternary":[{"marker":{"colorbar":{"outlinewidth":0,"ticks":""}},"type":"scatterternary"}],"surface":[{"colorbar":{"outlinewidth":0,"ticks":""},"colorscale":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]],"type":"surface"}],"table":[{"cells":{"fill":{"color":"#EBF0F8"},"line":{"color":"white"}},"header":{"fill":{"color":"#C8D4E3"},"line":{"color":"white"}},"type":"table"}]},"layout":{"annotationdefaults":{"arrowcolor":"#2a3f5f","arrowhead":0,"arrowwidth":1},"autotypenumbers":"strict","coloraxis":{"colorbar":{"outlinewidth":0,"ticks":""}},"colorscale":{"diverging":[[0,"#8e0152"],[0.1,"#c51b7d"],[0.2,"#de77ae"],[0.3,"#f1b6da"],[0.4,"#fde0ef"],[0.5,"#f7f7f7"],[0.6,"#e6f5d0"],[0.7,"#b8e186"],[0.8,"#7fbc41"],[0.9,"#4d9221"],[1,"#276419"]],"sequential":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]],"sequentialminus":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]]},"colorway":["#636efa","#EF553B","#00cc96","#ab63fa","#FFA15A","#19d3f3","#FF6692","#B6E880","#FF97FF","#FECB52"],"font":{"color":"#2a3f5f"},"geo":{"bgcolor":"white","lakecolor":"white","landcolor":"white","showlakes":true,"showland":true,"subunitcolor":"#C8D4E3"},"hoverlabel":{"align":"left"},"hovermode":"closest","mapbox":{"style":"light"},"paper_bgcolor":"white","plot_bgcolor":"white","polar":{"angularaxis":{"gridcolor":"#EBF0F8","linecolor":"#EBF0F8","ticks":""},"bgcolor":"white","radialaxis":{"gridcolor":"#EBF0F8","linecolor":"#EBF0F8","ticks":""}},"scene":{"xaxis":{"backgroundcolor":"white","gridcolor":"#DFE8F3","gridwidth":2,"linecolor":"#EBF0F8","showbackground":true,"ticks":"","zerolinecolor":"#EBF0F8"},"yaxis":{"backgroundcolor":"white","gridcolor":"#DFE8F3","gridwidth":2,"linecolor":"#EBF0F8","showbackground":true,"ticks":"","zerolinecolor":"#EBF0F8"},"zaxis":{"backgroundcolor":"white","gridcolor":"#DFE8F3","gridwidth":2,"linecolor":"#EBF0F8","showbackground":true,"ticks":"","zerolinecolor":"#EBF0F8"}},"shapedefaults":{"line":{"color":"#2a3f5f"}},"ternary":{"aaxis":{"gridcolor":"#DFE8F3","linecolor":"#A2B1C6","ticks":""},"baxis":{"gridcolor":"#DFE8F3","linecolor":"#A2B1C6","ticks":""},"bgcolor":"white","caxis":{"gridcolor":"#DFE8F3","linecolor":"#A2B1C6","ticks":""}},"title":{"x":0.05},"xaxis":{"automargin":true,"gridcolor":"#EBF0F8","linecolor":"#EBF0F8","ticks":"","title":{"standoff":15},"zerolinecolor":"#EBF0F8","zerolinewidth":2},"yaxis":{"automargin":true,"gridcolor":"#EBF0F8","linecolor":"#EBF0F8","ticks":"","title":{"standoff":15},"zerolinecolor":"#EBF0F8","zerolinewidth":2}}},"font":{"family":"'Segoe UI', Tahoma, Geneva, Verdana, sans-serif"},"yaxis":{"title":{"text":"Rating"},"range":[0.12213135294429356,0.8469069123649403]},"legend":{"title":{"text":"Teams"},"yanchor":"top","y":0.99,"xanchor":"left","x":1.01,"traceorder":"normal","itemclick":"toggleothers","itemdoubleclick":"toggle"},"xaxis":{"title":{"text":"Week"},"type":"category","categoryorder":"array","categoryarray":["Week 00","Week 01","Week 02","Week 03","Week 04","Week 05","Week 06","Next Week (2026-12-06)"]},"margin":{"r":109,"t":100},"hovermode":"x unified","updatemenus":[{"bgcolor":"#f4f6f8","bordercolor":"#a3aaaf","buttons":[{"args":[{"visible":[true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true]}],"label":"All Teams","method":"update"},{"args":[{"visible":[true,true,true,true,true,true,true,true,true,true,true,true,false,false,false,false,false,false,false,false,false,false,true,true,true,true,true,true,false,false,false,false,false]}],"label":"Top 6 Teams","method":"update"},{"args":[{"visible":[false,false,false,false,false,false,false,false,false,false,false,false,true,true,true,true,true,true,true,true,true,true,false,false,false,false,false,false,true,true,true,true,true]}],"label":"Bottom 6 Teams","method":"update"},{"args":[{"visible":[true,true,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,true,false,false,false,false,false,false,false,false,false,false]}],"label":"Central MOCO","method":"update"},{"args":[{"visible":[false,false,true,true,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,true,false,false,false,false,false,false,false,false,false]}],"label":"Winston Churchill","method":"update"},{"args":[{"visible":[false,false,false,false,true,true,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,true,false,false,false,false,false,false,false,false]}],"label":"Walter Johnson","method":"update"},{"args":[{"visible":[false,false,false,false,false,false,true,true,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,true,false,false,false,false,false,false,false]}],"label":"Silver Spring","method":"update"},{"args":[{"visible":[false,false,false,false,false,false,false,false,true,true,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,true,false,false,false,false,false,false]}],"label":"Walt Whitman","method":"update"},{"args":[{"visible":[false,false,false,false,false,false,false,false,false,false,true,true,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,true,false,false,false,false,false]}],"label":"DC Stars","method":"update"},{"args":[{"visible":[false,false,false,false,false,false,false,false,false,false,false,false,true,true,false,false,false,false,false,false,false,false,false,false,false,false,false,false,true,false,false,false,false]}],"label":"Bethesda-Chevy Chase","method":"update"},{"args":[{"visible":[false,false,false,false,false,false,false,false,false,false,false,false,false,false,true,true,false,false,false,false,false,false,false,false,false,false,false,false,false,true,false,false,false]}],"label":"Rockville-Magruder","method":"update"},{"args":[{"visible":[false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,true,true,false,false,false,false,false,false,false,false,false,false,false,false,true,false,false]}],"label":"Sherwood","method":"update"},{"args":[{"visible":[false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,true,true,false,false,false,false,false,false,false,false,false,false,false,true,false]}],"label":"Upper Montgomery","method":"update"},{"args":[{"visible":[false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,true,true,false,false,false,false,false,false,false,false,false,false,true]}],"label":"Richard Montgomery","method":"update"}],"direction":"down","type":"dropdown","x":0.0,"xanchor":"left","y":1.15,"yanchor":"top"}],"height":623},                        {"responsive": true, "toImageButtonOptions": {"format": "png", "filename": "mhc_plot", "height": 800, "width": 1200, "scale": 2}, "displaylogo": false}                    )                };            </script>        </div></div>
+        </section>
+
+        <section class="section">
+            <h2>Rankings Progress</h2>
+            <div><div>                            <div id="d203bb70-2e54-43b1-9709-0db7c6784fcc" class="plotly-graph-div" style="height:623px; width:100%;"></div>            <script>                window.PLOTLYENV=window.PLOTLYENV || {};                                if (document.getElementById("d203bb70-2e54-43b1-9709-0db7c6784fcc")) {                    Plotly.newPlot(                        "d203bb70-2e54-43b1-9709-0db7c6784fcc",                        [{"hoverinfo":"skip","legendgroup":"Central MOCO","line":{"color":"#2a52be","width":1},"mode":"lines","showlegend":false,"x":["Week 06","Next Week (2026-12-06)"],"y":[1,2],"type":"scatter"},{"fill":"tonexty","fillcolor":"rgba(42,82,190,0.22)","hoverinfo":"skip","legendgroup":"Central MOCO","line":{"color":"#2a52be","width":1},"mode":"lines","showlegend":false,"x":["Week 06","Next Week (2026-12-06)"],"y":[1,1],"type":"scatter"},{"hoverinfo":"skip","legendgroup":"Winston Churchill","line":{"color":"#1f5fbf","width":1},"mode":"lines","showlegend":false,"x":["Week 06","Next Week (2026-12-06)"],"y":[2,3],"type":"scatter"},{"fill":"tonexty","fillcolor":"rgba(31,95,191,0.22)","hoverinfo":"skip","legendgroup":"Winston Churchill","line":{"color":"#1f5fbf","width":1},"mode":"lines","showlegend":false,"x":["Week 06","Next Week (2026-12-06)"],"y":[2,1],"type":"scatter"},{"hoverinfo":"skip","legendgroup":"Walter Johnson","line":{"color":"#111111","width":1},"mode":"lines","showlegend":false,"x":["Week 06","Next Week (2026-12-06)"],"y":[3,4],"type":"scatter"},{"fill":"tonexty","fillcolor":"rgba(17,17,17,0.22)","hoverinfo":"skip","legendgroup":"Walter Johnson","line":{"color":"#111111","width":1},"mode":"lines","showlegend":false,"x":["Week 06","Next Week (2026-12-06)"],"y":[3,2],"type":"scatter"},{"hoverinfo":"skip","legendgroup":"Silver Spring","line":{"color":"#7a0f1f","width":1},"mode":"lines","showlegend":false,"x":["Week 06","Next Week (2026-12-06)"],"y":[4,5],"type":"scatter"},{"fill":"tonexty","fillcolor":"rgba(122,15,31,0.22)","hoverinfo":"skip","legendgroup":"Silver Spring","line":{"color":"#7a0f1f","width":1},"mode":"lines","showlegend":false,"x":["Week 06","Next Week (2026-12-06)"],"y":[4,3],"type":"scatter"},{"hoverinfo":"skip","legendgroup":"Walt Whitman","line":{"color":"#02a7e2","width":1},"mode":"lines","showlegend":false,"x":["Week 06","Next Week (2026-12-06)"],"y":[5,7],"type":"scatter"},{"fill":"tonexty","fillcolor":"rgba(2,167,226,0.22)","hoverinfo":"skip","legendgroup":"Walt Whitman","line":{"color":"#02a7e2","width":1},"mode":"lines","showlegend":false,"x":["Week 06","Next Week (2026-12-06)"],"y":[5,4],"type":"scatter"},{"hoverinfo":"skip","legendgroup":"DC Stars","line":{"color":"#ff6b6b","width":1},"mode":"lines","showlegend":false,"x":["Week 06","Next Week (2026-12-06)"],"y":[6,9],"type":"scatter"},{"fill":"tonexty","fillcolor":"rgba(255,107,107,0.22)","hoverinfo":"skip","legendgroup":"DC Stars","line":{"color":"#ff6b6b","width":1},"mode":"lines","showlegend":false,"x":["Week 06","Next Week (2026-12-06)"],"y":[6,5],"type":"scatter"},{"hoverinfo":"skip","legendgroup":"Bethesda-Chevy Chase","line":{"color":"#001f5b","width":1},"mode":"lines","showlegend":false,"x":["Week 06","Next Week (2026-12-06)"],"y":[7,9],"type":"scatter"},{"fill":"tonexty","fillcolor":"rgba(0,31,91,0.22)","hoverinfo":"skip","legendgroup":"Bethesda-Chevy Chase","line":{"color":"#001f5b","width":1},"mode":"lines","showlegend":false,"x":["Week 06","Next Week (2026-12-06)"],"y":[7,5],"type":"scatter"},{"hoverinfo":"skip","legendgroup":"Rockville-Magruder","line":{"color":"#c80f2e","width":1},"mode":"lines","showlegend":false,"x":["Week 06","Next Week (2026-12-06)"],"y":[8,10],"type":"scatter"},{"fill":"tonexty","fillcolor":"rgba(200,15,46,0.22)","hoverinfo":"skip","legendgroup":"Rockville-Magruder","line":{"color":"#c80f2e","width":1},"mode":"lines","showlegend":false,"x":["Week 06","Next Week (2026-12-06)"],"y":[8,6],"type":"scatter"},{"hoverinfo":"skip","legendgroup":"Sherwood","line":{"color":"#5b4fcf","width":1},"mode":"lines","showlegend":false,"x":["Week 06","Next Week (2026-12-06)"],"y":[9,10],"type":"scatter"},{"fill":"tonexty","fillcolor":"rgba(91,79,207,0.22)","hoverinfo":"skip","legendgroup":"Sherwood","line":{"color":"#5b4fcf","width":1},"mode":"lines","showlegend":false,"x":["Week 06","Next Week (2026-12-06)"],"y":[9,6],"type":"scatter"},{"hoverinfo":"skip","legendgroup":"Upper Montgomery","line":{"color":"#f2c200","width":1},"mode":"lines","showlegend":false,"x":["Week 06","Next Week (2026-12-06)"],"y":[10,10],"type":"scatter"},{"fill":"tonexty","fillcolor":"rgba(242,194,0,0.22)","hoverinfo":"skip","legendgroup":"Upper Montgomery","line":{"color":"#f2c200","width":1},"mode":"lines","showlegend":false,"x":["Week 06","Next Week (2026-12-06)"],"y":[10,8],"type":"scatter"},{"hoverinfo":"skip","legendgroup":"Richard Montgomery","line":{"color":"#c77700","width":1},"mode":"lines","showlegend":false,"x":["Week 06","Next Week (2026-12-06)"],"y":[11,11],"type":"scatter"},{"fill":"tonexty","fillcolor":"rgba(199,119,0,0.22)","hoverinfo":"skip","legendgroup":"Richard Montgomery","line":{"color":"#c77700","width":1},"mode":"lines","showlegend":false,"x":["Week 06","Next Week (2026-12-06)"],"y":[11,11],"type":"scatter"},{"hovertemplate":"%{meta}: %{y}\u003cextra\u003e\u003c\u002fextra\u003e","line":{"color":"#2a52be","dash":"dash","width":2},"marker":{"size":7,"symbol":"square"},"meta":"Central MOCO","mode":"lines+markers","name":"CenMOCO","x":["Week 00","Week 01","Week 02","Week 03","Week 04","Week 05","Week 06"],"y":[2,4,4,1,1,1,1],"type":"scatter"},{"hovertemplate":"%{meta}: %{y}\u003cextra\u003e\u003c\u002fextra\u003e","line":{"color":"#1f5fbf","dash":"longdashdot","width":2},"marker":{"size":7,"symbol":"hexagon2"},"meta":"Winston Churchill","mode":"lines+markers","name":"Church","x":["Week 00","Week 01","Week 02","Week 03","Week 04","Week 05","Week 06"],"y":[11,7,1,3,3,3,2],"type":"scatter"},{"hovertemplate":"%{meta}: %{y}\u003cextra\u003e\u003c\u002fextra\u003e","line":{"color":"#111111","dash":"longdash","width":2},"marker":{"size":7,"symbol":"hexagon"},"meta":"Walter Johnson","mode":"lines+markers","name":"WJ","x":["Week 00","Week 01","Week 02","Week 03","Week 04","Week 05","Week 06"],"y":[10,1,2,2,2,2,3],"type":"scatter"},{"hovertemplate":"%{meta}: %{y}\u003cextra\u003e\u003c\u002fextra\u003e","line":{"color":"#7a0f1f","dash":"solid","width":2},"marker":{"size":7,"symbol":"triangle-right"},"meta":"Silver Spring","mode":"lines+markers","name":"SS","x":["Week 00","Week 01","Week 02","Week 03","Week 04","Week 05","Week 06"],"y":[7,6,8,9,7,6,4],"type":"scatter"},{"hovertemplate":"%{meta}: %{y}\u003cextra\u003e\u003c\u002fextra\u003e","line":{"color":"#02a7e2","dash":"dashdot","width":2},"marker":{"size":7,"symbol":"star"},"meta":"Walt Whitman","mode":"lines+markers","name":"Whit","x":["Week 00","Week 01","Week 02","Week 03","Week 04","Week 05","Week 06"],"y":[9,2,3,4,4,5,5],"type":"scatter"},{"hovertemplate":"%{meta}: %{y}\u003cextra\u003e\u003c\u002fextra\u003e","line":{"color":"#ff6b6b","dash":"dashdot","width":2},"marker":{"size":7,"symbol":"triangle-up"},"meta":"DC Stars","mode":"lines+markers","name":"DC","x":["Week 00","Week 01","Week 02","Week 03","Week 04","Week 05","Week 06"],"y":[3,9,11,7,6,4,6],"type":"scatter"},{"hovertemplate":"%{meta}: %{y}\u003cextra\u003e\u003c\u002fextra\u003e","line":{"color":"#001f5b","dash":"solid","width":2},"marker":{"size":7,"symbol":"circle"},"meta":"Bethesda-Chevy Chase","mode":"lines+markers","name":"BCC","x":["Week 00","Week 01","Week 02","Week 03","Week 04","Week 05","Week 06"],"y":[1,10,6,5,5,7,7],"type":"scatter"},{"hovertemplate":"%{meta}: %{y}\u003cextra\u003e\u003c\u002fextra\u003e","line":{"color":"#c80f2e","dash":"longdashdot","width":2},"marker":{"size":7,"symbol":"triangle-down"},"meta":"Rockville-Magruder","mode":"lines+markers","name":"RAM","x":["Week 00","Week 01","Week 02","Week 03","Week 04","Week 05","Week 06"],"y":[5,11,9,6,8,8,8],"type":"scatter"},{"hovertemplate":"%{meta}: %{y}\u003cextra\u003e\u003c\u002fextra\u003e","line":{"color":"#5b4fcf","dash":"dot","width":2},"marker":{"size":7,"symbol":"triangle-left"},"meta":"Sherwood","mode":"lines+markers","name":"Sher","x":["Week 00","Week 01","Week 02","Week 03","Week 04","Week 05","Week 06"],"y":[6,5,7,10,10,10,9],"type":"scatter"},{"hovertemplate":"%{meta}: %{y}\u003cextra\u003e\u003c\u002fextra\u003e","line":{"color":"#f2c200","dash":"dash","width":2},"marker":{"size":7,"symbol":"pentagon"},"meta":"Upper Montgomery","mode":"lines+markers","name":"UML","x":["Week 00","Week 01","Week 02","Week 03","Week 04","Week 05","Week 06"],"y":[8,3,5,8,9,9,10],"type":"scatter"},{"hovertemplate":"%{meta}: %{y}\u003cextra\u003e\u003c\u002fextra\u003e","line":{"color":"#c77700","dash":"longdash","width":2},"marker":{"size":7,"symbol":"diamond"},"meta":"Richard Montgomery","mode":"lines+markers","name":"RM","x":["Week 00","Week 01","Week 02","Week 03","Week 04","Week 05","Week 06"],"y":[4,8,10,11,11,11,11],"type":"scatter"}],                        {"template":{"data":{"barpolar":[{"marker":{"line":{"color":"white","width":0.5},"pattern":{"fillmode":"overlay","size":10,"solidity":0.2}},"type":"barpolar"}],"bar":[{"error_x":{"color":"#2a3f5f"},"error_y":{"color":"#2a3f5f"},"marker":{"line":{"color":"white","width":0.5},"pattern":{"fillmode":"overlay","size":10,"solidity":0.2}},"type":"bar"}],"carpet":[{"aaxis":{"endlinecolor":"#2a3f5f","gridcolor":"#C8D4E3","linecolor":"#C8D4E3","minorgridcolor":"#C8D4E3","startlinecolor":"#2a3f5f"},"baxis":{"endlinecolor":"#2a3f5f","gridcolor":"#C8D4E3","linecolor":"#C8D4E3","minorgridcolor":"#C8D4E3","startlinecolor":"#2a3f5f"},"type":"carpet"}],"choropleth":[{"colorbar":{"outlinewidth":0,"ticks":""},"type":"choropleth"}],"contourcarpet":[{"colorbar":{"outlinewidth":0,"ticks":""},"type":"contourcarpet"}],"contour":[{"colorbar":{"outlinewidth":0,"ticks":""},"colorscale":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]],"type":"contour"}],"heatmap":[{"colorbar":{"outlinewidth":0,"ticks":""},"colorscale":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]],"type":"heatmap"}],"histogram2dcontour":[{"colorbar":{"outlinewidth":0,"ticks":""},"colorscale":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]],"type":"histogram2dcontour"}],"histogram2d":[{"colorbar":{"outlinewidth":0,"ticks":""},"colorscale":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]],"type":"histogram2d"}],"histogram":[{"marker":{"pattern":{"fillmode":"overlay","size":10,"solidity":0.2}},"type":"histogram"}],"mesh3d":[{"colorbar":{"outlinewidth":0,"ticks":""},"type":"mesh3d"}],"parcoords":[{"line":{"colorbar":{"outlinewidth":0,"ticks":""}},"type":"parcoords"}],"pie":[{"automargin":true,"type":"pie"}],"scatter3d":[{"line":{"colorbar":{"outlinewidth":0,"ticks":""}},"marker":{"colorbar":{"outlinewidth":0,"ticks":""}},"type":"scatter3d"}],"scattercarpet":[{"marker":{"colorbar":{"outlinewidth":0,"ticks":""}},"type":"scattercarpet"}],"scattergeo":[{"marker":{"colorbar":{"outlinewidth":0,"ticks":""}},"type":"scattergeo"}],"scattergl":[{"marker":{"colorbar":{"outlinewidth":0,"ticks":""}},"type":"scattergl"}],"scattermapbox":[{"marker":{"colorbar":{"outlinewidth":0,"ticks":""}},"type":"scattermapbox"}],"scattermap":[{"marker":{"colorbar":{"outlinewidth":0,"ticks":""}},"type":"scattermap"}],"scatterpolargl":[{"marker":{"colorbar":{"outlinewidth":0,"ticks":""}},"type":"scatterpolargl"}],"scatterpolar":[{"marker":{"colorbar":{"outlinewidth":0,"ticks":""}},"type":"scatterpolar"}],"scatter":[{"fillpattern":{"fillmode":"overlay","size":10,"solidity":0.2},"type":"scatter"}],"scatterternary":[{"marker":{"colorbar":{"outlinewidth":0,"ticks":""}},"type":"scatterternary"}],"surface":[{"colorbar":{"outlinewidth":0,"ticks":""},"colorscale":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]],"type":"surface"}],"table":[{"cells":{"fill":{"color":"#EBF0F8"},"line":{"color":"white"}},"header":{"fill":{"color":"#C8D4E3"},"line":{"color":"white"}},"type":"table"}]},"layout":{"annotationdefaults":{"arrowcolor":"#2a3f5f","arrowhead":0,"arrowwidth":1},"autotypenumbers":"strict","coloraxis":{"colorbar":{"outlinewidth":0,"ticks":""}},"colorscale":{"diverging":[[0,"#8e0152"],[0.1,"#c51b7d"],[0.2,"#de77ae"],[0.3,"#f1b6da"],[0.4,"#fde0ef"],[0.5,"#f7f7f7"],[0.6,"#e6f5d0"],[0.7,"#b8e186"],[0.8,"#7fbc41"],[0.9,"#4d9221"],[1,"#276419"]],"sequential":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]],"sequentialminus":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]]},"colorway":["#636efa","#EF553B","#00cc96","#ab63fa","#FFA15A","#19d3f3","#FF6692","#B6E880","#FF97FF","#FECB52"],"font":{"color":"#2a3f5f"},"geo":{"bgcolor":"white","lakecolor":"white","landcolor":"white","showlakes":true,"showland":true,"subunitcolor":"#C8D4E3"},"hoverlabel":{"align":"left"},"hovermode":"closest","mapbox":{"style":"light"},"paper_bgcolor":"white","plot_bgcolor":"white","polar":{"angularaxis":{"gridcolor":"#EBF0F8","linecolor":"#EBF0F8","ticks":""},"bgcolor":"white","radialaxis":{"gridcolor":"#EBF0F8","linecolor":"#EBF0F8","ticks":""}},"scene":{"xaxis":{"backgroundcolor":"white","gridcolor":"#DFE8F3","gridwidth":2,"linecolor":"#EBF0F8","showbackground":true,"ticks":"","zerolinecolor":"#EBF0F8"},"yaxis":{"backgroundcolor":"white","gridcolor":"#DFE8F3","gridwidth":2,"linecolor":"#EBF0F8","showbackground":true,"ticks":"","zerolinecolor":"#EBF0F8"},"zaxis":{"backgroundcolor":"white","gridcolor":"#DFE8F3","gridwidth":2,"linecolor":"#EBF0F8","showbackground":true,"ticks":"","zerolinecolor":"#EBF0F8"}},"shapedefaults":{"line":{"color":"#2a3f5f"}},"ternary":{"aaxis":{"gridcolor":"#DFE8F3","linecolor":"#A2B1C6","ticks":""},"baxis":{"gridcolor":"#DFE8F3","linecolor":"#A2B1C6","ticks":""},"bgcolor":"white","caxis":{"gridcolor":"#DFE8F3","linecolor":"#A2B1C6","ticks":""}},"title":{"x":0.05},"xaxis":{"automargin":true,"gridcolor":"#EBF0F8","linecolor":"#EBF0F8","ticks":"","title":{"standoff":15},"zerolinecolor":"#EBF0F8","zerolinewidth":2},"yaxis":{"automargin":true,"gridcolor":"#EBF0F8","linecolor":"#EBF0F8","ticks":"","title":{"standoff":15},"zerolinecolor":"#EBF0F8","zerolinewidth":2}}},"font":{"family":"'Segoe UI', Tahoma, Geneva, Verdana, sans-serif"},"yaxis":{"title":{"text":"Rank"},"range":[11.5,0.5],"dtick":1},"legend":{"title":{"text":"Teams"},"yanchor":"top","y":0.99,"xanchor":"left","x":1.01,"traceorder":"normal","itemclick":"toggleothers","itemdoubleclick":"toggle"},"xaxis":{"title":{"text":"Week"},"type":"category","categoryorder":"array","categoryarray":["Week 00","Week 01","Week 02","Week 03","Week 04","Week 05","Week 06","Next Week (2026-12-06)"]},"margin":{"r":109,"t":100},"hovermode":"x unified","updatemenus":[{"bgcolor":"#f4f6f8","bordercolor":"#a3aaaf","buttons":[{"args":[{"visible":[true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true]}],"label":"All Teams","method":"update"},{"args":[{"visible":[true,true,true,true,true,true,true,true,true,true,true,true,false,false,false,false,false,false,false,false,false,false,true,true,true,true,true,true,false,false,false,false,false]}],"label":"Top 6 Teams","method":"update"},{"args":[{"visible":[false,false,false,false,false,false,false,false,false,false,false,false,true,true,true,true,true,true,true,true,true,true,false,false,false,false,false,false,true,true,true,true,true]}],"label":"Bottom 6 Teams","method":"update"},{"args":[{"visible":[true,true,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,true,false,false,false,false,false,false,false,false,false,false]}],"label":"Central MOCO","method":"update"},{"args":[{"visible":[false,false,true,true,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,true,false,false,false,false,false,false,false,false,false]}],"label":"Winston Churchill","method":"update"},{"args":[{"visible":[false,false,false,false,true,true,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,true,false,false,false,false,false,false,false,false]}],"label":"Walter Johnson","method":"update"},{"args":[{"visible":[false,false,false,false,false,false,true,true,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,true,false,false,false,false,false,false,false]}],"label":"Silver Spring","method":"update"},{"args":[{"visible":[false,false,false,false,false,false,false,false,true,true,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,true,false,false,false,false,false,false]}],"label":"Walt Whitman","method":"update"},{"args":[{"visible":[false,false,false,false,false,false,false,false,false,false,true,true,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,true,false,false,false,false,false]}],"label":"DC Stars","method":"update"},{"args":[{"visible":[false,false,false,false,false,false,false,false,false,false,false,false,true,true,false,false,false,false,false,false,false,false,false,false,false,false,false,false,true,false,false,false,false]}],"label":"Bethesda-Chevy Chase","method":"update"},{"args":[{"visible":[false,false,false,false,false,false,false,false,false,false,false,false,false,false,true,true,false,false,false,false,false,false,false,false,false,false,false,false,false,true,false,false,false]}],"label":"Rockville-Magruder","method":"update"},{"args":[{"visible":[false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,true,true,false,false,false,false,false,false,false,false,false,false,false,false,true,false,false]}],"label":"Sherwood","method":"update"},{"args":[{"visible":[false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,true,true,false,false,false,false,false,false,false,false,false,false,false,true,false]}],"label":"Upper Montgomery","method":"update"},{"args":[{"visible":[false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,true,true,false,false,false,false,false,false,false,false,false,false,true]}],"label":"Richard Montgomery","method":"update"}],"direction":"down","type":"dropdown","x":0.0,"xanchor":"left","y":1.15,"yanchor":"top"}],"height":623},                        {"responsive": true, "toImageButtonOptions": {"format": "png", "filename": "mhc_plot", "height": 800, "width": 1200, "scale": 2}, "displaylogo": false}                    )                };            </script>        </div></div>
+        </section>
+
+        <section class="section">
+            <h2>Strength of Schedule</h2>
+            <div><div>                            <div id="f33a3217-3874-4059-b948-de0145cf193c" class="plotly-graph-div" style="height:623px; width:100%;"></div>            <script>                window.PLOTLYENV=window.PLOTLYENV || {};                                if (document.getElementById("f33a3217-3874-4059-b948-de0145cf193c")) {                    Plotly.newPlot(                        "f33a3217-3874-4059-b948-de0145cf193c",                        [{"hoverinfo":"skip","legendgroup":"Central MOCO","line":{"color":"#2a52be","width":1},"mode":"lines","showlegend":false,"x":["Week 06","Next Week (2026-12-06)"],"y":[0.44356057852491304,0.45841368028550794],"type":"scatter"},{"fill":"tonexty","fillcolor":"rgba(42,82,190,0.22)","hoverinfo":"skip","legendgroup":"Central MOCO","line":{"color":"#2a52be","width":1},"mode":"lines","showlegend":false,"x":["Week 06","Next Week (2026-12-06)"],"y":[0.44356057852491304,0.41405970341405524],"type":"scatter"},{"hoverinfo":"skip","legendgroup":"Winston Churchill","line":{"color":"#1f5fbf","width":1},"mode":"lines","showlegend":false,"x":["Week 06","Next Week (2026-12-06)"],"y":[0.4510775746561482,0.4965738227188245],"type":"scatter"},{"fill":"tonexty","fillcolor":"rgba(31,95,191,0.22)","hoverinfo":"skip","legendgroup":"Winston Churchill","line":{"color":"#1f5fbf","width":1},"mode":"lines","showlegend":false,"x":["Week 06","Next Week (2026-12-06)"],"y":[0.4510775746561482,0.416418760247538],"type":"scatter"},{"hoverinfo":"skip","legendgroup":"Walter Johnson","line":{"color":"#111111","width":1},"mode":"lines","showlegend":false,"x":["Week 06","Next Week (2026-12-06)"],"y":[0.5677273057701047,0.6138337107637121],"type":"scatter"},{"fill":"tonexty","fillcolor":"rgba(17,17,17,0.22)","hoverinfo":"skip","legendgroup":"Walter Johnson","line":{"color":"#111111","width":1},"mode":"lines","showlegend":false,"x":["Week 06","Next Week (2026-12-06)"],"y":[0.5677273057701047,0.5467284924558147],"type":"scatter"},{"hoverinfo":"skip","legendgroup":"Silver Spring","line":{"color":"#7a0f1f","width":1},"mode":"lines","showlegend":false,"x":["Week 06","Next Week (2026-12-06)"],"y":[0.522642798727851,0.5884729837108127],"type":"scatter"},{"fill":"tonexty","fillcolor":"rgba(122,15,31,0.22)","hoverinfo":"skip","legendgroup":"Silver Spring","line":{"color":"#7a0f1f","width":1},"mode":"lines","showlegend":false,"x":["Week 06","Next Week (2026-12-06)"],"y":[0.522642798727851,0.5091450449752429],"type":"scatter"},{"hoverinfo":"skip","legendgroup":"Walt Whitman","line":{"color":"#02a7e2","width":1},"mode":"lines","showlegend":false,"x":["Week 06","Next Week (2026-12-06)"],"y":[0.4549966676304161,0.46383540199565076],"type":"scatter"},{"fill":"tonexty","fillcolor":"rgba(2,167,226,0.22)","hoverinfo":"skip","legendgroup":"Walt Whitman","line":{"color":"#02a7e2","width":1},"mode":"lines","showlegend":false,"x":["Week 06","Next Week (2026-12-06)"],"y":[0.4549966676304161,0.42088612543865844],"type":"scatter"},{"hoverinfo":"skip","legendgroup":"DC Stars","line":{"color":"#ff6b6b","width":1},"mode":"lines","showlegend":false,"x":["Week 06","Next Week (2026-12-06)"],"y":[0.48113100106012424,0.49071410907329077],"type":"scatter"},{"fill":"tonexty","fillcolor":"rgba(255,107,107,0.22)","hoverinfo":"skip","legendgroup":"DC Stars","line":{"color":"#ff6b6b","width":1},"mode":"lines","showlegend":false,"x":["Week 06","Next Week (2026-12-06)"],"y":[0.48113100106012424,0.4225306850642467],"type":"scatter"},{"hoverinfo":"skip","legendgroup":"Bethesda-Chevy Chase","line":{"color":"#001f5b","width":1},"mode":"lines","showlegend":false,"x":["Week 06","Next Week (2026-12-06)"],"y":[0.46238064516129035,0.4473796839303799],"type":"scatter"},{"fill":"tonexty","fillcolor":"rgba(0,31,91,0.22)","hoverinfo":"skip","legendgroup":"Bethesda-Chevy Chase","line":{"color":"#001f5b","width":1},"mode":"lines","showlegend":false,"x":["Week 06","Next Week (2026-12-06)"],"y":[0.46238064516129035,0.38763730064646246],"type":"scatter"},{"hoverinfo":"skip","legendgroup":"Rockville-Magruder","line":{"color":"#c80f2e","width":1},"mode":"lines","showlegend":false,"x":["Week 06","Next Week (2026-12-06)"],"y":[0.5819939382925117,0.6297822465106212],"type":"scatter"},{"fill":"tonexty","fillcolor":"rgba(200,15,46,0.22)","hoverinfo":"skip","legendgroup":"Rockville-Magruder","line":{"color":"#c80f2e","width":1},"mode":"lines","showlegend":false,"x":["Week 06","Next Week (2026-12-06)"],"y":[0.5819939382925117,0.5795158120439113],"type":"scatter"},{"hoverinfo":"skip","legendgroup":"Sherwood","line":{"color":"#5b4fcf","width":1},"mode":"lines","showlegend":false,"x":["Week 06","Next Week (2026-12-06)"],"y":[0.5109132212630623,0.5339394714552514],"type":"scatter"},{"fill":"tonexty","fillcolor":"rgba(91,79,207,0.22)","hoverinfo":"skip","legendgroup":"Sherwood","line":{"color":"#5b4fcf","width":1},"mode":"lines","showlegend":false,"x":["Week 06","Next Week (2026-12-06)"],"y":[0.5109132212630623,0.5048914050417266],"type":"scatter"},{"hoverinfo":"skip","legendgroup":"Upper Montgomery","line":{"color":"#f2c200","width":1},"mode":"lines","showlegend":false,"x":["Week 06","Next Week (2026-12-06)"],"y":[0.5410657585395069,0.5472891975642655],"type":"scatter"},{"fill":"tonexty","fillcolor":"rgba(242,194,0,0.22)","hoverinfo":"skip","legendgroup":"Upper Montgomery","line":{"color":"#f2c200","width":1},"mode":"lines","showlegend":false,"x":["Week 06","Next Week (2026-12-06)"],"y":[0.5410657585395069,0.4857109073216734],"type":"scatter"},{"hoverinfo":"skip","legendgroup":"Richard Montgomery","line":{"color":"#c77700","width":1},"mode":"lines","showlegend":false,"x":["Week 06","Next Week (2026-12-06)"],"y":[0.4909056489474482,0.4984192094558447],"type":"scatter"},{"fill":"tonexty","fillcolor":"rgba(199,119,0,0.22)","hoverinfo":"skip","legendgroup":"Richard Montgomery","line":{"color":"#c77700","width":1},"mode":"lines","showlegend":false,"x":["Week 06","Next Week (2026-12-06)"],"y":[0.4909056489474482,0.4561263084050831],"type":"scatter"},{"hovertemplate":"%{meta}: %{y:.4f}\u003cextra\u003e\u003c\u002fextra\u003e","line":{"color":"#2a52be","dash":"dash","width":2},"marker":{"size":7,"symbol":"square"},"meta":"Central MOCO","mode":"lines+markers","name":"CenMOCO","x":["Week 00","Week 01","Week 02","Week 03","Week 04","Week 05","Week 06"],"y":[0.5,0.375,0.29871794871794877,0.38690476190476203,0.46139705882352966,0.5061475962568753,0.44356057852491304],"type":"scatter"},{"hovertemplate":"%{meta}: %{y:.4f}\u003cextra\u003e\u003c\u002fextra\u003e","line":{"color":"#1f5fbf","dash":"longdashdot","width":2},"marker":{"size":7,"symbol":"hexagon2"},"meta":"Winston Churchill","mode":"lines+markers","name":"Church","x":["Week 00","Week 01","Week 02","Week 03","Week 04","Week 05","Week 06"],"y":[0.5,0.5,0.368421052631579,0.39745916515426494,0.37300000000000005,0.3665998821344383,0.4510775746561482],"type":"scatter"},{"hovertemplate":"%{meta}: %{y:.4f}\u003cextra\u003e\u003c\u002fextra\u003e","line":{"color":"#111111","dash":"longdash","width":2},"marker":{"size":7,"symbol":"hexagon"},"meta":"Walter Johnson","mode":"lines+markers","name":"WJ","x":["Week 00","Week 01","Week 02","Week 03","Week 04","Week 05","Week 06"],"y":[0.5,0.37500000000000044,0.36842105263157876,0.3614640048396855,0.37299999999999994,0.4872892885206086,0.5677273057701047],"type":"scatter"},{"hovertemplate":"%{meta}: %{y:.4f}\u003cextra\u003e\u003c\u002fextra\u003e","line":{"color":"#7a0f1f","dash":"solid","width":2},"marker":{"size":7,"symbol":"triangle-right"},"meta":"Silver Spring","mode":"lines+markers","name":"SS","x":["Week 00","Week 01","Week 02","Week 03","Week 04","Week 05","Week 06"],"y":[0.5,0.5,0.6842105263157894,0.7078039927404719,0.5793809523809523,0.5080972926637617,0.522642798727851],"type":"scatter"},{"hovertemplate":"%{meta}: %{y:.4f}\u003cextra\u003e\u003c\u002fextra\u003e","line":{"color":"#02a7e2","dash":"dashdot","width":2},"marker":{"size":7,"symbol":"star"},"meta":"Walt Whitman","mode":"lines+markers","name":"Whit","x":["Week 00","Week 01","Week 02","Week 03","Week 04","Week 05","Week 06"],"y":[0.5,0.37500000000000044,0.4865384615384616,0.3680124223602488,0.5191993464052288,0.5280730766483319,0.4549966676304161],"type":"scatter"},{"hovertemplate":"%{meta}: %{y:.4f}\u003cextra\u003e\u003c\u002fextra\u003e","line":{"color":"#ff6b6b","dash":"dashdot","width":2},"marker":{"size":7,"symbol":"triangle-up"},"meta":"DC Stars","mode":"lines+markers","name":"DC","x":["Week 00","Week 01","Week 02","Week 03","Week 04","Week 05","Week 06"],"y":[0.5,0.625,0.5679487179487179,0.5411490683229814,0.4761029411764707,0.48088721099126114,0.48113100106012424],"type":"scatter"},{"hovertemplate":"%{meta}: %{y:.4f}\u003cextra\u003e\u003c\u002fextra\u003e","line":{"color":"#001f5b","dash":"solid","width":2},"marker":{"size":7,"symbol":"circle"},"meta":"Bethesda-Chevy Chase","mode":"lines+markers","name":"BCC","x":["Week 00","Week 01","Week 02","Week 03","Week 04","Week 05","Week 06"],"y":[0.5,0.625,0.47307692307692295,0.6136128364389234,0.5625,0.49338721099126115,0.46238064516129035],"type":"scatter"},{"hovertemplate":"%{meta}: %{y:.4f}\u003cextra\u003e\u003c\u002fextra\u003e","line":{"color":"#c80f2e","dash":"longdashdot","width":2},"marker":{"size":7,"symbol":"triangle-down"},"meta":"Rockville-Magruder","mode":"lines+markers","name":"RAM","x":["Week 00","Week 01","Week 02","Week 03","Week 04","Week 05","Week 06"],"y":[0.5,0.625,0.6842105263157894,0.5683605565638233,0.5357142857142857,0.5438115783780475,0.5819939382925117],"type":"scatter"},{"hovertemplate":"%{meta}: %{y:.4f}\u003cextra\u003e\u003c\u002fextra\u003e","line":{"color":"#5b4fcf","dash":"dot","width":2},"marker":{"size":7,"symbol":"triangle-left"},"meta":"Sherwood","mode":"lines+markers","name":"Sher","x":["Week 00","Week 01","Week 02","Week 03","Week 04","Week 05","Week 06"],"y":[0.5,0.5,0.6842105263157894,0.5789473684210527,0.5793809523809524,0.5676330069494762,0.5109132212630623],"type":"scatter"},{"hovertemplate":"%{meta}: %{y:.4f}\u003cextra\u003e\u003c\u002fextra\u003e","line":{"color":"#f2c200","dash":"dash","width":2},"marker":{"size":7,"symbol":"pentagon"},"meta":"Upper Montgomery","mode":"lines+markers","name":"UML","x":["Week 00","Week 01","Week 02","Week 03","Week 04","Week 05","Week 06"],"y":[0.5,0.37500000000000044,0.3134615384615387,0.34627329192546574,0.4113562091503269,0.49680741481534385,0.5410657585395069],"type":"scatter"},{"hovertemplate":"%{meta}: %{y:.4f}\u003cextra\u003e\u003c\u002fextra\u003e","line":{"color":"#c77700","dash":"longdash","width":2},"marker":{"size":7,"symbol":"diamond"},"meta":"Richard Montgomery","mode":"lines+markers","name":"RM","x":["Week 00","Week 01","Week 02","Week 03","Week 04","Week 05","Week 06"],"y":[0.5,0.625,0.626923076923077,0.6130952380952382,0.5625,0.5433872109912612,0.4909056489474482],"type":"scatter"}],                        {"template":{"data":{"barpolar":[{"marker":{"line":{"color":"white","width":0.5},"pattern":{"fillmode":"overlay","size":10,"solidity":0.2}},"type":"barpolar"}],"bar":[{"error_x":{"color":"#2a3f5f"},"error_y":{"color":"#2a3f5f"},"marker":{"line":{"color":"white","width":0.5},"pattern":{"fillmode":"overlay","size":10,"solidity":0.2}},"type":"bar"}],"carpet":[{"aaxis":{"endlinecolor":"#2a3f5f","gridcolor":"#C8D4E3","linecolor":"#C8D4E3","minorgridcolor":"#C8D4E3","startlinecolor":"#2a3f5f"},"baxis":{"endlinecolor":"#2a3f5f","gridcolor":"#C8D4E3","linecolor":"#C8D4E3","minorgridcolor":"#C8D4E3","startlinecolor":"#2a3f5f"},"type":"carpet"}],"choropleth":[{"colorbar":{"outlinewidth":0,"ticks":""},"type":"choropleth"}],"contourcarpet":[{"colorbar":{"outlinewidth":0,"ticks":""},"type":"contourcarpet"}],"contour":[{"colorbar":{"outlinewidth":0,"ticks":""},"colorscale":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]],"type":"contour"}],"heatmap":[{"colorbar":{"outlinewidth":0,"ticks":""},"colorscale":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]],"type":"heatmap"}],"histogram2dcontour":[{"colorbar":{"outlinewidth":0,"ticks":""},"colorscale":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]],"type":"histogram2dcontour"}],"histogram2d":[{"colorbar":{"outlinewidth":0,"ticks":""},"colorscale":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]],"type":"histogram2d"}],"histogram":[{"marker":{"pattern":{"fillmode":"overlay","size":10,"solidity":0.2}},"type":"histogram"}],"mesh3d":[{"colorbar":{"outlinewidth":0,"ticks":""},"type":"mesh3d"}],"parcoords":[{"line":{"colorbar":{"outlinewidth":0,"ticks":""}},"type":"parcoords"}],"pie":[{"automargin":true,"type":"pie"}],"scatter3d":[{"line":{"colorbar":{"outlinewidth":0,"ticks":""}},"marker":{"colorbar":{"outlinewidth":0,"ticks":""}},"type":"scatter3d"}],"scattercarpet":[{"marker":{"colorbar":{"outlinewidth":0,"ticks":""}},"type":"scattercarpet"}],"scattergeo":[{"marker":{"colorbar":{"outlinewidth":0,"ticks":""}},"type":"scattergeo"}],"scattergl":[{"marker":{"colorbar":{"outlinewidth":0,"ticks":""}},"type":"scattergl"}],"scattermapbox":[{"marker":{"colorbar":{"outlinewidth":0,"ticks":""}},"type":"scattermapbox"}],"scattermap":[{"marker":{"colorbar":{"outlinewidth":0,"ticks":""}},"type":"scattermap"}],"scatterpolargl":[{"marker":{"colorbar":{"outlinewidth":0,"ticks":""}},"type":"scatterpolargl"}],"scatterpolar":[{"marker":{"colorbar":{"outlinewidth":0,"ticks":""}},"type":"scatterpolar"}],"scatter":[{"fillpattern":{"fillmode":"overlay","size":10,"solidity":0.2},"type":"scatter"}],"scatterternary":[{"marker":{"colorbar":{"outlinewidth":0,"ticks":""}},"type":"scatterternary"}],"surface":[{"colorbar":{"outlinewidth":0,"ticks":""},"colorscale":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]],"type":"surface"}],"table":[{"cells":{"fill":{"color":"#EBF0F8"},"line":{"color":"white"}},"header":{"fill":{"color":"#C8D4E3"},"line":{"color":"white"}},"type":"table"}]},"layout":{"annotationdefaults":{"arrowcolor":"#2a3f5f","arrowhead":0,"arrowwidth":1},"autotypenumbers":"strict","coloraxis":{"colorbar":{"outlinewidth":0,"ticks":""}},"colorscale":{"diverging":[[0,"#8e0152"],[0.1,"#c51b7d"],[0.2,"#de77ae"],[0.3,"#f1b6da"],[0.4,"#fde0ef"],[0.5,"#f7f7f7"],[0.6,"#e6f5d0"],[0.7,"#b8e186"],[0.8,"#7fbc41"],[0.9,"#4d9221"],[1,"#276419"]],"sequential":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]],"sequentialminus":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]]},"colorway":["#636efa","#EF553B","#00cc96","#ab63fa","#FFA15A","#19d3f3","#FF6692","#B6E880","#FF97FF","#FECB52"],"font":{"color":"#2a3f5f"},"geo":{"bgcolor":"white","lakecolor":"white","landcolor":"white","showlakes":true,"showland":true,"subunitcolor":"#C8D4E3"},"hoverlabel":{"align":"left"},"hovermode":"closest","mapbox":{"style":"light"},"paper_bgcolor":"white","plot_bgcolor":"white","polar":{"angularaxis":{"gridcolor":"#EBF0F8","linecolor":"#EBF0F8","ticks":""},"bgcolor":"white","radialaxis":{"gridcolor":"#EBF0F8","linecolor":"#EBF0F8","ticks":""}},"scene":{"xaxis":{"backgroundcolor":"white","gridcolor":"#DFE8F3","gridwidth":2,"linecolor":"#EBF0F8","showbackground":true,"ticks":"","zerolinecolor":"#EBF0F8"},"yaxis":{"backgroundcolor":"white","gridcolor":"#DFE8F3","gridwidth":2,"linecolor":"#EBF0F8","showbackground":true,"ticks":"","zerolinecolor":"#EBF0F8"},"zaxis":{"backgroundcolor":"white","gridcolor":"#DFE8F3","gridwidth":2,"linecolor":"#EBF0F8","showbackground":true,"ticks":"","zerolinecolor":"#EBF0F8"}},"shapedefaults":{"line":{"color":"#2a3f5f"}},"ternary":{"aaxis":{"gridcolor":"#DFE8F3","linecolor":"#A2B1C6","ticks":""},"baxis":{"gridcolor":"#DFE8F3","linecolor":"#A2B1C6","ticks":""},"bgcolor":"white","caxis":{"gridcolor":"#DFE8F3","linecolor":"#A2B1C6","ticks":""}},"title":{"x":0.05},"xaxis":{"automargin":true,"gridcolor":"#EBF0F8","linecolor":"#EBF0F8","ticks":"","title":{"standoff":15},"zerolinecolor":"#EBF0F8","zerolinewidth":2},"yaxis":{"automargin":true,"gridcolor":"#EBF0F8","linecolor":"#EBF0F8","ticks":"","title":{"standoff":15},"zerolinecolor":"#EBF0F8","zerolinewidth":2}}},"font":{"family":"'Segoe UI', Tahoma, Geneva, Verdana, sans-serif"},"yaxis":{"title":{"text":"SOS"},"range":[0.2782636465168226,0.7282582949415981]},"legend":{"title":{"text":"Teams"},"yanchor":"top","y":0.99,"xanchor":"left","x":1.01,"traceorder":"normal","itemclick":"toggleothers","itemdoubleclick":"toggle"},"xaxis":{"title":{"text":"Week"},"type":"category","categoryorder":"array","categoryarray":["Week 00","Week 01","Week 02","Week 03","Week 04","Week 05","Week 06","Next Week (2026-12-06)"]},"margin":{"r":109,"t":100},"hovermode":"x unified","updatemenus":[{"bgcolor":"#f4f6f8","bordercolor":"#a3aaaf","buttons":[{"args":[{"visible":[true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true]}],"label":"All Teams","method":"update"},{"args":[{"visible":[true,true,true,true,true,true,true,true,true,true,true,true,false,false,false,false,false,false,false,false,false,false,true,true,true,true,true,true,false,false,false,false,false]}],"label":"Top 6 Teams","method":"update"},{"args":[{"visible":[false,false,false,false,false,false,false,false,false,false,false,false,true,true,true,true,true,true,true,true,true,true,false,false,false,false,false,false,true,true,true,true,true]}],"label":"Bottom 6 Teams","method":"update"},{"args":[{"visible":[true,true,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,true,false,false,false,false,false,false,false,false,false,false]}],"label":"Central MOCO","method":"update"},{"args":[{"visible":[false,false,true,true,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,true,false,false,false,false,false,false,false,false,false]}],"label":"Winston Churchill","method":"update"},{"args":[{"visible":[false,false,false,false,true,true,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,true,false,false,false,false,false,false,false,false]}],"label":"Walter Johnson","method":"update"},{"args":[{"visible":[false,false,false,false,false,false,true,true,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,true,false,false,false,false,false,false,false]}],"label":"Silver Spring","method":"update"},{"args":[{"visible":[false,false,false,false,false,false,false,false,true,true,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,true,false,false,false,false,false,false]}],"label":"Walt Whitman","method":"update"},{"args":[{"visible":[false,false,false,false,false,false,false,false,false,false,true,true,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,true,false,false,false,false,false]}],"label":"DC Stars","method":"update"},{"args":[{"visible":[false,false,false,false,false,false,false,false,false,false,false,false,true,true,false,false,false,false,false,false,false,false,false,false,false,false,false,false,true,false,false,false,false]}],"label":"Bethesda-Chevy Chase","method":"update"},{"args":[{"visible":[false,false,false,false,false,false,false,false,false,false,false,false,false,false,true,true,false,false,false,false,false,false,false,false,false,false,false,false,false,true,false,false,false]}],"label":"Rockville-Magruder","method":"update"},{"args":[{"visible":[false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,true,true,false,false,false,false,false,false,false,false,false,false,false,false,true,false,false]}],"label":"Sherwood","method":"update"},{"args":[{"visible":[false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,true,true,false,false,false,false,false,false,false,false,false,false,false,true,false]}],"label":"Upper Montgomery","method":"update"},{"args":[{"visible":[false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,true,true,false,false,false,false,false,false,false,false,false,false,true]}],"label":"Richard Montgomery","method":"update"}],"direction":"down","type":"dropdown","x":0.0,"xanchor":"left","y":1.15,"yanchor":"top"}],"height":623},                        {"responsive": true, "toImageButtonOptions": {"format": "png", "filename": "mhc_plot", "height": 800, "width": 1200, "scale": 2}, "displaylogo": false}                    )                };            </script>        </div></div>
+        </section>
+    </main>
+    <script>
+        const lookAheadTable = document.querySelector('.look-ahead-table');
+        const lookAheadBody = document.getElementById('lookAheadBody');
+        let sortColumn = -1;
+        let sortDirection = 1;
+
+        function sortLookAheadTable(columnIndex) {
+            const headers = Array.from(lookAheadTable.tHead.rows[0].cells);
+            const header = headers[columnIndex];
+            const sortType = header.dataset.sortType;
+            const rows = Array.from(lookAheadBody.rows);
+
+            if (sortColumn === columnIndex) {
+                sortDirection *= -1;
+            } else {
+                sortColumn = columnIndex;
+                sortDirection = 1;
+            }
+
+            headers.forEach((item, index) => {
+                item.classList.remove('sort-asc', 'sort-desc');
+                item.setAttribute('aria-sort', 'none');
+                if (index === columnIndex) {
+                    item.classList.add(sortDirection === 1 ? 'sort-asc' : 'sort-desc');
+                    item.setAttribute('aria-sort', sortDirection === 1 ? 'ascending' : 'descending');
+                }
+            });
+
+            const valueFor = row => {
+                const text = row.cells[columnIndex].innerText.trim();
+                if (sortType === 'text') return text;
+                const number = text.match(/-?\d+(?:\.\d+)?/);
+                return number ? Number(number[0]) : null;
+            };
+
+            rows.sort((a, b) => {
+                const valueA = valueFor(a);
+                const valueB = valueFor(b);
+                if (valueA === null) return valueB === null ? 0 : 1;
+                if (valueB === null) return -1;
+                const comparison = sortType === 'text'
+                    ? valueA.localeCompare(valueB)
+                    : valueA - valueB;
+                return comparison * sortDirection;
+            });
+
+            rows.forEach(row => lookAheadBody.appendChild(row));
+        }
+
+        Array.from(lookAheadTable.tHead.rows[0].cells).forEach((header, index) => {
+            const sort = () => sortLookAheadTable(index);
+            header.addEventListener('click', sort);
+            header.addEventListener('keydown', event => {
+                if (event.key === 'Enter' || event.key === ' ') {
+                    event.preventDefault();
+                    sort();
+                }
+            });
+        });
+    </script>
+</body>
+
+</html>
